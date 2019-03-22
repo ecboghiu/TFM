@@ -11,9 +11,9 @@
 
 /*******CONTROL: type of graph*******/
 //#define SMALL_WORLD
-#define ERDOS_RENYI
+//#define ERDOS_RENYI
 #define ERDOS_RENYI_prob 0.006
-//#define SCALE_FREE
+#define SCALE_FREE
 //#define READ_NETWORK_FROM_FILE    //WARNING: as of time moment this
                                     // doesn't work well
 
@@ -26,7 +26,7 @@
 #define K_MIN 2
 #define AVG_NUMBER 1
 
-//#define OSCILLATOR_ON
+#define OSCILLATOR_ON
 //#define PERCOLATION_ON
 
 
@@ -34,7 +34,7 @@
 // Input this into wolfram alpha if you want ot know the gamma for a certain
 // mean degree:
 // 6 = 1/(\int x^(-y)dx for x=2..100) *\int x*x^(-y) dx for x=2..100
-#define GAMMA 2.21412
+#define GAMMA 2.27837758
 
 #define M_PI 3.14159265358979323846
 

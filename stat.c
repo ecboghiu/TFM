@@ -3,9 +3,10 @@
 void calcHist(char* filename)
 {
     double min, max, d;
-    int N_Intervalos = NODE_NR-1;
+    int N_Intervalos = 20;//NODE_NR-1;
     int N_data = NODE_NR;
-    double *Hist = calloc(N_Intervalos, sizeof *Hist);
+    double *Hist;
+    Hist = calloc(N_Intervalos, sizeof *Hist);
     Histogram(GLOB_omega_nat, Hist, N_data, N_Intervalos, &d, &min, &max);
     #ifdef DEBUG
     printf("%s%g\n", "min=", min);
@@ -32,13 +33,12 @@ void calcHist(char* filename)
             #endif
             fprintf(file_hist, "%g %g\n", min+i*d, Hist[i]);
         }
-        fclose(file_hist);
     } else {
         printf("%s\n", "Something went wrong opening the histogram file.");
         exit(1);
     }
-    fclose(file_hist);
-    free(Hist);
+    fclose(file_hist); file_hist = NULL;
+    free(Hist); Hist = NULL;
 }
 
 void med_var (double *datos, int numero_de_datos,

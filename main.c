@@ -176,8 +176,6 @@ int main(int args_number, char* args[])
     initThetas();
     // gives values distributed normally for the nat. frequancies, mean 0 var 1
     initOmegas();
-    
-calcHist("hist.txt");
 
 #ifdef OSCILLATOR_ON
     double h               = DELTA_T;          // time increment
