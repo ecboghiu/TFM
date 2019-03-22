@@ -189,7 +189,7 @@ int main(int args_number, char* args[])
     #ifndef TERMALIZATION
     char filename_coh[128] = ".";
     snprintf(filename_coh, sizeof(char) * 128, "coh_%g.txt", DELTA_T);
-    FILE *theta_file = fopen("filename_coh","w");
+    FILE *theta_file = fopen(filename_coh,"w");
     if (theta_file == NULL) {
         printf("%s\n", "Could not open coh.txt");
         exit(1);
@@ -266,13 +266,12 @@ int main(int args_number, char* args[])
             #ifndef TERMALIZATION
             fprintf(theta_file, "%lf %.10lf %.10lf\n", time_aux_term, r_coh[t_idx], //exp(-0.01*time_aux_term));
                         sin(time_aux_term));
-
             #endif
-/*
+
             for (int t_aux = 0; t_aux < blind; t_aux++) {
                 update_RK(time_aux_term, sigma, h); // "blind" because we update without measuring
             }
-*/
+
             update_RK(time_aux_term, sigma, h);
         }
 

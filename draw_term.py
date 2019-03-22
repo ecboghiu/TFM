@@ -44,8 +44,20 @@ plot_data.append(genfromtxt("coh_0.8_300.txt", skip_header=2))
 labels.append(r'$\sigma$=0.8')
 colors.append(tableau20[10])
 '''
-plot_data.append(genfromtxt("coh.txt", skip_header=2))
-labels.append(r'$\sigma$=0.2')
+plot_data.append(genfromtxt("coh_0.0001.txt", skip_header=2))
+labels.append(r'$\delta t$=0.0001')
+colors.append(tableau20[10])
+plot_data.append(genfromtxt("coh_0.001.txt", skip_header=2))
+labels.append(r'$\delta t$=0.0001')
+colors.append(tableau20[10])
+plot_data.append(genfromtxt("coh_0.01.txt", skip_header=2))
+labels.append(r'$\delta t$=0.0001')
+colors.append(tableau20[10])
+plot_data.append(genfromtxt("coh_0.1.txt", skip_header=2))
+labels.append(r'$\delta t$=0.0001')
+colors.append(tableau20[10])
+plot_data.append(genfromtxt("coh_0.1.txt", skip_header=2))
+labels.append(r'$\delta t$=0.0001')
 colors.append(tableau20[10])
 
 fig = plt.figure()
@@ -58,18 +70,18 @@ for i in [0]:
             )   
 '''
 i=0
-
+'''
 plt.plot(plot_data[i][:,0], plot_data[i][:,1], 
                 label = labels[i], color = tableau20[0])  
 plt.plot(plot_data[i][:,0], plot_data[i][:,2],
                 label = 'teor', color = tableau20[2])  
+'''
 
-arra = np.abs(np.array(plot_data[i][:,1])-np.array(plot_data[i][:,2]))#/np.array(plot_data[i][:,2]))
-plt.plot(plot_data[i][:,0], arra,
+plt.plot(plot_data[i][:,0], np.abs(np.array(plot_data[i][:,1])-np.array(plot_data[i][:,2])),
                 label = 'diffr', color = tableau20[4])
   
 
-#plt.yscale('log')
+plt.yscale('log')
 plt.legend(loc="upper left")#.set_draggable(True)
 #plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 

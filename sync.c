@@ -5,7 +5,7 @@ void initThetas()
 {
     GLOB_theta = malloc(NODE_NR*sizeof(*GLOB_theta));
     for (int i = 0; i < NODE_NR; ++i) {
-        GLOB_theta[i] = 0; //Random() * 2*M_PI;
+        GLOB_theta[i] = Random() * 2*M_PI;
     }
 }
 
@@ -17,7 +17,7 @@ void initOmegas()
     // omega_nat IS GLOBAL
     GLOB_omega_nat = malloc(NODE_NR*sizeof(*GLOB_omega_nat));
     for (int i = 0; i < NODE_NR; i++) {
-        GLOB_omega_nat[i] = 1; //sampleNormal();
+        GLOB_omega_nat[i] = sampleNormal();
     }
 }
 
@@ -92,7 +92,7 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
 {
     // \dot{theta_i}=\omega_i+|sigma\sum_{j=0}^{N} a_{ij}\sin{theta_j-theta_i}
     double sum = 0;
-    return cos(t);
+    //return cos(t);
     
     #ifdef EPSILON_OSCILLATOR
     double coupling_all_to_all = EPSILON_OSCILLATOR;

@@ -12,17 +12,16 @@
 /*******CONTROL: type of graph*******/
 //#define SMALL_WORLD
 #define ERDOS_RENYI
-#define ERDOS_RENYI_prob 0.0
-//0.02
+#define ERDOS_RENYI_prob 0.12
 //#define SCALE_FREE
 //#define READ_NETWORK_FROM_FILE    //WARNING: as of time moment this
                                     // doesn't work well
 
 // Define if you want a histogram of the degrees of the graph
-//#define DEGREE_HISTOGRAM
+#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 60
+#define NODE_NR 50
 #define K_MAX 30
 #define K_MIN 2
 #define AVG_NUMBER 1
@@ -43,9 +42,9 @@
 // sufficently. small
 #define DELTA_T 0.001
 // How many times we measure.
-#define MAX_STEPS 10000
+#define MAX_STEPS 1000
 // Number of updates in between measures.
-#define IN_BETWEEN 0
+#define IN_BETWEEN 100
 // If its not defined we dont wait to termalize
 //#define TERMALIZATION 1000
 //#define EPSILON_OSCILLATOR 1e-3
