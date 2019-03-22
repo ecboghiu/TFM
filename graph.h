@@ -7,7 +7,7 @@
 #include <time.h> // For initializing the random generator.
 #include <string.h> // For atoi(),atof() mainly, amongst other things
 
-//#define DEBUG
+#define DEBUG
 
 /*******CONTROL: type of graph*******/
 //#define SMALL_WORLD
@@ -26,7 +26,7 @@
 #define K_MIN 2
 #define AVG_NUMBER 1
 
-#define OSCILLATOR_ON
+//#define OSCILLATOR_ON
 //#define PERCOLATION_ON
 
 
@@ -130,7 +130,7 @@ int    generateDegree   (int m, double gamma, double norm_const);
 double sampleNormal     (); // copied from http://stackoverflow.com/a/10645091
 
 // Statistics functions.
-void   Histogram        (int *data, double *Hist, int N_data, int N_Intervalos,
+void   Histogram        (double *data, double *Hist, int N_data, int N_Intervalos,
                          double *d, double *min, double *max);
 void   med_var          (double *datos, int numero_de_datos,
                          double *media, double *varianza);

@@ -6,7 +6,7 @@ void calcHist(char* filename)
     int N_Intervalos = NODE_NR-1;
     int N_data = NODE_NR;
     double *Hist = calloc(N_Intervalos, sizeof *Hist);
-    Histogram(degree, Hist, N_data, N_Intervalos, &d, &min, &max);
+    Histogram(GLOB_omega_nat, Hist, N_data, N_Intervalos, &d, &min, &max);
     #ifdef DEBUG
     printf("%s%g\n", "min=", min);
     printf("%s%g\n", "max=", max);
@@ -55,7 +55,7 @@ void med_var (double *datos, int numero_de_datos,
     *varianza  = sum_2 / numero_de_datos - (*media) * (*media);
 }
 
-void Histogram (int *data, double *Hist, int N_data, int N_Intervalos,
+void Histogram (double *data, double *Hist, int N_data, int N_Intervalos,
                 double *d, double *min, double *max)
 {
     // INFORMACION
@@ -83,9 +83,9 @@ void Histogram (int *data, double *Hist, int N_data, int N_Intervalos,
     *min = min_aux;
     
     // Specifically for this type of networks:
-    *min = 2;
-    *max = NODE_NR;
-    N_Intervalos = NODE_NR-2-1;
+    //*min = 2;
+    //*max = NODE_NR;
+    //N_Intervalos = NODE_NR-2-1;
 
     // Calculo la longitud de cada intervalo una vez que
     // sabemos el maximo y minimo.

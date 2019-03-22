@@ -131,7 +131,7 @@ int main(int args_number, char* args[])
 
 #endif
 
-#ifdef OSCILLATOR_ON
+
     ///////////////////////ERDOS-RENYI////////////////////////////////////////
     #ifdef ERDOS_RENYI
     initERmodel(ERDOS_RENYI_prob);         //erdos-renyi random model
@@ -176,7 +176,10 @@ int main(int args_number, char* args[])
     initThetas();
     // gives values distributed normally for the nat. frequancies, mean 0 var 1
     initOmegas();
+    
+calcHist("hist.txt");
 
+#ifdef OSCILLATOR_ON
     double h               = DELTA_T;          // time increment
     int nr_measurements    = MAX_STEPS;        // number of time increments we measure
     int    blind           = IN_BETWEEN;       // number of times we dont measure
@@ -243,8 +246,8 @@ int main(int args_number, char* args[])
     int node_nr_aux_term = 3;
     #endif
     #ifdef TERMALIZATION
-    double sigma_min = 0.00;
-    double sigma_max = 0.2;
+    double sigma_min = 0.2;
+    double sigma_max = 0.5;
     double sigma_inc = (sigma_max-sigma_min)/10; // sigma increments
     #endif
     #ifdef TERMALIZATION
