@@ -62,10 +62,10 @@ for i in [0]:#range(5,13):
     plt.plot(plot_data[i][:,0], plot_data[i][:,1],
             label = labels[i], color = colors[0]
             )
-    plt.plot(   np.array(plot_data[i][:,0]),
-            NORMALIZING_FACTOR * np.array(plot_data[i][:,0])**(-GAMMA) ,
-                label = 'Thero', color = tableau20[1]
-            )
+    #plt.plot(   np.array(plot_data[i][:,0]),
+    #        NORMALIZING_FACTOR * np.array(plot_data[i][:,0])**(-GAMMA) ,
+    #            label = 'Thero', color = tableau20[1]
+    #        )
 
 
 #plt.legend(loc="lower right").set_draggable(True)
