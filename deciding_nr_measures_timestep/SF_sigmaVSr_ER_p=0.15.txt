@@ -1,0 +1,4 @@
+# Node_nr = 50
+# SCALE FREE p=0.15 K_MIN=2 K_MAX=50 <k>=6.52 <k^2>=6.5696 
+# K <r> sigma_r(sig not of average! divide by sqrt(n))
+0.4 0.819715 0.041932 

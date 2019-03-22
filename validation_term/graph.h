@@ -12,7 +12,7 @@
 /*******CONTROL: type of graph*******/
 //#define SMALL_WORLD
 #define ERDOS_RENYI
-#define ERDOS_RENYI_prob 0.006
+#define ERDOS_RENYI_prob 0.15
 //#define SCALE_FREE
 //#define READ_NETWORK_FROM_FILE    //WARNING: as of time moment this
                                     // doesn't work well
@@ -21,8 +21,8 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 1000
-#define K_MAX 50
+#define NODE_NR 50
+#define K_MAX 30
 #define K_MIN 2
 #define AVG_NUMBER 1
 
@@ -40,21 +40,20 @@
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1e-2
+#define DELTA_T 0.001
 // How many times we measure.
-#define MAX_STEPS 10000
+#define MAX_STEPS 100000
 // Number of updates in between measures.
-#define IN_BETWEEN 10
+#define IN_BETWEEN 0
 
 // If its not defined we dont wait to termalize
-// we need to wait around 4s
-#define TERMALIZATION 40
+//#define TERMALIZATION 1000
 
 //#define EPSILON_OSCILLATOR 1e-3
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 0.4
+#define SIGMA_VAL 0.1
 
 
 // Where we store our connection matrix

@@ -212,7 +212,7 @@ int main(int args_number, char* args[])
     // we will store sigmas and phase coherence r
 
 
-    FILE *f_out2 = fopen(filename2,"a");
+    FILE *f_out2 = fopen(filename2,"w");
     if (f_out2 == NULL) {
         printf("Could not open sigmaVSr.txt");
         exit(1);
@@ -244,7 +244,7 @@ int main(int args_number, char* args[])
     #endif
     #ifdef TERMALIZATION
     double sigma_min = 0.00;
-    double sigma_max = 0.2;
+    double sigma_max = 1.00;
     double sigma_inc = (sigma_max-sigma_min)/10; // sigma increments
     #endif
     #ifdef TERMALIZATION

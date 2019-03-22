@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 
 from pylab import genfromtxt
-import numpy as np
 
 import seaborn as sns
 sns.set()
@@ -24,42 +23,36 @@ for i in range(len(tableau20)):
 
 plot_data, labels, colors = [], [], []
 
-
-plot_data.append(genfromtxt("coh_term_0.1.txt", skip_header=0))
-labels.append(r'$\sigma$=0.1')
+# 1
+plot_data.append(genfromtxt("SF_sigmaVSr_SF_gamma=2.21412.txt", skip_header=2))
+labels.append(r'SF $\gamma$=2.21412 $\langle k \rangle$=4.9')
 colors.append(tableau20[0])
-plot_data.append(genfromtxt("coh_term_0.3.txt", skip_header=0))
-labels.append(r'$\sigma$=0.3')
-colors.append(tableau20[2])
-plot_data.append(genfromtxt("coh_term_0.4.txt", skip_header=0))
-labels.append(r'$\sigma$=0.4')
-colors.append(tableau20[3])
-plot_data.append(genfromtxt("coh_term_0.5.txt", skip_header=0))
-labels.append(r'$\sigma$=0.5')
-colors.append(tableau20[4])
-plot_data.append(genfromtxt("coh_term_0.7.txt", skip_header=0))
-labels.append(r'$\sigma$=0.7')
-colors.append(tableau20[6])
-plot_data.append(genfromtxt("coh_term_0.8.txt", skip_header=0))
-labels.append(r'$\sigma$=0.8')
-colors.append(tableau20[8])
 
+# 1
+#plot_data.append(genfromtxt("SF_sigmaVSr_ER_p=0.02_1.txt", skip_header=2))
+#labels.append(r'ER p=0.02')
+#colors.append(tableau20[2])
+
+# 1
+plot_data.append(genfromtxt("SF_sigmaVSr_ER_p=0.02.txt", skip_header=2))
+labels.append(r'ER $p$=0.02000 $\langle k \rangle$=6.3')
+colors.append(tableau20[2])
 
 fig = plt.figure()
 
 nr_plots = len(plot_data)
+for i in [0]:
+    plt.errorbar(plot_data[i][:,0], plot_data[i][:,1], plot_data[i][:,2],
+                label = labels[i], color = colors[i]
+            )   
+for i in [1]:
+    plt.errorbar(plot_data[i][:,0], plot_data[i][:,1], plot_data[i][:,2],
+                label = labels[i], color = colors[i]
+            )
 
-for i in range(0,nr_plots):
-    plt.plot(plot_data[i][:,0], plot_data[i][:,1], 
-                label = labels[i], color = colors[i])
+plt.title("N=300")
 
-
-#plt.plot(plot_data[i][:,0], np.abs(np.array(plot_data[i][:,1])-np.array(plot_data[i][:,2])),
-#                label = 'diffr', color = tableau20[4])
-
-
-#plt.yscale('log')
-plt.legend(loc="upper left").set_draggable(True)
+plt.legend(loc="lower right")#.set_draggable(True)
 #plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 # Formating:
@@ -69,7 +62,7 @@ plt.legend(loc="upper left").set_draggable(True)
 #plt.xlabel(r'Edge density ($t$)')
 #plt.ylabel(r'$C_{max}/N$')
 
-plt.xlabel(r'Time')
+plt.xlabel(r'Coupling: $\sigma$')
 plt.ylabel(r'Phase coherence: $r$')
 
 plt.gcf().subplots_adjust(bottom=0.15)

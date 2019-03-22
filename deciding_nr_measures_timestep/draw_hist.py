@@ -24,53 +24,62 @@ for i in range(len(tableau20)):
 
 plot_data, labels, colors = [], [], []
 
-
-plot_data.append(genfromtxt("coh_term_0.1.txt", skip_header=0))
-labels.append(r'$\sigma$=0.1')
+# 0
+plot_data.append(genfromtxt("hist.txt", skip_header=1))
+labels.append(r'ER')
 colors.append(tableau20[0])
-plot_data.append(genfromtxt("coh_term_0.3.txt", skip_header=0))
-labels.append(r'$\sigma$=0.3')
-colors.append(tableau20[2])
-plot_data.append(genfromtxt("coh_term_0.4.txt", skip_header=0))
-labels.append(r'$\sigma$=0.4')
-colors.append(tableau20[3])
-plot_data.append(genfromtxt("coh_term_0.5.txt", skip_header=0))
-labels.append(r'$\sigma$=0.5')
-colors.append(tableau20[4])
-plot_data.append(genfromtxt("coh_term_0.7.txt", skip_header=0))
-labels.append(r'$\sigma$=0.7')
-colors.append(tableau20[6])
-plot_data.append(genfromtxt("coh_term_0.8.txt", skip_header=0))
-labels.append(r'$\sigma$=0.8')
-colors.append(tableau20[8])
-
 
 fig = plt.figure()
 
+NODE_NR = len(plot_data[0][:,0])
+GAMMA = 2.27837758
+K_MIN = 2
+K_MAX = NODE_NR
+
+
+def promedio_dif (y):
+    k_avg = 6
+    
+    K_MIN = 2
+    K_MAX = NODE_NR
+    
+    suma = 0
+    for k in range(K_MIN,K_MAX):
+        suma = suma + k**(-y)
+        
+    suma2 = 0
+    for k in range(K_MIN,K_MAX):
+        suma2 = suma2 + k* k**(-y)
+        
+    return k_avg - suma2 / suma, suma, suma2, suma2 / suma
+
+NORMALIZING_FACTOR = 1/(promedio_dif(GAMMA)[1])
+print("Norm const python:", NORMALIZING_FACTOR)
+print("promedio teorico:", (promedio_dif(GAMMA)[3]))
+
 nr_plots = len(plot_data)
+for i in [0]:#range(5,13):
+    plt.plot(plot_data[i][:,0], plot_data[i][:,1],
+            label = labels[i], color = colors[0]
+            )
+    plt.plot(   np.array(plot_data[i][:,0]),
+            NORMALIZING_FACTOR * np.array(plot_data[i][:,0])**(-GAMMA) ,
+                label = 'Thero', color = tableau20[1]
+            )
 
-for i in range(0,nr_plots):
-    plt.plot(plot_data[i][:,0], plot_data[i][:,1], 
-                label = labels[i], color = colors[i])
 
-
-#plt.plot(plot_data[i][:,0], np.abs(np.array(plot_data[i][:,1])-np.array(plot_data[i][:,2])),
-#                label = 'diffr', color = tableau20[4])
-
-
-#plt.yscale('log')
-plt.legend(loc="upper left").set_draggable(True)
+#plt.legend(loc="lower right").set_draggable(True)
 #plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 # Formating:
 #plt.xlim(0,1.1)
 #plt.ylim(0,1.1)
 
-#plt.xlabel(r'Edge density ($t$)')
-#plt.ylabel(r'$C_{max}/N$')
 
-plt.xlabel(r'Time')
-plt.ylabel(r'Phase coherence: $r$')
+plt.xlabel(r'$K$')
+plt.ylabel(r'Relative frequency')
+
+plt.title('Degree histogram')
 
 plt.gcf().subplots_adjust(bottom=0.15)
 plt.show()
