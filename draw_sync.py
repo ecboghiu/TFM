@@ -29,17 +29,18 @@ for i in range(len(tableau20)):
     tableau20[i] = (r / 255., g / 255., b / 255.) 
 
 plot_data, labels, colors = [], [], []
-'''
-plot_data.append(genfromtxt("sync_sigmaVSr_ER_N=100_p=0.06.txt", skip_header=3))
-labels.append(r'ER $p$=0.06 $N$=100')
-colors.append(tableau20[0])
-plot_data.append(genfromtxt("sync_sigmaVSr_ER_N=1000_p=0.006.txt", skip_header=3))
+
+
+plot_data.append(genfromtxt("sync_norm_sigmaVSr_ER_N=1000_p=0.006.txt", skip_header=3))
 labels.append(r'ER $p$=0.006 $N$=1000')
 colors.append(tableau20[2])
-'''
+
 plot_data.append(genfromtxt("sync_sigmaVSr_SF_N=1000_gamma=2.27838.txt", skip_header=3))
 labels.append(r'SF $\gamma$=2.27838 $N$=1000')
 colors.append(tableau20[4])
+plot_data.append(genfromtxt("sync_sigmaVSr_SF_N=1000_gamma=1.69285.txt", skip_header=3))
+labels.append(r'SF $\gamma$=1.69285 $N$=1000')
+colors.append(tableau20[6])
 
 
 

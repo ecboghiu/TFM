@@ -186,21 +186,11 @@ void initScaleFree ()
 {
     int i, j, sum, len, k_min, k_max;
     double norm_const, sum_norm;
-/*
+
     k_min = K_MIN;  // to generate connected net with prob 1,
                     // see PHYS.REVIEW E71,027103(2005)
     k_max = NODE_NR-1;
 
-    // normalization constant of p~k^-GAMMA
-    sum_norm = 0;
-    for (int k = k_min; k <= k_max ; k++) {
-        sum_norm += pow(k,-GAMMA);
-    }
-    norm_const = 1.0/sum_norm;
-    #ifdef DEBUG
-    printf("%s norm const: %g\n", "Check1.", norm_const);
-    #endif
-*/
 
     printf("Beginning generating degree distribution.\n");
     int *aux_deg;
@@ -215,11 +205,10 @@ void initScaleFree ()
                         // edges than than the maximum possible in
                         // an undirected graph
     {
-         printf("Beginning generating degree distribution.\n");
         for (i = 0; i < NODE_NR; i++) {
-            aux_deg[i]= generateDegree(k_min,GAMMA,norm_const);
+            aux_deg[i]= generateDegree(k_min,GAMMA);
             #ifdef DEBUG
-            printf("just generated a degree: %d\n", aux_deg[i]);
+            //printf("just generated a degree: %d\n", aux_deg[i]);
             #endif
         }
         sum = 0;

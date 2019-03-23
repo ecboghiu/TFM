@@ -18,7 +18,7 @@
                                     // doesn't work well
 
 // Define if you want a histogram of the degrees of the graph
-#define DEGREE_HISTOGRAM
+//#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
 #define NODE_NR 1000
@@ -127,7 +127,7 @@ double Clustering       ();
 // Functions for generating random numbers.
 double Random           (); // Random number in [0,1).
 void   ini_ran          (int SEMILLA); // initializes the generator
-int    generateDegree   (int m, double gamma, double norm_const);
+int    generateDegree   (int m, double gamma);
 double sampleNormal     (); // copied from http://stackoverflow.com/a/10645091
 
 // Statistics functions.

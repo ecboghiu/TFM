@@ -15,7 +15,7 @@ int main(int args_number, char* args[])
     printf("Initializing program.\n");
 
     //ini_ran(time(NULL));  // Seed for the random generator.
-    ini_ran(324893);     // we want predictable results
+    ini_ran(662323);     // we want predictable results
 
     init_C_memory(&C, NODE_NR, K_MAX);
 
@@ -29,10 +29,8 @@ int main(int args_number, char* args[])
     double t_inc = (t_max-t_min)/(t_number); // sigma increments
     double t = t_min;
     double fractional_size_noavg[t_number][AVG_NUMBER];
-    for(int i = 0; i < t_number; i++)
-    {
-        for(int j = 0; j < AVG_NUMBER; j++)
-        {
+    for(int i = 0; i < t_number; i++) {
+        for(int j = 0; j < AVG_NUMBER; j++) {
             fractional_size_noavg[i][j] = 0;
         }
     }

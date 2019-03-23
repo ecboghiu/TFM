@@ -81,7 +81,7 @@ deg, cnt = zip(*degreeCount.items())
 average = 0
 norm = 0
 for i in range(0,len(deg)):
-    norm = norm + cnt[i]
+    norm = norm + cnt[i]    
 for i in range(0,len(deg)):
     average = average + deg[i] * cnt[i]
 average = average/norm

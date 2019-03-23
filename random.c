@@ -51,7 +51,7 @@ double sampleNormal() {
         return u * c;
 }
 
-int generateDegree (int m, double gamma, double norm_const)
+int generateDegree (int m, double gamma)
 {
     // min and max degree; we avoid k=0 because p~k^-GAMMA diverges
     double w, sum, sum2, norm, sum_norm, P, r;
@@ -81,7 +81,7 @@ int generateDegree (int m, double gamma, double norm_const)
     norm = 1.0/sum_norm;
 
     k = -1; // this makes sure we get inside the loop, as m is posiitve
-    while( k>sqrt(NODE_NR) || k<m)
+    while(  k<m) //k>sqrt(NODE_NR) ||
     {   
         P = 0;
         k1 =  k_min;
@@ -89,7 +89,7 @@ int generateDegree (int m, double gamma, double norm_const)
             P += norm*pow(i_idx,-gamma);
         }
         r = Random();
-        while ( P > (1-r) )
+        while ( P > r )
         {
             //printf("bad loop4! P=%g 1-r=%g\n", P, 1-r);
             k1++;
@@ -99,7 +99,9 @@ int generateDegree (int m, double gamma, double norm_const)
             }
         }
         k = k1-1;
+        //printf("bad loop4! k=%d P=%g 1-r=%g\n", k, P, 1-r);
     }
+    //printf("bad loop4! k=%d P=%g 1-r=%g\n", k, P, 1-r);
 /*
     // Now we find x such that the sum from k=m to k=x of the area
     // of the probability distribution gives w. We are inverting the
