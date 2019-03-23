@@ -62,6 +62,7 @@ print("Norm const python:", NORMALIZING_FACTOR)
 print("promedio teorico:", (promedio_dif(GAMMA)[2]))
 
 G = nx.read_adjlist("adj_C.txt", nodetype=int)
+
 options = {
     'node_color': 'black',
     'node_size': 50,
@@ -87,7 +88,7 @@ average = average/norm
 print("average=",average)
 
 fig, ax = plt.subplots()
-plt.bar(np.array(deg), np.array(cnt)/norm, width=0.80, color='b')
+plt.plot(np.array(deg), np.array(cnt)/norm, color='b')#, width=0.80, color='b')
 plt.plot(np.array(deg),
          NORMALIZING_FACTOR * np.array(deg)**(-GAMMA),
    label = 'teor', color = tableau20[1])

@@ -18,15 +18,15 @@
                                     // doesn't work well
 
 // Define if you want a histogram of the degrees of the graph
-//#define DEGREE_HISTOGRAM
+#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
 #define NODE_NR 1000
-#define K_MAX 1000
+#define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
 
-//#define OSCILLATOR_ON
+#define OSCILLATOR_ON
 //#define PERCOLATION_ON
 
 
@@ -43,7 +43,7 @@
 // sufficently. small
 #define DELTA_T 1e-2
 // How many times we measure.
-#define MAX_STEPS 10000
+#define MAX_STEPS 1000
 // Number of updates in between measures.
 #define IN_BETWEEN 10
 

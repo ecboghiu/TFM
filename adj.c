@@ -201,16 +201,26 @@ void initScaleFree ()
     printf("%s norm const: %g\n", "Check1.", norm_const);
     #endif
 */
+
+    printf("Beginning generating degree distribution.\n");
     int *aux_deg;
     aux_deg = calloc(NODE_NR, sizeof *aux_deg);
-    
+    if (aux_deg == NULL)
+    {
+        printf("warning: null memory allocation\n");
+        exit(10);
+    }
     sum = 1; // so we start the first loop
     while (sum%2 != 0)  // requirement of the algorithm: \sum k_i even and less
                         // edges than than the maximum possible in
                         // an undirected graph
     {
+         printf("Beginning generating degree distribution.\n");
         for (i = 0; i < NODE_NR; i++) {
             aux_deg[i]= generateDegree(k_min,GAMMA,norm_const);
+            #ifdef DEBUG
+            printf("just generated a degree: %d\n", aux_deg[i]);
+            #endif
         }
         sum = 0;
         for (i = 0; i < NODE_NR; i++) {
@@ -224,6 +234,7 @@ void initScaleFree ()
         link we remove the two nodes from the list.
     */
 
+    printf("Finished generating degree distribution.\n");
     signed int *list = calloc((sum+1),sizeof(*list)); // sum+1 because we need
     list[0] = -1;                                     // to store -1
     for (signed int i = 0; i < NODE_NR; i++) {
@@ -235,12 +246,16 @@ void initScaleFree ()
     #ifdef DEBUG
     printf("%s len: %d sum: %d\n", "Check1.", len, sum);
     #endif
+    printf("Finished declaring list.\n");
 
+    
+    printf("Entering nasty loop.\n");
     while (len!=0)
     { //TODO: SOLVE LIST GOES TO LENGTH 1, DOESN?T MAKE SENSe
         i = (int) (Random()*(len));
         j = (int) (Random()*(len));
         while (list[i]==-1 || list[j]==-1){
+            printf("warning: you got list[i]==-1 which shouldnt happen!\n");
             i = (int) (Random()*(len));
             j = (int) (Random()*(len));
         }
@@ -255,7 +270,7 @@ void initScaleFree ()
             //#endif
             //len = list_len(list);
             #ifdef DEBUG
-            //printf("%s len: %d sum: %d\n", "Check1.", len, sum);
+            printf("%s len: %d sum: %d\n", "Check1.", len, sum);
             #endif
 
             if (j>i) {
@@ -269,6 +284,7 @@ void initScaleFree ()
             len = list_len(list);
         }
     }
+    printf("Finished nasty loop.\n");
 
     // Check if correct
     for(int i = 0; i < NODE_NR; i++)

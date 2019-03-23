@@ -12,8 +12,10 @@
 
 int main(int args_number, char* args[])
 {
-    ini_ran(time(NULL));  // Seed for the random generator.
-    //ini_ran(324893);     // we want predictable results
+    printf("Initializing program.\n");
+
+    //ini_ran(time(NULL));  // Seed for the random generator.
+    ini_ran(324893);     // we want predictable results
 
     init_C_memory(&C, NODE_NR, K_MAX);
 
@@ -247,7 +249,7 @@ int main(int args_number, char* args[])
     
     double sigma_min = 0.0;
     double sigma_max = 0.8;
-    double sigma_inc = (sigma_max-sigma_min)/80;
+    double sigma_inc = (sigma_max-sigma_min)/10;
     #endif
     #ifdef TERMALIZATION
     for ( sigma = sigma_min; sigma < sigma_max; sigma += sigma_inc)
@@ -255,7 +257,7 @@ int main(int args_number, char* args[])
     {
         for(int i = 0; i < NODE_NR; i++)
         {
-            GLOB_theta[i] = 0;
+            GLOB_theta[i] = M_PI*(-1 + Random()*2);
         }
         
 
