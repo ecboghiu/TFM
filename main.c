@@ -12,8 +12,8 @@
 
 int main(int args_number, char* args[])
 {
-    //ini_ran(time(NULL));  // Seed for the random generator.
-    ini_ran(324893);     // we want predictable results
+    ini_ran(time(NULL));  // Seed for the random generator.
+    //ini_ran(324893);     // we want predictable results
 
     init_C_memory(&C, NODE_NR, K_MAX);
 
@@ -117,7 +117,7 @@ int main(int args_number, char* args[])
     FILE *f_out1 = fopen(filename1,"w");
     if (f_out1 == NULL) {
         printf("Could not open file.txt");
-        exit(1);
+        exit(4);
     }
     for(int i = 0; i < t_number; i++)
     {
@@ -194,7 +194,7 @@ int main(int args_number, char* args[])
     FILE *theta_file = fopen(filename_coh,"w");
     if (theta_file == NULL) {
         printf("%s\n", "Could not open coh.txt");
-        exit(1);
+        exit(2);
     }
     #endif
 
@@ -216,7 +216,7 @@ int main(int args_number, char* args[])
     FILE *f_out2 = fopen(filename2,"a");
     if (f_out2 == NULL) {
         printf("Could not open sigmaVSr.txt");
-        exit(1);
+        exit(3);
     }
     fprintf(f_out2, "# Node_nr = %d\n", NODE_NR);
     // Now we print the first with statistical data for the network.
@@ -244,14 +244,21 @@ int main(int args_number, char* args[])
     int node_nr_aux_term = 3;
     #endif
     #ifdef TERMALIZATION
-    double sigma_min = 0.2;
-    double sigma_max = 0.5;
-    double sigma_inc = (sigma_max-sigma_min)/10; // sigma increments
+    
+    double sigma_min = 0.0;
+    double sigma_max = 0.8;
+    double sigma_inc = (sigma_max-sigma_min)/80;
     #endif
     #ifdef TERMALIZATION
     for ( sigma = sigma_min; sigma < sigma_max; sigma += sigma_inc)
     #endif
     {
+        for(int i = 0; i < NODE_NR; i++)
+        {
+            GLOB_theta[i] = 0;
+        }
+        
+
         #ifdef TERMALIZATION // we wait for r to stabilize
         for (int i = 0; i < termalization; i++)
             for (int t_aux = 0; t_aux < blind; t_aux++)

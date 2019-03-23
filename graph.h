@@ -22,11 +22,11 @@
 
 // Number of nodes in the graph.
 #define NODE_NR 1000
-#define K_MAX 50
+#define K_MAX 1000
 #define K_MIN 2
 #define AVG_NUMBER 1
 
-#define OSCILLATOR_ON
+//#define OSCILLATOR_ON
 //#define PERCOLATION_ON
 
 
@@ -34,7 +34,8 @@
 // Input this into wolfram alpha if you want ot know the gamma for a certain
 // mean degree:
 // 6 = 1/(\int x^(-y)dx for x=2..100) *\int x*x^(-y) dx for x=2..100
-#define GAMMA 2.27837758
+#define GAMMA 1.69285028
+//2.27837758 1.69285028
 
 #define M_PI 3.14159265358979323846
 
@@ -130,7 +131,7 @@ int    generateDegree   (int m, double gamma, double norm_const);
 double sampleNormal     (); // copied from http://stackoverflow.com/a/10645091
 
 // Statistics functions.
-void   Histogram        (double *data, double *Hist, int N_data, int N_Intervalos,
+void   Histogram        (int *data, double *Hist, int N_data, int N_Intervalos,
                          double *d, double *min, double *max);
 void   med_var          (double *datos, int numero_de_datos,
                          double *media, double *varianza);

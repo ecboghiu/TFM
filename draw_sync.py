@@ -29,13 +29,18 @@ for i in range(len(tableau20)):
     tableau20[i] = (r / 255., g / 255., b / 255.) 
 
 plot_data, labels, colors = [], [], []
-
-plot_data.append(genfromtxt("sync_sigmaVSr_ER_N=100_p=0.06.txt", skip_header=2))
+'''
+plot_data.append(genfromtxt("sync_sigmaVSr_ER_N=100_p=0.06.txt", skip_header=3))
 labels.append(r'ER $p$=0.06 $N$=100')
 colors.append(tableau20[0])
-plot_data.append(genfromtxt("sync_sigmaVSr_ER_N=1000_p=0.006.txt", skip_header=2))
+plot_data.append(genfromtxt("sync_sigmaVSr_ER_N=1000_p=0.006.txt", skip_header=3))
 labels.append(r'ER $p$=0.006 $N$=1000')
 colors.append(tableau20[2])
+'''
+plot_data.append(genfromtxt("sync_sigmaVSr_SF_N=1000_gamma=2.27838.txt", skip_header=3))
+labels.append(r'SF $\gamma$=2.27838 $N$=1000')
+colors.append(tableau20[4])
+
 
 
 fig = plt.figure()
@@ -44,7 +49,7 @@ nr_plots = len(plot_data)
 for i in range(0,nr_plots):
     plt.errorbar(plot_data[i][:,0], plot_data[i][:,1], plot_data[i][:,2],
                 label = labels[i], color = colors[i]
-            )   
+            )
 
 
 plt.legend(loc="lower right").set_draggable(True)

@@ -53,23 +53,78 @@ double sampleNormal() {
 
 int generateDegree (int m, double gamma, double norm_const)
 {
-        // min and max degree; we avoid k=0 because p~k^-GAMMA diverges
-        double w, sum;
-        int k;
-        w = Random(); // random in [0,1)
+    // min and max degree; we avoid k=0 because p~k^-GAMMA diverges
+    double w, sum, sum2;
+    int k;
 
-        // Now we find x such that the sum from k=m to k=x of the area
-        // of the probability distribution gives w. We are inverting the
-        // quantile function.
-        sum = 0;
-        k   = m;
-        while (sum < w) {
-                sum += norm_const*pow(k,-gamma);
-                k++;
+    double norm = 0;
+    double sum_norm = 0;
+
+    int k_min, k_max;
+    k_min = K_MIN;  // to generate connected net with prob 1,
+                    // see PHYS.REVIEW E71,027103(2005)
+    k_max = (int)sqrt(NODE_NR);
+
+    w = Random();
+    k = (int) ( ((double)k_min-0.5)*pow(1-w,-1/(gamma-1)) + 0.5 );
+
+
+/*
+    // normalization constant of p~k^-GAMMA
+    sum_norm = 0;
+    for (int k = k_min; k <= k_max ; k++) {
+        sum_norm += pow(k,-GAMMA);
+    }   
+    norm = 1.0/sum_norm;
+
+    
+
+    double P = 0;
+    int k1 =  k_min;
+    for(int i_idx = k1; i_idx <= k_max; i_idx++) {
+        P += pow(i_idx,-gamma);
+    }   P = P/norm;
+
+    double r = Random();
+    while ( P > (1-r) )
+    {
+        k1++;
+        for(int i_idx = k1; i_idx <= k_max; i_idx++) {
+            P += pow(i_idx,-gamma);
+        }   
+        P = P/norm;
+    }
+    k = k1;
+*/
+/*
+    // Now we find x such that the sum from k=m to k=x of the area
+    // of the probability distribution gives w. We are inverting the
+    // quantile function.
+    sum = 0;
+    sum2= 0;
+    k   = m;
+    while (sum < w) 
+    {
+        sum += norm*pow(k,-gamma);
+        sum2 = sum + norm*pow(k,-gamma);
+        k++;
+        if (sum2 > w) {
+            if (w>sum && w < (sum2+sum)/2)  
+            {
+                k--;
+                break;
+            } 
+            else
+            {
+                break;
+            }
         }
+    }
+*/    
 
-        if  ( k>sqrt(NODE_NR) || k<m) // one of the requirements is m<k<N^1/2
-                return generateDegree(m,gamma,norm_const);
-        return k;
+    if  ( k>sqrt(NODE_NR) || k<m) // one of the requirements is m<k<N^1/2
+            return generateDegree(m,gamma,norm_const);
+
+    return k;
 }
 

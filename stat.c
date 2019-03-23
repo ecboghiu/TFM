@@ -3,11 +3,11 @@
 void calcHist(char* filename)
 {
     double min, max, d;
-    int N_Intervalos = 20;//NODE_NR-1;
+    int N_Intervalos = NODE_NR-1;
     int N_data = NODE_NR;
     double *Hist;
     Hist = calloc(N_Intervalos, sizeof *Hist);
-    Histogram(GLOB_omega_nat, Hist, N_data, N_Intervalos, &d, &min, &max);
+    Histogram(degree, Hist, N_data, N_Intervalos, &d, &min, &max);
     #ifdef DEBUG
     printf("%s%g\n", "min=", min);
     printf("%s%g\n", "max=", max);
@@ -35,7 +35,7 @@ void calcHist(char* filename)
         }
     } else {
         printf("%s\n", "Something went wrong opening the histogram file.");
-        exit(1);
+        exit(5);
     }
     fclose(file_hist); file_hist = NULL;
     free(Hist); Hist = NULL;
@@ -55,7 +55,7 @@ void med_var (double *datos, int numero_de_datos,
     *varianza  = sum_2 / numero_de_datos - (*media) * (*media);
 }
 
-void Histogram (double *data, double *Hist, int N_data, int N_Intervalos,
+void Histogram (int *data, double *Hist, int N_data, int N_Intervalos,
                 double *d, double *min, double *max)
 {
     // INFORMACION
@@ -71,8 +71,9 @@ void Histogram (double *data, double *Hist, int N_data, int N_Intervalos,
     // Inicializo los valores como me da la gana.
     double min_aux = +1e40; double max_aux = -1e40;
 
-    for (int i = 0; i < N_Intervalos; ++i)
+    for (int i = 0; i < N_Intervalos; ++i) {
         Hist[i] = 0;
+    }
 
     for (int i = 0; i < N_data; i++)
     {
@@ -83,16 +84,16 @@ void Histogram (double *data, double *Hist, int N_data, int N_Intervalos,
     *min = min_aux;
     
     // Specifically for this type of networks:
-    //*min = 2;
-    //*max = NODE_NR;
-    //N_Intervalos = NODE_NR-2-1;
+    *min = 2;
+    *max = NODE_NR;
+    N_Intervalos = NODE_NR-2-1;
 
     // Calculo la longitud de cada intervalo una vez que
     // sabemos el maximo y minimo.
     *d = (*max-*min)/((double)N_Intervalos);
     if ( *d == 0 ) {
         printf("%s\n", "La longitud del intervalo es nula.");
-        exit(1);
+        exit(6);
     }
 
     #ifdef DEBUG

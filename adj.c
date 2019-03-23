@@ -42,7 +42,7 @@ int add_edge (int i, int j) {
         //printf("max components: %d of %d\n", GLOB_max_component_size, NODE_NR);
         if (GLOB_max_component_size > NODE_NR) {
             printf("warning: too big a component");
-            exit(1);
+            exit(9);
         }
     }
     
@@ -186,10 +186,10 @@ void initScaleFree ()
 {
     int i, j, sum, len, k_min, k_max;
     double norm_const, sum_norm;
-
+/*
     k_min = K_MIN;  // to generate connected net with prob 1,
                     // see PHYS.REVIEW E71,027103(2005)
-    k_max = NODE_NR;
+    k_max = NODE_NR-1;
 
     // normalization constant of p~k^-GAMMA
     sum_norm = 0;
@@ -200,24 +200,23 @@ void initScaleFree ()
     #ifdef DEBUG
     printf("%s norm const: %g\n", "Check1.", norm_const);
     #endif
-
+*/
     int *aux_deg;
     aux_deg = calloc(NODE_NR, sizeof *aux_deg);
-    generate:
+    
+    sum = 1; // so we start the first loop
+    while (sum%2 != 0)  // requirement of the algorithm: \sum k_i even and less
+                        // edges than than the maximum possible in
+                        // an undirected graph
     {
         for (i = 0; i < NODE_NR; i++) {
-            *(aux_deg+i) = (int) generateDegree(k_min,GAMMA,norm_const);
+            aux_deg[i]= generateDegree(k_min,GAMMA,norm_const);
         }
-
         sum = 0;
         for (i = 0; i < NODE_NR; i++) {
             sum += aux_deg[i];
         }
-        if (sum%2 != 0) {
-            goto generate;  // requirement of the algorithm: \sum k_i even and less
-        }                   // edges than than the maximum possible in
-    }                       // an undirected graph
-
+    }
     /* We will use a list of ints whose elements are nodes. The element with value
         -1 marks the END OF THE LIST. The functions are made with this in mind.
         The length of the list is \sum k_i. We repeat the node according to the degree
@@ -254,7 +253,7 @@ void initScaleFree ()
             //printf("%s%d\t%s%d%s%d\t (%d,%d)\n","initScaleFree: list_len --",
             //            len, " i=", i, ",j=", j, list[i], list[j]);
             //#endif
-            len = list_len(list);
+            //len = list_len(list);
             #ifdef DEBUG
             //printf("%s len: %d sum: %d\n", "Check1.", len, sum);
             #endif
@@ -267,12 +266,8 @@ void initScaleFree ()
                 remove_from_list(list, i, sum+1);
                 remove_from_list(list, j, sum+1);
             }
+            len = list_len(list);
         }
-        len = list_len(list);
-        
-        //for(int mm = 0; mm < len; mm++) {
-        //    printf("%d\t", list[mm]);
-        //}   printf("\n");
     }
 
     // Check if correct
@@ -281,11 +276,12 @@ void initScaleFree ()
         if (degree[i] != aux_deg[i]) {
             printf("warning: node %d does not have the degree it should!\n",
                             i);
+            exit(7);
         }
         
     }
-    free(aux_deg);
-    free(list);
+    free(aux_deg); aux_deg = NULL;
+    free(list); list = NULL;
 }
 
 

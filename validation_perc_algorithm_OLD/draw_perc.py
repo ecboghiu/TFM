@@ -23,23 +23,23 @@ for i in range(len(tableau20)):
 
 plot_data, labels, colors = [], [], []
 
-plot_data.append(genfromtxt("N=100000_fracsize_vs_t.txt"))
+plot_data.append(genfromtxt("N=100000_fracsize_vs_t_old.txt"))
 labels.append(r'$N=100000$')
 colors.append(tableau20[8])
 
-plot_data.append(genfromtxt("N=10000_fracsize_vs_t.txt"))
+plot_data.append(genfromtxt("N=10000_fracsize_vs_t_old.txt"))
 labels.append(r'$N=10000$') 
 colors.append(tableau20[0])
 
-plot_data.append(genfromtxt("N=1000_fracsize_vs_t.txt"))
+plot_data.append(genfromtxt("N=1000_fracsize_vs_t_old.txt"))
 labels.append(r'$N=1000$')
 colors.append(tableau20[2])
 
-plot_data.append(genfromtxt("N=100_fracsize_vs_t.txt"))
+plot_data.append(genfromtxt("N=100_fracsize_vs_t_old.txt"))
 labels.append(r'$N=100$')
 colors.append(tableau20[4])
 
-plot_data.append(genfromtxt("N=50_fracsize_vs_t.txt"))
+plot_data.append(genfromtxt("N=50_fracsize_vs_t_old.txt"))
 labels.append(r'$N=50$')
 colors.append(tableau20[6])
 

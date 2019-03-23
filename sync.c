@@ -17,7 +17,7 @@ void initOmegas()
     // omega_nat IS GLOBAL
     GLOB_omega_nat = malloc(NODE_NR*sizeof(*GLOB_omega_nat));
     for (int i = 0; i < NODE_NR; i++) {
-        GLOB_omega_nat[i] = sampleNormal();
+        GLOB_omega_nat[i] = -M_PI + Random()*(2*M_PI);//sampleNormal();
     }
 }
 
@@ -104,7 +104,7 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     double coupling = 0;
     for(int j = 0; j < degree[i]; j++) {
         coupling = sigma;
-        sum += coupling * sin(phases[ C[i][j] ] - phases[i] );
+        sum += coupling * sin( phases[ C[i][j] ] - phases[i] );
     }
     
     return GLOB_omega_nat[i] + sum;
