@@ -55,7 +55,7 @@ colors.append(tableau20[8])
 
 plot_data.append(genfromtxt("N=1000000_fracsize_vs_t.txt"))
 labels.append(r'$N=100000$')
-colors.append(tableau20[8])
+colors.append(tableau20[10])
 
 '''
 plot_data.append(genfromtxt("N=1000_fracsize_vs_t.txt"))

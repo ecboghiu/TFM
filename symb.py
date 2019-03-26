@@ -4,7 +4,7 @@ from scipy.stats import norm
 
 def promedio_SF (y):
     k_avg = 6
-    NODE_NR = 1000
+    NODE_NR = 10000
     K_MIN = 2
     K_MAX = int((NODE_NR)**0.5)
     
@@ -28,13 +28,13 @@ def promedio_root (y):
 ini_gamma = 2.5
 ROOT = opt.root(promedio_root, ini_gamma, method='hybr')
 
-K_meanfield = 2.0/sc.pi/norm.pdf(0)
+K_meanfield = 2.0/sc.pi/(1/2/sc.pi)/1000  #norm.pdf(0)
 
 avg_k  = promedio_SF(ROOT.x)[2]
 avg_k2 = promedio_SF(ROOT.x)[3]
-print("K_SF=", K_meanfield * avg_k / avg_k2/1000)
+print("K_SF=", K_meanfield * avg_k / avg_k2)
 
-print("K_ER=", K_meanfield/1000)
+print("K_ER=", K_meanfield)
 
 
 print("gamma=",ROOT.x)

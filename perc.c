@@ -14,10 +14,15 @@ int initEXPL_product_rule (double t)
     int bool_res = 0; // 0 false, 1 true
     int name_aux1, name_aux2, name_aux3;
 
-    //GLOB_unique_components = unique_elements(GLOB_component_name, NODE_NR);
+
+    
+    while (GLOB_nr_edges < tot_nr_edges) 
+{
+            //GLOB_unique_components = unique_elements(GLOB_component_name, NODE_NR);
     GLOB_unique_components = (int) (GLOB_unique_elements_in_network);
     if (GLOB_unique_components < 0 || GLOB_unique_components > NODE_NR) {
         printf("warning: unique components wrong!\n");
+        exit(11);
     }
     
     //printf("unique components: %d\n", GLOB_unique_components);
@@ -71,11 +76,11 @@ int initEXPL_product_rule (double t)
         }
         return 1;
     }*/
-    
-    while (GLOB_nr_edges < tot_nr_edges) {
+
+
         if (GLOB_nr_edges >= NODE_NR) {
             printf("IF STATEMENT:Glob_nr_edges= %d\n", GLOB_nr_edges);
-            return 0;
+            exit(12);
         }
 
 
@@ -110,12 +115,13 @@ int initEXPL_product_rule (double t)
         size2 = GLOB_component_size[rnd2];
         size3 = GLOB_component_size[rnd3];
         size4 = GLOB_component_size[rnd4];
-        if (0) {//(size1*size2 >= size3*size4) {
+        bool_res = 0;
+        if (size1*size2 >= size3*size4) {
             bool_res = add_edge(rnd3,rnd4);
         } else {
             bool_res = add_edge(rnd1,rnd2);
         }
-       
+        
         if (bool_res == 1) { // this means an edge has been added
             GLOB_nr_edges++;
         }

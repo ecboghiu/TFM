@@ -63,6 +63,11 @@ print("promedio teorico:", (promedio_dif(GAMMA)[2]))
 
 G = nx.read_adjlist("adj_C.txt", nodetype=int)
 
+#G = nx.barabasi_albert_graph(1000, 3)
+
+#G = nx.erdos_renyi_graph(1000, 0.006)
+#nx.write_edgelist(G, "nx_edgelist.txt")
+
 options = {
     'node_color': 'black',
     'node_size': 50,
@@ -102,6 +107,9 @@ plt.xlabel("Degree")
 ax.set_xticks([d + 0.4 for d in deg])
 ax.set_xticklabels(deg)
 
+#G = nx.barabasi_albert_graph(1000, 3)
+
+
 # draw graph in inset
 plt.axes([0.4, 0.4, 0.5, 0.5])
 Gcc = sorted(nx.connected_component_subgraphs(G), key=len, reverse=True)[0]
@@ -111,4 +119,5 @@ nx.draw_networkx_nodes(G, pos, node_size=20)
 nx.draw_networkx_edges(G, pos, alpha=0.4)
 
 plt.show()
+
 

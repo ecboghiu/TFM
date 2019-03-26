@@ -21,7 +21,7 @@ int main(int args_number, char* args[])
 
 
     //////////////////////PERCOLATION//////////////////////////////////////////
-
+#ifdef PERCOLATION_ON
     // saveAdj();
     int t_number = 100;
     double t_min = 0.0;
@@ -34,7 +34,7 @@ int main(int args_number, char* args[])
             fractional_size_noavg[i][j] = 0;
         }
     }
-#ifdef PERCOLATION_ON
+
 
     double *fractional_size;
     fractional_size = calloc(t_number, sizeof *fractional_size);
@@ -131,7 +131,7 @@ int main(int args_number, char* args[])
 
 #endif
 
-
+#ifdef OSCILLATOR_ON
     ///////////////////////ERDOS-RENYI////////////////////////////////////////
     #ifdef ERDOS_RENYI
     initERmodel(ERDOS_RENYI_prob);         //erdos-renyi random model
@@ -140,6 +140,10 @@ int main(int args_number, char* args[])
     #ifdef SCALE_FREE
     initScaleFree();       // following a power law degree distr., possible hubs
     printf("Finished initializing SF network.\n");
+    #endif
+    #ifdef READ_NETWORK_FROM_FILE
+    init_C(&C, NODE_NR, K_MAX);
+    read_edgelist_file_py ("nx_edgelist.txt");
     #endif
     double deg_med, deg_var;
     deg_med = deg_var = 0;
@@ -152,6 +156,8 @@ int main(int args_number, char* args[])
     printf("Statistical properties. avg: %g var: %g\n", deg_med, deg_var);
     printf("K_C = %g\n", 1/sqrt(2*M_PI) * deg_med/deg_var);
     free(deg_aux); deg_aux = NULL;
+
+
 
     write_C_to_file(); // to plot the graph
 
@@ -177,7 +183,7 @@ int main(int args_number, char* args[])
     // gives values distributed normally for the nat. frequancies, mean 0 var 1
     initOmegas();
 
-#ifdef OSCILLATOR_ON
+
     double h               = DELTA_T;          // time increment
     int nr_measurements    = MAX_STEPS;        // number of time increments we measure
     int    blind           = IN_BETWEEN;       // number of times we dont measure
@@ -187,16 +193,16 @@ int main(int args_number, char* args[])
 
     double *r_coh;
     r_coh = calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
-    #ifndef TERMALIZATION
+    //#ifndef TERMALIZATION
     char filename_coh[128] = ".";
     snprintf(filename_coh, sizeof(char) * 128, "coh_%s_%g.txt",
                                                 "term", SIGMA_VAL);
-    FILE *theta_file = fopen(filename_coh,"w");
+    FILE *theta_file = fopen(filename_coh,"a");
     if (theta_file == NULL) {
         printf("%s\n", "Could not open coh.txt");
         exit(2);
     }
-    #endif
+    //#endif
 
     // this is for a varying filename
     #ifdef ERDOS_RENYI
@@ -209,11 +215,13 @@ int main(int args_number, char* args[])
     snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_SF_N=%d_gamma=%g.txt", 
                                                 NODE_NR, GAMMA);
     #endif
-    //printf("passed first ifdefs \n");
-    // we will store sigmas and phase coherence r
+    #ifdef READ_NETWORK_FROM_FILE
+    char filename2[128] = "aa";
+    snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt", 
+                                                NODE_NR, NET_TYPE, NET_CHARACT);
+    #endif
 
-
-    FILE *f_out2 = fopen(filename2,"a");
+    FILE *f_out2 = fopen(filename2,"w");
     if (f_out2 == NULL) {
         printf("Could not open sigmaVSr.txt");
         exit(3);
@@ -245,18 +253,17 @@ int main(int args_number, char* args[])
     #endif
     #ifdef TERMALIZATION
     
-    double sigma_min = 0.0;
-    double sigma_max = 0.8;
-    double sigma_inc = (sigma_max-sigma_min)/10;
+    double sigma_min = SIGMA_MIN;
+    double sigma_max = SIGMA_MAX;
+    double sigma_inc = (sigma_max-sigma_min)/NR_SIGMA;
     #endif
     #ifdef TERMALIZATION
     for ( sigma = sigma_min; sigma < sigma_max; sigma += sigma_inc)
     #endif
     {
-        for(int i = 0; i < NODE_NR; i++)
-        {
-            GLOB_theta[i] = M_PI*(-1 + Random()*2);
-        }
+        //for(int i = 0; i < NODE_NR; i++) {
+        //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
+        //}
         
 
         #ifdef TERMALIZATION // we wait for r to stabilize
@@ -272,10 +279,11 @@ int main(int args_number, char* args[])
             //r_coh[t_idx] = (GLOB_theta[node_nr_aux_term]);
             timp = t_idx*h*(1+blind);
 
-            #ifndef TERMALIZATION
-            fprintf(theta_file, "%lf %lf %lf\n", timp, r_coh[t_idx], //exp(-0.01*timp));
+            //#ifndef TERMALIZATION
+            fprintf(theta_file, "%lf %lf %lf\n", timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
+             r_coh[t_idx], //exp(-0.01*timp));
                         sin(timp));
-            #endif
+            //#endif
 
             for (int t_aux = 0; t_aux < blind; t_aux++) {
                 update_RK(timp, sigma, h); // "blind" because we update without measuring
@@ -301,6 +309,239 @@ int main(int args_number, char* args[])
     free(GLOB_theta); GLOB_theta = NULL;
     free(GLOB_omega_nat); GLOB_omega_nat = NULL;
 #endif //end if OSCILLATOR_ON
+
+/////////////////////////////// EPES ///////////////////////////////////////////
+#ifdef SYNC_AND_PERC_ON
+
+    int t_number = 100;
+    int t_blind  = 0;
+    double t_min = 0.0;
+    double t_max = 1.0;
+    double t_inc = (t_max-t_min)/(t_number); // sigma increments
+    double t     = t_min;
+    double fractional_size_noavg[t_number][AVG_NUMBER];
+    for(int i = 0; i < t_number; i++) {
+        for(int j = 0; j < AVG_NUMBER; j++) {
+            fractional_size_noavg[i][j] = 0;
+        }
+    }
+
+    double *fractional_size;
+    fractional_size = calloc(t_number, sizeof *fractional_size);
+    double *fractional_size_sigma ;
+    fractional_size_sigma = calloc(t_number, sizeof *fractional_size_sigma);
+    //print_vec(&fractional_size, (int)t_number);
+    double *edge_fraction ;
+    edge_fraction = calloc(t_number, sizeof *edge_fraction);
+    int aux_int = 0;
+    int idx = 0;
+
+    // For coherece
+    double r_med, r_var;
+    r_med = r_var = 0;
+
+    
+    double timp = 0;
+    // If we wait to termalize we run through many sigmas, else we only measure
+    // a single sigma and plot coh.txt to see how much we should wait until the
+    // phase coherence reaches a stable value, if at all.
+    double sigma = 0.5;
+
+    double h               = DELTA_T;          // time increment
+    int nr_measurements    = MAX_STEPS;        // number of time increments we measure
+    int    blind           = IN_BETWEEN;       // number of times we dont measure
+    #ifdef TERMALIZATION
+    int termalization = TERMALIZATION;
+    #endif
+
+    double *r_coh;
+    r_coh = calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
+    #ifndef TERMALIZATION
+    char filename_coh[128] = ".";
+    snprintf(filename_coh, sizeof(char) * 128, "coh_%s_%g.txt",
+                                                "term", SIGMA_VAL);
+    FILE *theta_file = fopen(filename_coh,"a");
+    if (theta_file == NULL) {
+        printf("%s\n", "Could not open coh.txt");
+        exit(2);
+    }
+    #endif
+    
+    char filename2[128] = "aa";
+    snprintf(filename2, sizeof(char) * 128, "EPES_sigmaVSr_file_N=%d_%s.txt", 
+                                                NODE_NR, EPES_CHARACT);
+
+    FILE *f_out2 = fopen(filename2,"w");
+    if (f_out2 == NULL) {
+        printf("Could not open %s.txt", filename2);
+        exit(15);
+    }
+    fprintf(f_out2, "# Node_nr = %d\n", NODE_NR);
+    // Now we print the first with statistical data for the network.
+    fprintf(f_out2, "# K <r> sigma_r(sig not of average! divide by sqrt(n))\n");
+    //printf("passed second ifdefs\n");
+
+    // INITIAL CONDITIONS:
+    // gives random initial values for all the phases, theta_i
+    initThetas();
+    // gives values distributed normally for the nat. frequancies, mean 0 var 1
+    initOmegas();
+
+    int avg_idx = 0;
+    //for(int avg_idx = 0; avg_idx < AVG_NUMBER; avg_idx++)
+    {
+        init_C(&C, NODE_NR, K_MAX);
+        idx = 0;
+        for ( t=t_min; t<t_max; t += t_inc)
+        {   
+            //init_C(&C, NODE_NR, K_MAX);
+            initEXPL_product_rule(t);  
+
+            for(int i = 0; i < NODE_NR; i++) {
+                GLOB_theta[i] = M_PI*(-1 + Random()*2);
+            }
+            for (int i = 0; i < NODE_NR; i++) {
+                GLOB_omega_nat[i] = (double)GLOB_component_size[i];//0.5*(-1 + 2*Random());//sampleNormal();
+            }
+            
+            #ifdef TERMALIZATION // we wait for r to stabilize
+            for (int i = 0; i < termalization; i++)
+                for (int t_aux = 0; t_aux < blind; t_aux++)
+                    update_RK(timp, sigma, h);
+            #endif
+            //printf("passed termalization\n");
+
+            for (int t_idx = 0; t_idx < nr_measurements; t_idx++)
+            {
+                r_coh[t_idx] = phase_coherence();
+                //r_coh[t_idx] = (GLOB_theta[node_nr_aux_term]);
+                timp = t_idx*h*(1+blind);
+
+                #ifndef TERMALIZATION
+                fprintf(theta_file, "%lf %lf %lf\n", timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
+                r_coh[t_idx], //exp(-0.01*timp));
+                            sin(timp));
+                #endif
+
+                for (int t_aux = 0; t_aux < blind; t_aux++) {
+                    update_RK(timp, sigma, h); // "blind" because we update without measuring
+                }
+
+                update_RK(timp, sigma, h);
+            }
+
+
+            //aux_int = int_max_vector(&GLOB_component_size, NODE_NR);
+            aux_int = (int) (GLOB_max_component_size);
+            //printf("max comp: %d \n", aux_int);
+            fractional_size_noavg[idx][avg_idx] = ((double)aux_int)/NODE_NR;
+        
+            med_var(r_coh, nr_measurements, &r_med, &r_var);
+            fprintf(f_out2, "%g %g %g %g \n", 
+            t, fractional_size_noavg[idx][avg_idx], r_med, sqrt(r_var));
+            //printf("One loop finished! \t sigma=%g \t <r>=%g \t sigma_<r>=%g \n",
+            //            sigma, r_med, sqrt(r_var));
+
+            //printf("t=%g, fractional_size=%g\n", t, 
+            //            fractional_size_noavg[idx][avg_idx]);
+            //printf("Glob_nr_edges= %d\n", GLOB_nr_edges);
+            //printf("component name unique elements: %d\n",
+            //                unique_elements(GLOB_component_name, NODE_NR));
+printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g\n",
+                                            GLOB_nr_edges, NODE_NR,
+                                            GLOB_max_component_size,
+                                            (GLOB_unique_elements_in_network),
+                                            r_med,
+                                            sqrt(r_var));
+                        
+
+
+            edge_fraction[idx] = t;
+            idx++;
+
+        }
+        printf("avgnr= %d\n", avg_idx);
+    }
+    
+    fclose(f_out2);     f_out2 = NULL;
+    #ifndef TERMALIZATION
+    fclose(theta_file); theta_file = NULL ;
+    #endif
+
+    // calculate averages
+    double *aux_array = 0;
+    aux_array = calloc(t_number, sizeof *aux_array);
+    idx = 0;
+    for ( t=t_min; t<t_max; t += t_inc) {
+        for(size_t j = 0; j < AVG_NUMBER; j++) {
+            aux_array[j] = fractional_size_noavg[idx][j];
+        }
+        med_var(aux_array, AVG_NUMBER, &(fractional_size[idx]),
+                                        &(fractional_size_sigma[idx]));
+        idx++;
+    }
+    free(aux_array); aux_array = NULL;
+
+    write_C_to_file(); // to plot the graph
+
+
+
+    // For Runge kutta I will define these auxiliary variables:
+
+
+
+
+
+
+    // debug prints:
+    //for(int i = 0; i < (int)t_number; i++) {
+    //    printf("%g\t", fractional_size[i]);
+    //}   printf("\n");
+    
+    //printf("component size: ");
+    //for(int i = 0; i < NODE_NR; i++) {
+    //    printf("%d\t", GLOB_component_size[i]);
+    //}   printf("\n");
+    //printf("component size unique elemnts: %d\n",
+    //                    unique_elements(GLOB_component_size, NODE_NR));
+    //printf("component name: ");
+    //for(int i = 0; i < NODE_NR; i++) {
+    //    printf("%d\t", GLOB_component_name[i]);
+    //}   printf("\n");
+    //printf("component name unique elemnts: %d\n",
+    //                    unique_elements(GLOB_component_name, NODE_NR));
+    //print_C();
+/*
+    // We write to file percolation data.
+    char filename1[128] = "frac_size_vs_t.txt";
+    snprintf(filename1, sizeof(char) * 128, "N=%d_fracsize_vs_t.txt", NODE_NR);
+    // we will store sigmas and phase coherence r
+    FILE *f_out1 = fopen(filename1,"w");
+    if (f_out1 == NULL) {
+        printf("Could not open file.txt");
+        exit(4);
+    }
+    for(int i = 0; i < t_number; i++)
+    {
+        fprintf(f_out1, "%g\t%g\t%g\n", edge_fraction[i], fractional_size[i],
+                                sqrt(fractional_size_sigma[i]/AVG_NUMBER));
+    }
+    fclose(f_out1);                 f_out1                  = NULL;
+*/
+    
+    free(fractional_size);          fractional_size         = NULL;
+    free(fractional_size_sigma);    fractional_size_sigma   = NULL;
+    free(edge_fraction);            edge_fraction           = NULL;
+
+
+
+
+
+    free(r_coh);        r_coh = NULL;
+    free(GLOB_theta); GLOB_theta = NULL;
+    free(GLOB_omega_nat); GLOB_omega_nat = NULL;
+#endif // endif SYNC_AND_PERC_ON
+////////////////////////////////////////////////////////////////////////////////
 
     // Freeing other global arrays.
     free(GLOB_component_name); GLOB_component_name = NULL;

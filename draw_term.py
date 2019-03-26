@@ -24,7 +24,7 @@ for i in range(len(tableau20)):
 
 plot_data, labels, colors = [], [], []
 
-
+'''
 plot_data.append(genfromtxt("coh_term_0.1.txt", skip_header=0))
 labels.append(r'$\sigma$=0.1')
 colors.append(tableau20[0])
@@ -43,7 +43,10 @@ colors.append(tableau20[6])
 plot_data.append(genfromtxt("coh_term_0.8.txt", skip_header=0))
 labels.append(r'$\sigma$=0.8')
 colors.append(tableau20[8])
-
+'''
+plot_data.append(genfromtxt("coh_term_0.4.txt", skip_header=0))
+labels.append(r'$\sigma$=0.4')
+colors.append(tableau20[0])
 
 fig = plt.figure()
 

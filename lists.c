@@ -46,3 +46,20 @@ void remove_from_list (signed int * list, signed int loc, int length)
         i++;
     }
 }
+
+// taken form https://stackoverflow.com/questions/6127503/shuffle-array-in-c
+void shuffle(int *array, size_t n)
+{
+    if (n > 1) 
+    {   
+        int t = 0;
+        size_t i, j;
+        for (i = 0; i < n - 1; i++) 
+        {
+            j = i + rand() / (RAND_MAX / (n - i) + 1);
+            t = array[j];
+            array[j] = array[i];
+            array[i] = t;
+        }
+    }
+}

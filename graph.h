@@ -12,40 +12,50 @@
 /*******CONTROL: type of graph*******/
 //#define SMALL_WORLD
 //#define ERDOS_RENYI
-#define ERDOS_RENYI_prob 0.006
-#define SCALE_FREE
-//#define READ_NETWORK_FROM_FILE    //WARNING: as of time moment this
-                                    // doesn't work well
+#define ERDOS_RENYI_prob 0.0
+//#define SCALE_FREE
+//#define READ_NETWORK_FROM_FILE
+#ifdef READ_NETWORK_FROM_FILE
+    #define NET_TYPE "BA"
+    #define NET_CHARACT 3.0
+#endif
+#define EPES
+#ifdef EPES
+    #define EPES_CHARACT "weff"
+#endif
 
 // Define if you want a histogram of the degrees of the graph
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 1000
-#define K_MAX 100
+#define NODE_NR 100
+#define K_MAX 30
 #define K_MIN 2
 #define AVG_NUMBER 1
 
-#define OSCILLATOR_ON
+//#define OSCILLATOR_ON
 //#define PERCOLATION_ON
-
+#define SYNC_AND_PERC_ON
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
 // mean degree:
 // 6 = 1/(\int x^(-y)dx for x=2..100) *\int x*x^(-y) dx for x=2..100
-#define GAMMA 1.69285028
+#define GAMMA 2.0842189
 //2.27837758 1.69285028
 
 #define M_PI 3.14159265358979323846
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1e-2
+#define DELTA_T 1e-1
 // How many times we measure.
 #define MAX_STEPS 1000
 // Number of updates in between measures.
-#define IN_BETWEEN 10
+#define IN_BETWEEN 0
+#define SIGMA_MIN 1.2
+#define SIGMA_MAX 1.5
+#define NR_SIGMA 2
 
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
@@ -107,6 +117,7 @@ void print_C        ();
 void write_C_to_file();
 void saveAdjGephi   (); // writes edges to file in a format usable by Gephi
 int number_of_edges (char* filename);
+void read_edgelist_file_py (char* filename);
 
 // Graph observables, measurables.
 void   calculateDegree       (); // calculates array with degrees of all nodes
@@ -148,5 +159,6 @@ void make_edge_list     ();
 void append_to_list     (signed int *list, signed int elem);
 int list_len            (signed int *list);
 void remove_from_list   (signed int *list, signed int loc, int length);
+void shuffle            (int *array, size_t n);
 
 #endif

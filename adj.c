@@ -92,8 +92,7 @@ int exists_edge(int i, int j)
         return 1;
     }
 
-    int k_max = degree[i];
-    for(int k = 0; k < k_max; k++)
+    for(int k = 0; k < degree[i]; k++)
     {
         if ( C[i][k] == j) {
             //printf("warning: edge already exists\n");
@@ -103,6 +102,28 @@ int exists_edge(int i, int j)
     return 0;
 }
 
+void read_edgelist_file_py (char* filename)
+{
+    // Note, you should have previously initialized C.
+    // Take care with how many nodes the network has!
+
+    FILE *f_in;
+    f_in = fopen(filename, "r");
+    if (f_in == NULL) {
+        printf("Could not open file for edgelist!\n");
+        exit(11);
+    } 
+    else {
+        int i,j;
+        i = j = 0;
+        printf("beginning reading\n");
+        while ( fscanf(f_in, "%d %d {}\n", &i, &j) != EOF   ) {
+            add_edge(i,j);
+            printf("added edge: %d %d\n", i,j);
+        }
+        fclose(f_in); f_in = NULL;
+    }
+}
 
 void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
 {
@@ -139,6 +160,7 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
 
 void clear_C_memory(int ***data_ptr, int dim_x, int dim_y)
 {
+    int a = dim_y;
     for (int i = 0; i < dim_x; i++) {
         free((*data_ptr)[i]);
         (*data_ptr)[i] = NULL;
@@ -237,40 +259,85 @@ void initScaleFree ()
     #endif
     printf("Finished declaring list.\n");
 
-    
+    printf("Shuffling list.\n");
+    shuffle(list, len);
+    printf("Finished shuffling.\n");
+
     printf("Entering nasty loop.\n");
     while (len!=0)
     { //TODO: SOLVE LIST GOES TO LENGTH 1, DOESN?T MAKE SENSe
         i = (int) (Random()*(len));
-        j = (int) (Random()*(len));
-        while (list[i]==-1 || list[j]==-1){
+        while(list[i]==-1) {
             printf("warning: you got list[i]==-1 which shouldnt happen!\n");
             i = (int) (Random()*(len));
+        }
+        j = (int) (Random()*(len));
+        while(list[j]==-1) {
+            printf("warning: you got list[i]==-1 which shouldnt happen!\n");
             j = (int) (Random()*(len));
         }
-        
-        if ( !( exists_edge(list[i],list[j]) ) )
+
+        while(exists_edge(list[i],list[j]))
+        {
+            //i = (int) (Random()*(len));
+            //j = (int) (Random()*(len));
+            j = (j+1)%len;
+        }
+/*
+        i=0; j=0;
+        if (len < 80) {
+            for(int i_1 = 0; i_1 < len; i_1++) {
+                for(int j_1 = 0; j_1 < len; j_1++) {
+                    if (! (exists_edge(list[i_1],list[j_1]))) {
+                        i=i_1;
+                        j=j_1;
+                        break;
+                    } else
+                    {
+                        printf("exists link\n");
+                    }
+                    
+                    
+                }
+                if (! (exists_edge(list[i_1],list[j]))) {
+                        i=i_1;
+                        break;
+                }
+            }
+        }
+*/
+
+        //printf("i,j: %d %d\n", i, j);
+        //if ( !( exists_edge(list[i],list[j]) ) )
         {
             add_edge(list[i], list[j]);
 
-            //#ifdef DEBUG
+            #ifdef DEBUG
             //printf("%s%d\t%s%d%s%d\t (%d,%d)\n","initScaleFree: list_len --",
             //            len, " i=", i, ",j=", j, list[i], list[j]);
-            //#endif
-            //len = list_len(list);
-            #ifdef DEBUG
-            printf("%s len: %d sum: %d\n", "Check1.", len, sum);
             #endif
 
             if (j>i) {
                 remove_from_list(list, j, sum+1);
                 remove_from_list(list, i, sum+1);
             }
-            if (i>j) {
+            if (i>=j) {
                 remove_from_list(list, i, sum+1);
                 remove_from_list(list, j, sum+1);
             }
+            #ifdef DEBUG
+            printf("%s len: %d sum: %d\n", "Check1.", len, sum);
+            #endif
             len = list_len(list);
+            if (len < 60) {
+                for(size_t i = 0; i < len; i++)
+                {
+                    printf("%d ", list[i]);
+                }   printf("\n");
+            }
+            
+
+            
         }
     }
     printf("Finished nasty loop.\n");

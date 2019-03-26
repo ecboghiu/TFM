@@ -5,7 +5,7 @@ void initThetas()
 {
     GLOB_theta = malloc(NODE_NR*sizeof(*GLOB_theta));
     for (int i = 0; i < NODE_NR; ++i) {
-        GLOB_theta[i] = Random() * 2*M_PI;
+        GLOB_theta[i] = -M_PI + Random()*(2*M_PI);
     }
 }
 
@@ -17,7 +17,7 @@ void initOmegas()
     // omega_nat IS GLOBAL
     GLOB_omega_nat = malloc(NODE_NR*sizeof(*GLOB_omega_nat));
     for (int i = 0; i < NODE_NR; i++) {
-        GLOB_omega_nat[i] = -M_PI + Random()*(2*M_PI);//sampleNormal();
+        GLOB_omega_nat[i] = 0.5*(-1 + 2*Random());//sampleNormal();
     }
 }
 
@@ -85,6 +85,54 @@ double phase_coherence()
     ry/=NODE_NR;
 
     return sqrt(rx*rx+ry*ry);
+}
+
+double psi_coherence()
+{
+    double Nrx, Nry;
+    Nrx = Nry = 0;
+
+    for (int i = 0; i < NODE_NR; i++) {
+        Nrx += cos(GLOB_theta[i]);
+        Nry += sin(GLOB_theta[i]);
+    }
+    if  (Nrx < 1e-6){
+        printf("warning: ry too small for division?");
+        return atan2(Nry,Nrx);
+    }
+    return atan2(Nry,Nrx);
+}
+
+double phase_coherence_compt (int id_compt)
+{
+    double rx, ry;
+    rx = ry = 0;
+
+    for (int i = 0; i < NODE_NR; i++) {
+        if  (GLOB_component_name[i] == id_compt) {
+            rx += cos(GLOB_theta[i]);
+            ry += sin(GLOB_theta[i]);
+        }
+    }
+    rx/=NODE_NR;
+    ry/=NODE_NR;
+
+    return sqrt(rx*rx+ry*ry);
+}
+
+double psi_coherence_compt (int id_compt)
+{
+    double Nrx, Nry;
+    Nrx = Nry = 0;
+
+    for (int i = 0; i < NODE_NR; i++) {
+        if  (GLOB_component_name[i] == id_compt) {
+            Nrx += cos(GLOB_theta[i]);
+            Nry += sin(GLOB_theta[i]);
+        }
+    }
+
+    return atan2(Nry,Nrx);
 }
 
 double calculateTheta_dot_i(double t, double *phases, int phases_len,

@@ -63,7 +63,7 @@ int generateDegree (int m, double gamma)
     int k1, k_min, k_max;
     k_min = K_MIN;  // to generate connected net with prob 1,
                     // see PHYS.REVIEW E71,027103(2005)
-    k_max = NODE_NR-1;
+    k_max = (int)(NODE_NR-1);
 /*
     k = 2*NODE_NR;
     //while  ( k>sqrt(NODE_NR) || k<m) 
@@ -81,7 +81,7 @@ int generateDegree (int m, double gamma)
     norm = 1.0/sum_norm;
 
     k = -1; // this makes sure we get inside the loop, as m is posiitve
-    while(  k<m) //k>sqrt(NODE_NR) ||
+    while(  k<m || k>5*sqrt(NODE_NR) )
     {   
         P = 0;
         k1 =  k_min;
