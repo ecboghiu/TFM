@@ -28,14 +28,14 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 20
+#define NODE_NR 10
 #define K_MAX 30
 #define K_MIN 2
 #define AVG_NUMBER 1
 
 //#define OSCILLATOR_ON
-#define PERCOLATION_ON
-//#define SYNC_AND_PERC_ON
+//#define PERCOLATION_ON
+#define SYNC_AND_PERC_ON
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain

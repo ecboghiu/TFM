@@ -52,13 +52,18 @@ int add_edge (int i, int j) {
         if (GLOB_component_name[i_aux] == old_name) {
             GLOB_component_name[i_aux]  = new_name;
             GLOB_component_size[i_aux]  = new_size;
+            GLOB_dom_size[GLOB_component_name[i_aux]] = new_size;
+            
         }
         if (GLOB_component_name[i_aux] == new_name) {
             GLOB_component_size[i_aux]  = new_size;
+            GLOB_dom_size[GLOB_component_name[i_aux]] = new_size;
         }
     }
 
-    join_domains(j,i);
+    GLOB_dom_size[old_name] = 0;
+
+    join_domains(GLOB_component_name[i],GLOB_component_name[j]);
 
     return 1;
 }
@@ -169,10 +174,7 @@ void initDom()
     for(int i = 0; i < NODE_NR; i++)
     {
         insertNode(&(GLOB_dom->suc[i]),i);
-        //insertNode(&(GLOB_dom->suc[i]),i);
-        //insertNode(&(GLOB_dom->suc[i]),i);
     }
-    
 
     GLOB_dom_size = malloc(NODE_NR *sizeof *GLOB_dom_size);
     for(int i = 0; i < NODE_NR; i++)
@@ -530,40 +532,23 @@ void removeNode (Node *I, int j)
 int join_domains(int j, int i)
 {
     if (i == j) {
-        printf("warning: no self domain joining allowed");
+        //printf("warning: no self domain joining allowed");
         return 0;
     }
 
-    // we will join i to j
-
-    Node crawl_i = GLOB_dom->suc[i];
-    if (crawl_i != NULL)  // if crawl null then we don't do anything, we have 
-                        // nothing to add to j
+    Node crawl_j_end = GLOB_dom->suc[j];
+    if  (crawl_j_end == NULL) {
+        return 0;
+    } 
+    else
     {
-        Node crawl_j_end = GLOB_dom->suc[j];
-        Node crawl_before = crawl_j_end;
-        while( (crawl_j_end->next) != NULL)
-        {
+        while( (crawl_j_end->next) != NULL) {
             crawl_j_end = crawl_j_end->next;
         }
+        crawl_j_end->next = GLOB_dom->suc[i];
 
-        crawl_j_end->next = crawl_i;
-
-        free(crawl_j_end);  crawl_j_end = NULL;
-        free(crawl_before); crawl_before= NULL;
+        GLOB_dom->suc[i] = NULL;
     }
-
-    // now we clear memory at i
-    //from https://stackoverflow.com/questions/7025328/
-    // linkedlist-how-to-free-the-memory-allocated-using-malloc:
-    Node crawl_zaux = GLOB_dom->suc[i];
-    while ((crawl_i = crawl_zaux) != NULL) { // set curr to head, stop if list empty.
-        crawl_zaux = crawl_zaux->next;          // advance head to next element.
-        free(crawl_i);                // delete saved pointer.
-    }
-    free(crawl_zaux); crawl_zaux = NULL;
 
     return 1;
-
-
 }

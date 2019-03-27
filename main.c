@@ -19,11 +19,10 @@ int main(int args_number, char* args[])
 
     init_C_memory(&C, NODE_NR, K_MAX);
 
-    join_domains(2,3);
-
+/*
     for(size_t i = 0; i < NODE_NR; i++)
     {
-        printf("comp: %d\n", i);
+        printf("comp: %d ||||| ", i);
         Node crawl;
         crawl = GLOB_dom->suc[i];
         while(crawl != NULL) {
@@ -33,6 +32,8 @@ int main(int args_number, char* args[])
         printf("size: %d\n", (int)GLOB_dom_size[i]);
         
     }
+*/
+
     
 
 
@@ -86,6 +87,8 @@ int main(int args_number, char* args[])
                                             (GLOB_unique_elements_in_network));
             edge_fraction[idx] = t;
             idx++;    
+
+
         }
         printf("avgnr= %d\n", avg_idx);
     }
@@ -146,7 +149,18 @@ int main(int args_number, char* args[])
     free(edge_fraction);            edge_fraction           = NULL;
 
 #endif
-
+    for(size_t i = 0; i < NODE_NR; i++)
+    {
+        printf("comp: %d\n", i);
+        Node crawl;
+        crawl = GLOB_dom->suc[i];
+        while(crawl != NULL) {
+            printf("%d ", crawl->id);
+            crawl = crawl->next;
+        }
+        printf("size: %d\n", (int)GLOB_dom_size[i]);
+        
+    }
 #ifdef OSCILLATOR_ON
     ///////////////////////ERDOS-RENYI////////////////////////////////////////
     #ifdef ERDOS_RENYI

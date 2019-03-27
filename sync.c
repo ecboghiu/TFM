@@ -106,15 +106,20 @@ double psi_coherence()
 
 double phase_coherence_compt (int id_compt)
 {
+
+    int i=0;
+    Node crawl = GLOB_dom->suc[id_compt];
     double rx, ry;
     rx = ry = 0;
-
-    for (int i = 0; i < NODE_NR; i++) {
-        if  (GLOB_component_name[i] == id_compt) {
-            rx += cos(GLOB_theta[i]);
-            ry += sin(GLOB_theta[i]);
-        }
+    while(crawl != NULL) {
+        i = crawl->id;
+        rx += cos(GLOB_theta[i]);
+        ry += sin(GLOB_theta[i]);
+        
+        crawl = crawl->next;
     }
+    free(crawl); crawl = NULL;
+
     rx/=NODE_NR;
     ry/=NODE_NR;
 
@@ -126,12 +131,16 @@ double psi_coherence_compt (int id_compt)
     double Nrx, Nry;
     Nrx = Nry = 0;
 
-    for (int i = 0; i < NODE_NR; i++) {
-        if  (GLOB_component_name[i] == id_compt) {
-            Nrx += cos(GLOB_theta[i]);
-            Nry += sin(GLOB_theta[i]);
-        }
+    int i=0;
+    Node crawl = GLOB_dom->suc[id_compt];
+    while(crawl != NULL) {
+        i = crawl->id;
+        Nrx += cos(GLOB_theta[i]);
+        Nry += sin(GLOB_theta[i]);
+        
+        crawl = crawl->next;
     }
+    free(crawl); crawl = NULL;
 
     return atan2(Nry,Nrx);
 }
