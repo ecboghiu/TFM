@@ -16,8 +16,9 @@ void initOmegas()
 {
     // omega_nat IS GLOBAL
     GLOB_omega_nat = malloc(NODE_NR*sizeof(*GLOB_omega_nat));
-    for (int i = 0; i < NODE_NR; i++) {
-        GLOB_omega_nat[i] = 0.5*(-1 + 2*Random());//sampleNormal();
+    for (int i = 0; i < NODE_NR; i++) 
+    {
+        GLOB_omega_nat[i] = sampleNormal();//(double)degree[i];//0.5*(-1 + 2*Random());//
     }
 }
 

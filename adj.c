@@ -58,7 +58,7 @@ int add_edge (int i, int j) {
         }
     }
 
-
+    join_domains(j,i);
 
     return 1;
 }
@@ -127,6 +127,8 @@ void read_edgelist_file_py (char* filename)
 
 void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
 {
+    initDom();
+
     int i,j,k;
     
     int **data;
@@ -153,9 +155,31 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
     for(int i = 0; i < NODE_NR; i++){
         GLOB_component_name[i] = i; // all nodes are their own cluster
     }
+    
 
     GLOB_nr_edges = 0;
     GLOB_unique_components = NODE_NR;
+}
+
+double *GLOB_dom_size;
+void initDom()
+{
+    GLOB_dom      =        malloc(sizeof(*GLOB_dom));
+    GLOB_dom->suc = (Node*)calloc(NODE_NR,sizeof(*(GLOB_dom->suc)));
+    for(int i = 0; i < NODE_NR; i++)
+    {
+        insertNode(&(GLOB_dom->suc[i]),i);
+        //insertNode(&(GLOB_dom->suc[i]),i);
+        //insertNode(&(GLOB_dom->suc[i]),i);
+    }
+    
+
+    GLOB_dom_size = malloc(NODE_NR *sizeof *GLOB_dom_size);
+    for(int i = 0; i < NODE_NR; i++)
+    {
+        GLOB_dom_size[i] = 1;
+    }
+    
 }
 
 void clear_C_memory(int ***data_ptr, int dim_x, int dim_y)
@@ -382,25 +406,6 @@ void saveAdjGephi (int C[][K_MAX])
     }
 }
 
-
-void calculateDegree()
-{
-    /*
-    Node app = malloc(sizeof(*app));
-    free(degree);
-    degree = malloc(NODE_NR*sizeof(*degree));
-    for (int i = 0; i < NODE_NR; i++) {
-        degree[i] = 0;
-        app = adj->suc[i];
-        while (app!=NULL) {
-            degree[i]++;
-            app = app->next;
-        }
-    }
-    free(app);
-    */
-}
-
 // Taken from: https://stackoverflow.com/questions/28556641/
 // a-program-that-counts-unique-elements-in-an-un-ordered-array
 int unique_elements(int arr[], int len) {
@@ -478,4 +483,87 @@ int int_max_vector (int **vector, int size) {
         }
     }
     return aux;
+}
+
+// Inserting a node is the same as inserting a new link.
+void insertNode (Node *I, int i)
+{
+    // The new node is the new head. *I is a pointer to the old
+    // head of the linked list.
+    // We create a new aux pointer and make it hold the location
+    // of the old head struct
+    Node aux;
+    aux = *I; // s is now a pointer to a struct of type Node
+    // Now we make *I point to new blank memory and give it id
+    // value i and make it point to the old head: head insertion.
+    (*I) = malloc( sizeof *(*I) );
+    (*I)->id=i;
+    (*I)->next=aux;
+}
+
+void removeNode (Node *I, int j)
+{
+    Node crawl = *I;
+    Node crawled_before = *I;
+    if (j == ((*I)->id)) { // SPECIAL CASE: if we have to remove the head
+        crawl = (*I);
+        if ((*I)->next == NULL) { // There is only the head in the list.
+            (*I) = NULL;
+        } else { // There is more than one element in the linked list.
+            (*I) = (*I)->next;
+        }
+        free(crawl);
+    } else {
+        while (crawl != NULL) {
+            if (crawl->id == j) {
+                (crawled_before->next) = (crawl->next); // we skip node j
+                free(crawl); // we free the memory;
+                return;
+            }
+            crawled_before = crawl;
+            crawl = crawl->next;
+        }
+    }
+    free(crawled_before);
+}
+
+int join_domains(int j, int i)
+{
+    if (i == j) {
+        printf("warning: no self domain joining allowed");
+        return 0;
+    }
+
+    // we will join i to j
+
+    Node crawl_i = GLOB_dom->suc[i];
+    if (crawl_i != NULL)  // if crawl null then we don't do anything, we have 
+                        // nothing to add to j
+    {
+        Node crawl_j_end = GLOB_dom->suc[j];
+        Node crawl_before = crawl_j_end;
+        while( (crawl_j_end->next) != NULL)
+        {
+            crawl_j_end = crawl_j_end->next;
+        }
+
+        crawl_j_end->next = crawl_i;
+
+        free(crawl_j_end);  crawl_j_end = NULL;
+        free(crawl_before); crawl_before= NULL;
+    }
+
+    // now we clear memory at i
+    //from https://stackoverflow.com/questions/7025328/
+    // linkedlist-how-to-free-the-memory-allocated-using-malloc:
+    Node crawl_zaux = GLOB_dom->suc[i];
+    while ((crawl_i = crawl_zaux) != NULL) { // set curr to head, stop if list empty.
+        crawl_zaux = crawl_zaux->next;          // advance head to next element.
+        free(crawl_i);                // delete saved pointer.
+    }
+    free(crawl_zaux); crawl_zaux = NULL;
+
+    return 1;
+
+
 }

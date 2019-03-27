@@ -19,6 +19,22 @@ int main(int args_number, char* args[])
 
     init_C_memory(&C, NODE_NR, K_MAX);
 
+    join_domains(2,3);
+
+    for(size_t i = 0; i < NODE_NR; i++)
+    {
+        printf("comp: %d\n", i);
+        Node crawl;
+        crawl = GLOB_dom->suc[i];
+        while(crawl != NULL) {
+            printf("%d ", crawl->id);
+            crawl = crawl->next;
+        }
+        printf("size: %d\n", (int)GLOB_dom_size[i]);
+        
+    }
+    
+
 
     //////////////////////PERCOLATION//////////////////////////////////////////
 #ifdef PERCOLATION_ON
@@ -397,13 +413,13 @@ int main(int args_number, char* args[])
             //init_C(&C, NODE_NR, K_MAX);
             initEXPL_product_rule(t);  
 
-            for(int i = 0; i < NODE_NR; i++) {
-                GLOB_theta[i] = M_PI*(-1 + Random()*2);
-            }
+            //for(int i = 0; i < NODE_NR; i++) {
+            //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
+            //}
             for (int i = 0; i < NODE_NR; i++) {
                 GLOB_omega_nat[i] = (double)GLOB_component_size[i];//0.5*(-1 + 2*Random());//sampleNormal();
             }
-            
+
             #ifdef TERMALIZATION // we wait for r to stabilize
             for (int i = 0; i < termalization; i++)
                 for (int t_aux = 0; t_aux < blind; t_aux++)
@@ -484,15 +500,6 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g\n",
 
     write_C_to_file(); // to plot the graph
 
-
-
-    // For Runge kutta I will define these auxiliary variables:
-
-
-
-
-
-
     // debug prints:
     //for(int i = 0; i < (int)t_number; i++) {
     //    printf("%g\t", fractional_size[i]);
@@ -511,6 +518,7 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g\n",
     //printf("component name unique elemnts: %d\n",
     //                    unique_elements(GLOB_component_name, NODE_NR));
     //print_C();
+
 /*
     // We write to file percolation data.
     char filename1[128] = "frac_size_vs_t.txt";
@@ -532,10 +540,6 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g\n",
     free(fractional_size);          fractional_size         = NULL;
     free(fractional_size_sigma);    fractional_size_sigma   = NULL;
     free(edge_fraction);            edge_fraction           = NULL;
-
-
-
-
 
     free(r_coh);        r_coh = NULL;
     free(GLOB_theta); GLOB_theta = NULL;

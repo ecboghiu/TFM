@@ -28,14 +28,14 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 100
+#define NODE_NR 20
 #define K_MAX 30
 #define K_MIN 2
 #define AVG_NUMBER 1
 
 //#define OSCILLATOR_ON
-//#define PERCOLATION_ON
-#define SYNC_AND_PERC_ON
+#define PERCOLATION_ON
+//#define SYNC_AND_PERC_ON
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
@@ -81,10 +81,28 @@ extern int GLOB_nr_edges;
 extern int GLOB_unique_components;
 extern double GLOB_max_component_size;
 extern double GLOB_unique_elements_in_network;
+extern double *GLOB_dom_size;
 
 // We will store the natural frequencies of all the oscillators.
 extern double *GLOB_theta;
 extern double *GLOB_omega_nat;
+
+/*******STRUCT DEFINITIONS*******/
+struct _Node {
+        int id;
+        struct _Node *next;
+        //struct _Node *next_domain; // ignore this, only useful for percolation
+}; typedef struct _Node *Node;
+
+//struct _Connected {
+//        struct _Node *main_head;
+//}; typedef struct _Connected *Graph_domains;
+
+struct _Graph {
+        Node *suc;
+}; typedef struct _Graph *Graph;
+
+Graph GLOB_dom;
 
 /*******FUNCTION PROTOTYPES*******/
 void update_EULER   (double sigma, double h);
@@ -130,6 +148,7 @@ int number_of_domains        ();
 void domain_size_array       (int *size_array, int i, int* domain, int *size);
 int domain_of_node_i_size    (int i);
 int max_domain_size          ();
+int join_domains            (int i, int j);
 
 // Clustering
 double localClustering  (int i);
