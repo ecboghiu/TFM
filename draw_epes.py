@@ -23,11 +23,11 @@ for i in range(len(tableau20)):
 
 plot_data, labels, colors = [], [], []
 
-
-filename = r"trampa_EPES_sigmaVSr_file_N=10000_weff.txt"
+#filename = r"trampa_EPES_sigmaVSr_file_N=10000_weff.txt"
+filename = r"EPES_sigmaVSr_file_N=1000_weff.txt"
 plot_data.append(genfromtxt(filename,  skip_header=2))
 labels.append(['r_'+filename,'p_'+filename])
-colors.append([tableau20[4],tableau20[2]])
+colors.append([tableau20[0],tableau20[2]])
 
 fig = plt.figure()
 

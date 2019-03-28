@@ -104,6 +104,25 @@ double psi_coherence()
     return atan2(Nry,Nrx);
 }
 
+double weff_compt (int id_compt, double t, double sigma)
+{
+    int i=0;
+    Node crawl = GLOB_dom->suc[id_compt];
+    double weff = 0;
+    while(crawl != NULL) {
+        i = crawl->id;
+
+        weff += calculateTheta_dot_i(t, GLOB_theta, NODE_NR, sigma, i);
+        
+        crawl = crawl->next;
+    }
+    weff /= GLOB_dom_size[id_compt];
+    free(crawl); crawl = NULL;
+
+    return weff;
+
+}
+
 double phase_coherence_compt (int id_compt)
 {
 
@@ -120,8 +139,8 @@ double phase_coherence_compt (int id_compt)
     }
     free(crawl); crawl = NULL;
 
-    rx/=NODE_NR;
-    ry/=NODE_NR;
+    rx/=GLOB_dom_size[id_compt];
+    ry/=GLOB_dom_size[id_compt];
 
     return sqrt(rx*rx+ry*ry);
 }

@@ -28,14 +28,20 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 10
-#define K_MAX 30
+#define NODE_NR 100
+#define K_MAX NODE_NR
 #define K_MIN 2
 #define AVG_NUMBER 1
 
 //#define OSCILLATOR_ON
 //#define PERCOLATION_ON
 #define SYNC_AND_PERC_ON
+#ifdef SYNC_AND_PERC_ON
+    #define EPES_MECH_Pure_perc
+    //#define EPES_MECH_compare_r
+    //#define EPES_MECH_Scale_by_dom_size
+    //#define EPES_MECH_weff
+#endif
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
@@ -59,7 +65,7 @@
 
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
-#define TERMALIZATION 40
+#define TERMALIZATION 100
 
 //#define EPSILON_OSCILLATOR 1e-3
 
@@ -108,7 +114,7 @@ Graph GLOB_dom;
 void update_EULER   (double sigma, double h);
 void update_RK      (double t, double sigma, double h);
 
-int initEXPL_product_rule (double t);
+int initEXPL_product_rule (double t, double sigma);
 
 void initOmegas     ();
 void initThetas     ();
@@ -142,7 +148,11 @@ void   calculateDegree       (); // calculates array with degrees of all nodes
 double calculateTheta_dot_i  (double t, double *phases, int phases_len,
                                 double sigma, int i);
 double calculateThetaAverage ();
+double weff_compt            (int id_compt, double t, double sigma);
 double phase_coherence       ();
+double psi_coherence         ();
+double phase_coherence_compt (int id_compt);
+double psi_coherence_compt   (int id_compt);
 int debug_count_nodes        ();
 int number_of_domains        ();
 void domain_size_array       (int *size_array, int i, int* domain, int *size);

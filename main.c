@@ -70,7 +70,7 @@ int main(int args_number, char* args[])
         for ( t=t_min; t<t_max; t += t_inc)
         {   //TODO: Make it a running average
             //init_C(&C, NODE_NR, K_MAX);
-            initEXPL_product_rule(t);
+            initEXPL_product_rule(t, sigma);
 
             //aux_int = int_max_vector(&GLOB_component_size, NODE_NR);
             aux_int = (int) (GLOB_max_component_size);
@@ -149,18 +149,7 @@ int main(int args_number, char* args[])
     free(edge_fraction);            edge_fraction           = NULL;
 
 #endif
-    for(size_t i = 0; i < NODE_NR; i++)
-    {
-        printf("comp: %d\n", i);
-        Node crawl;
-        crawl = GLOB_dom->suc[i];
-        while(crawl != NULL) {
-            printf("%d ", crawl->id);
-            crawl = crawl->next;
-        }
-        printf("size: %d\n", (int)GLOB_dom_size[i]);
-        
-    }
+
 #ifdef OSCILLATOR_ON
     ///////////////////////ERDOS-RENYI////////////////////////////////////////
     #ifdef ERDOS_RENYI
@@ -168,7 +157,7 @@ int main(int args_number, char* args[])
     printf("Finished initializing ER network.\n");
     #endif
     #ifdef SCALE_FREE
-    initScaleFree();       // following a power law degree distr., possible hubs
+    initScaleFree();    // following a power law degree distr.,possible hubs
     printf("Finished initializing SF network.\n");
     #endif
     #ifdef READ_NETWORK_FROM_FILE
@@ -214,9 +203,9 @@ int main(int args_number, char* args[])
     initOmegas();
 
 
-    double h               = DELTA_T;          // time increment
-    int nr_measurements    = MAX_STEPS;        // number of time increments we measure
-    int    blind           = IN_BETWEEN;       // number of times we dont measure
+    double h               = DELTA_T;   // time increment
+    int nr_measurements    = MAX_STEPS; // number of time increments we measure
+    int    blind           = IN_BETWEEN;  // number of times we dont measure
     #ifdef TERMALIZATION
     int termalization = TERMALIZATION;
     #endif
@@ -237,18 +226,18 @@ int main(int args_number, char* args[])
     // this is for a varying filename
     #ifdef ERDOS_RENYI
     char filename2[128] = "SF_sigmaVSr.txt";
-    snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_ER_N=%d_p=%g.txt", 
+snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_ER_N=%d_p=%g.txt", 
                                                 NODE_NR, ERDOS_RENYI_prob);
     #endif
     #ifdef SCALE_FREE
     char filename2[128] = "SF_sigmaVSr.txt";
-    snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_SF_N=%d_gamma=%g.txt", 
+snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_SF_N=%d_gamma=%g.txt", 
                                                 NODE_NR, GAMMA);
     #endif
     #ifdef READ_NETWORK_FROM_FILE
     char filename2[128] = "aa";
-    snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt", 
-                                                NODE_NR, NET_TYPE, NET_CHARACT);
+snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt", 
+                                            NODE_NR, NET_TYPE, NET_CHARACT);
     #endif
 
     FILE *f_out2 = fopen(filename2,"w");
@@ -259,11 +248,11 @@ int main(int args_number, char* args[])
     fprintf(f_out2, "# Node_nr = %d\n", NODE_NR);
     // Now we print the first with statistical data for the network.
     #ifdef ERDOS_RENYI
-        fprintf(f_out2, "# SCALE FREE p=%g K_MIN=%d K_MAX=%d <k>=%g <k^2>=%g \n", 
+        fprintf(f_out2,"# SCALE FREE p=%g K_MIN=%d K_MAX=%d <k>=%g <k^2>=%g \n", 
                     ERDOS_RENYI_prob, K_MIN, NODE_NR, deg_med, deg_var);
     #endif
     #ifdef SCALE_FREE
-    fprintf(f_out2, "# SCALE FREE GAMMA=%g K_MIN=%d K_MAX=%d <k>=%g <k^2>=%g \n", 
+    fprintf(f_out2,"# SCALE FREE GAMMA=%g K_MIN=%d K_MAX=%d <k>=%g <k^2>=%g \n", 
                     GAMMA, K_MIN, NODE_NR, deg_med, deg_var);
     #endif
     fprintf(f_out2, "# K <r> sigma_r(sig not of average! divide by sqrt(n))\n");
@@ -310,13 +299,15 @@ int main(int args_number, char* args[])
             timp = t_idx*h*(1+blind);
 
             //#ifndef TERMALIZATION
-            fprintf(theta_file, "%lf %lf %lf\n", timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
+            fprintf(theta_file, "%lf %lf %lf\n",
+     timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
              r_coh[t_idx], //exp(-0.01*timp));
                         sin(timp));
             //#endif
 
             for (int t_aux = 0; t_aux < blind; t_aux++) {
-                update_RK(timp, sigma, h); // "blind" because we update without measuring
+                // "blind" because we update without measuring
+                update_RK(timp, sigma, h); 
             }
 
             update_RK(timp, sigma, h);
@@ -340,10 +331,10 @@ int main(int args_number, char* args[])
     free(GLOB_omega_nat); GLOB_omega_nat = NULL;
 #endif //end if OSCILLATOR_ON
 
-/////////////////////////////// EPES ///////////////////////////////////////////
+/////////////////////////////// EPES /////////////////////////////////////////
 #ifdef SYNC_AND_PERC_ON
 
-    int t_number = 100;
+    int t_number = 20;
     int t_blind  = 0;
     double t_min = 0.0;
     double t_max = 1.0;
@@ -375,11 +366,11 @@ int main(int args_number, char* args[])
     // If we wait to termalize we run through many sigmas, else we only measure
     // a single sigma and plot coh.txt to see how much we should wait until the
     // phase coherence reaches a stable value, if at all.
-    double sigma = 0.5;
+    double sigma = SIGMA_VAL;
 
-    double h               = DELTA_T;          // time increment
-    int nr_measurements    = MAX_STEPS;        // number of time increments we measure
-    int    blind           = IN_BETWEEN;       // number of times we dont measure
+    double h               = DELTA_T;   // time increment
+    int nr_measurements    = MAX_STEPS; // number of time increments we measure
+    int    blind           = IN_BETWEEN;  // number of times we dont measure
     #ifdef TERMALIZATION
     int termalization = TERMALIZATION;
     #endif
@@ -408,7 +399,7 @@ int main(int args_number, char* args[])
     }
     fprintf(f_out2, "# Node_nr = %d\n", NODE_NR);
     // Now we print the first with statistical data for the network.
-    fprintf(f_out2, "# K <r> sigma_r(sig not of average! divide by sqrt(n))\n");
+    fprintf(f_out2,"# K <r> sigma_r(sig not of average! divide by sqrt(n))\n");
     //printf("passed second ifdefs\n");
 
     // INITIAL CONDITIONS:
@@ -422,17 +413,18 @@ int main(int args_number, char* args[])
     {
         init_C(&C, NODE_NR, K_MAX);
         idx = 0;
-        for ( t=t_min; t<t_max; t += t_inc)
+        for ( t=t_min; t<=t_max; t += t_inc)
         {   
             //init_C(&C, NODE_NR, K_MAX);
-            initEXPL_product_rule(t);  
+            initEXPL_product_rule(t, sigma);  
 
             //for(int i = 0; i < NODE_NR; i++) {
             //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
             //}
-            for (int i = 0; i < NODE_NR; i++) {
-                GLOB_omega_nat[i] = (double)GLOB_component_size[i];//0.5*(-1 + 2*Random());//sampleNormal();
-            }
+            //for (int i = 0; i < NODE_NR; i++) {
+            //    GLOB_omega_nat[i] = (double) degree[i];//(double)GLOB_component_size[i];
+            //            //0.5*(-1 + 2*Random());//sampleNormal();
+            //}
 
             #ifdef TERMALIZATION // we wait for r to stabilize
             for (int i = 0; i < termalization; i++)
@@ -448,13 +440,15 @@ int main(int args_number, char* args[])
                 timp = t_idx*h*(1+blind);
 
                 #ifndef TERMALIZATION
-                fprintf(theta_file, "%lf %lf %lf\n", timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
+                fprintf(theta_file, "%lf %lf %lf\n",
+         timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
                 r_coh[t_idx], //exp(-0.01*timp));
                             sin(timp));
                 #endif
 
                 for (int t_aux = 0; t_aux < blind; t_aux++) {
-                    update_RK(timp, sigma, h); // "blind" because we update without measuring
+                    // "blind" because we update without measuring
+                    update_RK(timp, sigma, h); 
                 }
 
                 update_RK(timp, sigma, h);
@@ -469,7 +463,7 @@ int main(int args_number, char* args[])
             med_var(r_coh, nr_measurements, &r_med, &r_var);
             fprintf(f_out2, "%g %g %g %g \n", 
             t, fractional_size_noavg[idx][avg_idx], r_med, sqrt(r_var));
-            //printf("One loop finished! \t sigma=%g \t <r>=%g \t sigma_<r>=%g \n",
+    //printf("One loop finished! \t sigma=%g \t <r>=%g \t sigma_<r>=%g \n",
             //            sigma, r_med, sqrt(r_var));
 
             //printf("t=%g, fractional_size=%g\n", t, 
@@ -550,7 +544,7 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g\n",
     }
     fclose(f_out1);                 f_out1                  = NULL;
 */
-    
+    /*
     free(fractional_size);          fractional_size         = NULL;
     free(fractional_size_sigma);    fractional_size_sigma   = NULL;
     free(edge_fraction);            edge_fraction           = NULL;
@@ -558,8 +552,9 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g\n",
     free(r_coh);        r_coh = NULL;
     free(GLOB_theta); GLOB_theta = NULL;
     free(GLOB_omega_nat); GLOB_omega_nat = NULL;
+    */
 #endif // endif SYNC_AND_PERC_ON
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
     // Freeing other global arrays.
     free(GLOB_component_name); GLOB_component_name = NULL;

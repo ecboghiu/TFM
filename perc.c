@@ -1,6 +1,6 @@
 #include "graph.h"
 
-int initEXPL_product_rule (double t)
+int initEXPL_product_rule (double t, double sigma)
 {   
     int tot_nr_edges = 0;
     tot_nr_edges =  (int) (t* ((double)NODE_NR));
@@ -8,7 +8,7 @@ int initEXPL_product_rule (double t)
     
     //int nr_edges = 0;
     int rnd1, rnd2, rnd3, rnd4;
-    int size1, size2, size3, size4;
+    double size1, size2, size3, size4;
     size1 = size2 = size3 = size4 = 0;
     rnd1 = rnd2 = rnd3 = rnd4 = 0;
     int bool_res = 0; // 0 false, 1 true
@@ -18,7 +18,7 @@ int initEXPL_product_rule (double t)
     
     while (GLOB_nr_edges < tot_nr_edges) 
 {
-            //GLOB_unique_components = unique_elements(GLOB_component_name, NODE_NR);
+    //GLOB_unique_components = unique_elements(GLOB_component_name, NODE_NR);
     GLOB_unique_components = (int) (GLOB_unique_elements_in_network);
     if (GLOB_unique_components < 0 || GLOB_unique_components > NODE_NR) {
         printf("warning: unique components wrong!\n");
@@ -77,44 +77,79 @@ int initEXPL_product_rule (double t)
         return 1;
     }*/
 
-
+/*
         if (GLOB_nr_edges >= NODE_NR) {
             printf("IF STATEMENT:Glob_nr_edges= %d\n", GLOB_nr_edges);
-            exit(12);
+            //exit(12);
         }
+*/
+        rnd1 = (int)(Random()*NODE_NR);
+        rnd2 = (int)(Random()*NODE_NR);
+        rnd3 = (int)(Random()*NODE_NR);
+        rnd4 = (int)(Random()*NODE_NR);
 
-
-
+/*
         rnd1 = (int)(Random()*NODE_NR);
         // TODO: remove thjese conditions
         rnd2 = (int)(Random()*NODE_NR);
         name_aux1 = GLOB_component_name[rnd1];
-        while (GLOB_component_name[rnd2] == name_aux1) {
+        while (GLOB_component_name[rnd2] == name_aux1) 
+        {
             rnd2 = (int)(Random()*NODE_NR);
         } // now we have two nodes from different domains
         //printf("rnds1: %d, %d, %d \n", rnd1, rnd2, rnd3);
         rnd3 = (int)(Random()*NODE_NR);
         name_aux2 = GLOB_component_name[rnd2];
         while ( (GLOB_component_name[rnd3] == name_aux1) ||
-                (GLOB_component_name[rnd3] == name_aux2)    ) {
+                (GLOB_component_name[rnd3] == name_aux2)    ) 
+        {
             rnd3 = (int)(Random()*NODE_NR);
         }
 
-        
 
         //printf("rnds2: %d, %d, %d \n", rnd1, rnd2, rnd3);
         rnd4 = (int)(Random()*NODE_NR);
         name_aux3 = GLOB_component_name[rnd3];
-        while (GLOB_component_name[rnd4] == name_aux3) {
+        while (GLOB_component_name[rnd4] == name_aux3) 
+        {
             rnd4 = (int)(Random()*NODE_NR);
         }
         //printf("rnds3: %d, %d, %d \n", rnd1, rnd2, rnd3);
+*/
 
+#ifdef EPES_MECH_Pure_perc
+        size1 = (double) GLOB_component_size[rnd1];
+        size2 = (double) GLOB_component_size[rnd2];
+        size3 = (double) GLOB_component_size[rnd3];
+        size4 = (double) GLOB_component_size[rnd4];
+#endif
+#ifdef EPES_MECH_compare_r
+        size1 = phase_coherence_compt(GLOB_component_name[rnd1]);
+        size2 = phase_coherence_compt(GLOB_component_name[rnd2]);
+        size3 = phase_coherence_compt(GLOB_component_name[rnd3]);
+        size4 = phase_coherence_compt(GLOB_component_name[rnd4]);
+#endif
+#ifdef EPES_MECH_Scale_by_dom_size
+        size1 = phase_coherence_compt(GLOB_component_name[rnd1]);
+        size2 = phase_coherence_compt(GLOB_component_name[rnd2]);
+        size3 = phase_coherence_compt(GLOB_component_name[rnd3]);
+        size4 = phase_coherence_compt(GLOB_component_name[rnd4]);
+        size1 /= GLOB_component_size[rnd1];
+        size2 /= GLOB_component_size[rnd2];
+        size3 /= GLOB_component_size[rnd3];
+        size4 /= GLOB_component_size[rnd4];
+#endif
+#ifdef EPES_MECH_weff
+        size1 = weff_compt(GLOB_component_name[rnd1], 0, sigma);
+        size2 = weff_compt(GLOB_component_name[rnd2], 0, sigma);
+        size3 = weff_compt(GLOB_component_name[rnd3], 0, sigma);
+        size4 = weff_compt(GLOB_component_name[rnd4], 0, sigma);
+        size1 *= GLOB_component_size[rnd1];
+        size2 *= GLOB_component_size[rnd2];
+        size3 *= GLOB_component_size[rnd3];
+        size4 *= GLOB_component_size[rnd4];
+#endif
 
-        size1 = GLOB_component_size[rnd1];
-        size2 = GLOB_component_size[rnd2];
-        size3 = GLOB_component_size[rnd3];
-        size4 = GLOB_component_size[rnd4];
         bool_res = 0;
         if (size1*size2 >= size3*size4) {
             bool_res = add_edge(rnd3,rnd4);

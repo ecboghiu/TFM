@@ -32,14 +32,16 @@ int add_edge (int i, int j) {
     }
     else
     {
-        new_size = GLOB_component_size[i] + GLOB_component_size[j]; // diff comps sum
+         // diff comps sum
+        new_size = GLOB_component_size[i] + GLOB_component_size[j];
         (GLOB_unique_elements_in_network)--;
         //printf("names: %d %d\n", new_name, old_name);
     }
 
     if (new_size > GLOB_max_component_size) {
         GLOB_max_component_size = new_size;
-        //printf("max components: %d of %d\n", GLOB_max_component_size, NODE_NR);
+        //printf("max components: %d of %d\n", GLOB_max_component_size,
+        //                                                     NODE_NR);
         if (GLOB_max_component_size > NODE_NR) {
             printf("warning: too big a component");
             exit(9);
@@ -195,7 +197,8 @@ void clear_C_memory(int ***data_ptr, int dim_x, int dim_y)
 }
 
 // TODO: MAKE A FUNC TO ASSIGN MEMORY; MAKE ANOTHER TO CLEAR VALUES!!!!!!
-// Taken from:: https://stackoverflow.com/questions/11463455/c-programming-initialize-2d-array-dynamically
+// Taken from:: https://stackoverflow.com/questions/11463455/
+// c-programming-initialize-2d-array-dynamically
 void init_C(int ***data_ptr, int dim_x, int dim_y) 
 {
     for (int i = 0; i < dim_x; i++) {
@@ -264,11 +267,11 @@ void initScaleFree ()
             sum += aux_deg[i];
         }
     }
-    /* We will use a list of ints whose elements are nodes. The element with value
-        -1 marks the END OF THE LIST. The functions are made with this in mind.
-        The length of the list is \sum k_i. We repeat the node according to the degree
-        number present. We then pair nodes at random and if we pair them and form a
-        link we remove the two nodes from the list.
+    /* We will use a list of ints whose elements are nodes. The element with
+    value -1 marks the END OF THE LIST. The functions are made with this
+    in mind. The length of the list is \sum k_i. We repeat the node according
+    to the degree number present. We then pair nodes at random and if we
+    pair them and form a link we remove the two nodes from the list.
     */
 
     printf("Finished generating degree distribution.\n");

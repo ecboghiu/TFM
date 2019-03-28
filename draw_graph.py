@@ -93,10 +93,10 @@ average = average/norm
 print("average=",average)
 
 fig, ax = plt.subplots()
-plt.plot(np.array(deg), np.array(cnt)/norm, color='b')#, width=0.80, color='b')
-plt.plot(np.array(deg),
-         NORMALIZING_FACTOR * np.array(deg)**(-GAMMA),
-   label = 'teor', color = tableau20[1])
+plt.plot(np.array(deg), np.array(cnt), color='b')#, width=0.80, color='b')
+#plt.plot(np.array(deg),
+#         NORMALIZING_FACTOR * np.array(deg)**(-GAMMA),
+#   label = 'teor', color = tableau20[1])
     
 #plt.yscale('log')
 #plt.xscale('log')
