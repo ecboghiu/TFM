@@ -369,11 +369,10 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
 
 /////////////////////////////// EPES /////////////////////////////////////////
 #ifdef SYNC_AND_PERC_ON
-
-    int t_number = 100;
     int t_blind  = 0;
     double t_min = 0.0;
-    double t_max = 1.7;//1.0*(NODE_NR-1)/10;
+    double t_max = 3;//1.0*(NODE_NR-1)/2;
+    int t_number = 50;//t_max*NODE_NR;//10*(NODE_NR-1)/2.0;
     double t_inc = (t_max-t_min)/(t_number); // sigma increments
     double t     = t_min;
     double fractional_size_noavg[t_number][AVG_NUMBER];

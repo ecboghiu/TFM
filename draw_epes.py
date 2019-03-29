@@ -24,16 +24,16 @@ for i in range(len(tableau20)):
 plot_data, labels, colors = [], [], []
 
 #filename = r"trampa_EPES_sigmaVSr_file_N=10000_weff.txt"
-filename = r"EPES_if_N=10000_weff_sig=3.txt"
+filename = r"EPES_N=1000_tribe_sig=0.txt"
 plot_data.append(genfromtxt(filename,  skip_header=2))
 labels.append(['r_'+filename,'p_'+filename])
 colors.append([tableau20[0],tableau20[0],tableau20[0]])
-
+'''
 filename = r"EPES_N=10000_weff_sig=3.txt"
 plot_data.append(genfromtxt(filename,  skip_header=2))
 labels.append(['r_'+filename,'p_'+filename])
 colors.append([tableau20[2],tableau20[2],tableau20[2]])
-'''
+
 filename = r"EPES_N=1000_weff_sig=8.txt"
 plot_data.append(genfromtxt(filename,  skip_header=2))
 labels.append(['r_'+filename,'p_'+filename])

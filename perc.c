@@ -243,7 +243,7 @@ int initEXPL_product_rule (double t, double sigma)
             //if (localClustering(rnd1) < 1) 
             {
 w = Random();
-if (w > 4*GLOB_max_component_size/((double)NODE_NR)) 
+if (w > 5*GLOB_max_component_size/((double)NODE_NR)) 
 {
     // we dont go outside our domain if this condition holds
     // we choose a random node within the domain and connect with it
