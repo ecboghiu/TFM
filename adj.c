@@ -17,7 +17,6 @@ int add_edge (int i, int j) {
         return 0;
     }
     
-
     C[ i ][ degree[i] ] = j;
     C[ j ][ degree[j] ] = i;
     degree[i]++;
@@ -25,6 +24,12 @@ int add_edge (int i, int j) {
     
     int new_name = GLOB_component_name[j];
     int old_name = GLOB_component_name[i];
+
+    if (new_name != old_name) {
+        join_domains(old_name,new_name);
+    }
+    
+
     int new_size = 0;
     if (new_name == old_name) // then they are from the same component
     {  
@@ -49,23 +54,51 @@ int add_edge (int i, int j) {
     }
     
     
+    
     for(int i_aux = 0; i_aux < NODE_NR; i_aux++)
     {
         if (GLOB_component_name[i_aux] == old_name) {
+            //GLOB_dom_size[GLOB_component_name[i_aux]] = new_size;
             GLOB_component_name[i_aux]  = new_name;
             GLOB_component_size[i_aux]  = new_size;
-            GLOB_dom_size[GLOB_component_name[i_aux]] = new_size;
-            
         }
         if (GLOB_component_name[i_aux] == new_name) {
+            //GLOB_dom_size[GLOB_component_name[i_aux]] = new_size;
             GLOB_component_size[i_aux]  = new_size;
-            GLOB_dom_size[GLOB_component_name[i_aux]] = new_size;
         }
     }
 
-    GLOB_dom_size[old_name] = 0;
+    // we join i to j
+    
+    if (old_name != new_name) {
+        GLOB_dom_size[old_name]=0;
+        GLOB_dom_size[new_name]=new_size;
+    }
+    else
+    {
+        GLOB_dom_size[old_name]=new_size;
+        GLOB_dom_size[new_name]=new_size;
+    }
+    
+    
 
-    join_domains(GLOB_component_name[i],GLOB_component_name[j]);
+/*
+    //print_linked_list();
+        for(int i = 0; i < NODE_NR; i++)
+    {
+        printf("comp: %d ||||| ", i);
+        Node crawl = GLOB_dom->suc[i];
+        while(crawl != NULL) {
+            printf("%d ", crawl->id);
+            crawl = crawl->next;
+        }
+        printf("size: %d\n", (int)GLOB_dom_size[i]);
+        
+    }
+*/
+
+    //GLOB_dom_size[old_name] = 0;
+    //GLOB_dom_size[new_name] = new_size;
 
     return 1;
 }
@@ -134,8 +167,6 @@ void read_edgelist_file_py (char* filename)
 
 void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
 {
-    initDom();
-
     int i,j,k;
     
     int **data;
@@ -151,7 +182,7 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
     *data_ptr = data;
 
     
-    GLOB_max_component_size = -1;
+    GLOB_max_component_size = 1;
     GLOB_unique_elements_in_network = NODE_NR;
     degree         = calloc(NODE_NR, sizeof *degree);
     GLOB_component_size = malloc(NODE_NR * sizeof *GLOB_component_size);
@@ -176,6 +207,8 @@ void initDom()
     for(int i = 0; i < NODE_NR; i++)
     {
         insertNode(&(GLOB_dom->suc[i]),i);
+        //insertNode(&(GLOB_dom->suc[i]),i);
+        //insertNode(&(GLOB_dom->suc[i]),i);
     }
 
     GLOB_dom_size = malloc(NODE_NR *sizeof *GLOB_dom_size);
@@ -214,7 +247,7 @@ void init_C(int ***data_ptr, int dim_x, int dim_y)
         GLOB_component_name[i] = i;
     }
 
-    GLOB_max_component_size = -1;
+    GLOB_max_component_size = 1;
     GLOB_unique_elements_in_network = NODE_NR;
 
     GLOB_nr_edges = 0;
@@ -529,29 +562,171 @@ void removeNode (Node *I, int j)
             crawl = crawl->next;
         }
     }
-    free(crawled_before);
 }
 
-int join_domains(int j, int i)
+int join_domains(int dom_i, int dom_j)
 {
-    if (i == j) {
+    
+    if (dom_i == dom_j) {
         //printf("warning: no self domain joining allowed");
         return 0;
     }
 
-    Node crawl_j_end = GLOB_dom->suc[j];
-    if  (crawl_j_end == NULL) {
-        return 0;
-    } 
-    else
-    {
+    Node crawl_j_end = GLOB_dom->suc[dom_j];
+    if (crawl_j_end != NULL) {
         while( (crawl_j_end->next) != NULL) {
             crawl_j_end = crawl_j_end->next;
         }
-        crawl_j_end->next = GLOB_dom->suc[i];
-
-        GLOB_dom->suc[i] = NULL;
+        crawl_j_end->next = GLOB_dom->suc[dom_i];
+        GLOB_dom->suc[dom_i] = NULL;
+        return 1;
+    }
+    else
+    {
+        if (GLOB_dom->suc[dom_i] != NULL) {
+            GLOB_dom->suc[dom_j] = GLOB_dom->suc[dom_i];
+            GLOB_dom->suc[dom_i] = NULL;
+            return 1;
+        }
+        else
+        {
+            return 1; // both are null so we are joining inexisting domains
+        }
+    }
+    
+    /*
+    if (i == j) {
+        printf("warning: no self domain joining allowed");
+        return 0;
     }
 
-    return 1;
+    // we will join i to j
+
+    Node crawl_i = GLOB_dom->suc[i];
+    if (crawl_i != NULL)  // if crawl null then we don't do anything, we have 
+                        // nothing to add to j
+    {
+        Node crawl_j_end = GLOB_dom->suc[j];
+        Node crawl_before = crawl_j_end;
+        while( (crawl_j_end->next) != NULL)
+        {
+            crawl_j_end = crawl_j_end->next;
+        }
+
+        crawl_j_end->next = crawl_i;
+
+        //free(crawl_j_end);  crawl_j_end = NULL;
+        //free(crawl_before); crawl_before= NULL;
+    }
+    */
+/*
+    // now we clear memory at i
+    //from https://stackoverflow.com/questions/7025328/
+    // linkedlist-how-to-free-the-memory-allocated-using-malloc:
+    Node crawl_zaux = GLOB_dom->suc[i];
+    while ((crawl_i = crawl_zaux) != NULL) { // set curr to head, stop if list empty.
+        crawl_zaux = crawl_zaux->next;          // advance head to next element.
+        free(crawl_i);                // delete saved pointer.
+    }
+    free(crawl_zaux); crawl_zaux = NULL;
+*/
+
+//return 1;
+}
+
+// Returns 1 if there is a link from j to i.
+int read (int i, int j)
+{
+    // This should work as reading from an adjacency matrix though slower.
+    if (i==j) {
+        return 0;
+    }
+    
+    int deg = degree[i];
+    for(int k = 0; k < deg; k++)
+    {
+        if (C[i][k] == j) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+double localClustering (int i)
+{
+    int nr_neigh = degree[i];
+    double max_edges_in_G_i = 1.0/2 * nr_neigh * (nr_neigh-1);
+    if (nr_neigh == 0) {
+        return 0;
+    }
+    if (nr_neigh == 1) {
+        return 0;
+    }
+   
+   /* double sum = 0;
+    for (int j = 0; j < NODE_NR; j++) {
+        for (int m = 0; m < NODE_NR; m++) {
+            sum += read(i,j)*read(j,m)*read(m,i);
+        }
+    }
+    return (1.0/2)*sum/max_edges_in_G_i;
+*/
+    double nr_edges = 0;
+    int node_j = -1;
+    int node_k = -1;
+    
+    for(size_t j = 0; j < nr_neigh; j++)
+    {
+        node_j = C[i][j];
+        for(size_t k = 0; k < nr_neigh; k++) {
+            node_k = C[i][k];
+            //printf("node j,k: %d %d\n", node_j, node_k);
+            if ( read(node_j,node_k) ) {
+                nr_edges++;
+                //printf("nr edges: %g\n", nr_edges);
+            }
+        }
+    }
+    nr_edges /= 2.0;
+    nr_edges /= max_edges_in_G_i;
+    //printf("nr_edges: %g", nr_edges);
+
+    return nr_edges;
+
+}
+
+// Average of the local clustering over the whole graph.
+double Clustering ()
+{
+    double sum = 0;
+    for (int i = 0; i < NODE_NR; i++) {
+        sum += localClustering(i);
+    }
+    //printf("sum: %g\n", sum);
+    return sum/NODE_NR;
+}
+
+int random_node_comp (int node)
+{
+    int rnd_idx = (int) ( Random() * GLOB_component_size[node] );
+    //printf("rnd_idx/tot=%d %d\n",rnd_idx,GLOB_component_size[node]);
+    Node crawl = GLOB_dom->suc[GLOB_component_name[node]];
+    int i=0;
+    int counter=0;
+    while(crawl != NULL) {
+        i = crawl->id;
+        if (counter == rnd_idx) {
+            break;
+        }
+        counter++;
+        crawl = crawl->next;
+        //printf("coiunter=%d %d %d %d\n",counter, rnd_idx, i, GLOB_component_size[node] );
+    }
+    if (crawl == NULL) 
+    {
+        // this means for some reason it didn't stop when it should
+        return -1;
+    }
+
+    return i;
 }

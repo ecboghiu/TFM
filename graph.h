@@ -21,14 +21,14 @@
 #endif
 #define EPES
 #ifdef EPES
-    #define EPES_CHARACT "weff"
+    #define EPES_CHARACT "tribe"
 #endif
 
 // Define if you want a histogram of the degrees of the graph
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 100
+#define NODE_NR 500
 #define K_MAX NODE_NR
 #define K_MIN 2
 #define AVG_NUMBER 1
@@ -37,11 +37,18 @@
 //#define PERCOLATION_ON
 #define SYNC_AND_PERC_ON
 #ifdef SYNC_AND_PERC_ON
-    #define EPES_MECH_Pure_perc
+    //#define EPES_MECH_Pure_perc
     //#define EPES_MECH_compare_r
     //#define EPES_MECH_Scale_by_dom_size
     //#define EPES_MECH_weff
+    //#define EPES_MECH_iffs
+    #define EPES_MECH_selfloop
 #endif
+
+
+// only when termalization is undefined, when termalization is
+// defined we make a look going through many sigma values, not one
+#define SIGMA_VAL 0.5
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
@@ -65,14 +72,9 @@
 
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
-#define TERMALIZATION 100
+#define TERMALIZATION 40
 
 //#define EPSILON_OSCILLATOR 1e-3
-
-// only when termalization is undefined, when termalization is
-// defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 0.4
-
 
 // Where we store our connection matrix
 extern int **C;
@@ -97,7 +99,7 @@ extern double *GLOB_omega_nat;
 struct _Node {
         int id;
         struct _Node *next;
-        //struct _Node *next_domain; // ignore this, only useful for percolation
+        struct _Node *next_domain; // ignore this, only useful for percolation
 }; typedef struct _Node *Node;
 
 //struct _Connected {
@@ -118,9 +120,9 @@ int initEXPL_product_rule (double t, double sigma);
 
 void initOmegas     ();
 void initThetas     ();
-
 void init_C         (int ***data_ptr, int dim_x, int dim_y);
 void init_C_memory  (int ***data_ptr, int dim_x, int dim_y);
+void initDom        ();
 void clear_C_memory (int ***data_ptr, int dim_x, int dim_y);
 void initERmodel    (double prob);
 void initScaleFree  ();
@@ -128,6 +130,8 @@ void initScaleFree  ();
 int add_edge        (int i, int j);
 int remove_edge     (int I, int J);
 int exists_edge     (int i, int j);
+void insertNode     (Node *I, int i);
+void removeNode     (Node *I, int j);
 int unique_elements (int arr[], int len);
 
 int  read           (int i, int j); // works like a[i][j] where a is
@@ -138,6 +142,7 @@ void printAdj       ();
 void print_vec      (int **vec, int size);
 int int_max_vector  (int **vector, int size);
 void print_C        ();
+void print_linked_list ();
 void write_C_to_file();
 void saveAdjGephi   (); // writes edges to file in a format usable by Gephi
 int number_of_edges (char* filename);
@@ -158,8 +163,8 @@ int number_of_domains        ();
 void domain_size_array       (int *size_array, int i, int* domain, int *size);
 int domain_of_node_i_size    (int i);
 int max_domain_size          ();
-int join_domains            (int i, int j);
-
+int join_domains             (int i, int j);
+int random_node_comp         (int id_compt);
 // Clustering
 double localClustering  (int i);
 double Clustering       ();

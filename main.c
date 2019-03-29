@@ -10,17 +10,53 @@
 
 #include "graph.h"
 
+// Funcion para imprimir en pantalla la red con el fin de poder debugear mas
+// facilmente. No coge parametros porque usa las variables globales.
+void print_linked_list()
+{
+    Node aux_inside = NULL;
+    printf("\n");
+    for(int i = 0; i < NODE_NR; i++)     
+    {
+        aux_inside = GLOB_dom->suc[i];
+        printf("fila %d [ --", i);
+        while ((aux_inside) != NULL) {
+            printf(" %d -", aux_inside->id);
+            aux_inside = aux_inside->next;
+        }
+        if (aux_inside == NULL) {
+            printf("- NULL -");
+        }
+        printf("- ]");
+        printf("\n");
+    }
+}
+
 int main(int args_number, char* args[])
 {
     printf("Initializing program.\n");
 
-    //ini_ran(time(NULL));  // Seed for the random generator.
-    ini_ran(662323);     // we want predictable results
+    ini_ran(time(NULL));  // Seed for the random generator.
+    //ini_ran(662323);     // we want predictable results
 
     init_C_memory(&C, NODE_NR, K_MAX);
-
+    initDom();
 /*
-    for(size_t i = 0; i < NODE_NR; i++)
+    join_domains(2,3);
+    join_domains(0,3);
+    join_domains(0,3);
+    join_domains(0,2);
+    join_domains(3,0);
+
+    add_edge(2,3);
+    add_edge(3,3);
+    add_edge(2,3);
+    add_edge(0,1);
+    add_edge(0,3);
+
+    print_linked_list();
+
+        for(size_t i = 0; i < NODE_NR; i++)
     {
         printf("comp: %d ||||| ", i);
         Node crawl;
@@ -34,7 +70,7 @@ int main(int args_number, char* args[])
     }
 */
 
-    
+
 
 
     //////////////////////PERCOLATION//////////////////////////////////////////
@@ -334,10 +370,10 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
 /////////////////////////////// EPES /////////////////////////////////////////
 #ifdef SYNC_AND_PERC_ON
 
-    int t_number = 20;
+    int t_number = 100;
     int t_blind  = 0;
     double t_min = 0.0;
-    double t_max = 1.0;
+    double t_max = 1.7;//1.0*(NODE_NR-1)/10;
     double t_inc = (t_max-t_min)/(t_number); // sigma increments
     double t     = t_min;
     double fractional_size_noavg[t_number][AVG_NUMBER];
@@ -356,6 +392,7 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
     edge_fraction = calloc(t_number, sizeof *edge_fraction);
     int aux_int = 0;
     int idx = 0;
+    double clustering = 0;
 
     // For coherece
     double r_med, r_var;
@@ -389,8 +426,8 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
     #endif
     
     char filename2[128] = "aa";
-    snprintf(filename2, sizeof(char) * 128, "EPES_sigmaVSr_file_N=%d_%s.txt", 
-                                                NODE_NR, EPES_CHARACT);
+    snprintf(filename2, sizeof(char) * 128, "EPES_N=%d_%s_sig=%g.txt", 
+                                        NODE_NR, EPES_CHARACT, SIGMA_VAL);
 
     FILE *f_out2 = fopen(filename2,"w");
     if (f_out2 == NULL) {
@@ -460,9 +497,11 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
             //printf("max comp: %d \n", aux_int);
             fractional_size_noavg[idx][avg_idx] = ((double)aux_int)/NODE_NR;
         
+            //clustering = Clustering();
+            clustering=0;
             med_var(r_coh, nr_measurements, &r_med, &r_var);
-            fprintf(f_out2, "%g %g %g %g \n", 
-            t, fractional_size_noavg[idx][avg_idx], r_med, sqrt(r_var));
+            fprintf(f_out2, "%g %g %g %g %g\n", 
+    t, fractional_size_noavg[idx][avg_idx], r_med, sqrt(r_var), clustering);
     //printf("One loop finished! \t sigma=%g \t <r>=%g \t sigma_<r>=%g \n",
             //            sigma, r_med, sqrt(r_var));
 
@@ -471,22 +510,30 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
             //printf("Glob_nr_edges= %d\n", GLOB_nr_edges);
             //printf("component name unique elements: %d\n",
             //                unique_elements(GLOB_component_name, NODE_NR));
-printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g\n",
+printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust=%g\n",
                                             GLOB_nr_edges, NODE_NR,
                                             GLOB_max_component_size,
                                             (GLOB_unique_elements_in_network),
                                             r_med,
-                                            sqrt(r_var));
+                                            sqrt(r_var),
+                                            clustering);
                         
 
 
             edge_fraction[idx] = t;
             idx++;
-
+            
         }
         printf("avgnr= %d\n", avg_idx);
     }
     
+
+    ////////////////////////////
+
+
+                        
+    
+    ///////////////////////////
     fclose(f_out2);     f_out2 = NULL;
     #ifndef TERMALIZATION
     fclose(theta_file); theta_file = NULL ;
@@ -500,7 +547,7 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g\n",
         for(size_t j = 0; j < AVG_NUMBER; j++) {
             aux_array[j] = fractional_size_noavg[idx][j];
         }
-        med_var(aux_array, AVG_NUMBER, &(fractional_size[idx]),
+        med_var(aux_array, AVG_NUMBER,  &(fractional_size[idx]),
                                         &(fractional_size_sigma[idx]));
         idx++;
     }

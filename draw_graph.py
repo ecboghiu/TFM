@@ -9,9 +9,8 @@ import seaborn as sns
 sns.set()
 #sns.set_context('talk')
 sns.set_context("notebook", font_scale=1.1, rc={"lines.linewidth": 1.5})
+
 import networkx as nx
-
-
 
 #from matplotlib import rcParams
 #rcParams.update({'figure.autolayout': True})
@@ -93,7 +92,7 @@ average = average/norm
 print("average=",average)
 
 fig, ax = plt.subplots()
-plt.plot(np.array(deg), np.array(cnt), color='b')#, width=0.80, color='b')
+plt.bar(np.array(deg), np.array(cnt), color='b')#, width=0.80, color='b')
 #plt.plot(np.array(deg),
 #         NORMALIZING_FACTOR * np.array(deg)**(-GAMMA),
 #   label = 'teor', color = tableau20[1])

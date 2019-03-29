@@ -6,13 +6,14 @@ int initEXPL_product_rule (double t, double sigma)
     tot_nr_edges =  (int) (t* ((double)NODE_NR));
     //printf("tot_nr_edges=%d\n", tot_nr_edges);
     
-    //int nr_edges = 0;
     int rnd1, rnd2, rnd3, rnd4;
     double size1, size2, size3, size4;
     size1 = size2 = size3 = size4 = 0;
     rnd1 = rnd2 = rnd3 = rnd4 = 0;
     int bool_res = 0; // 0 false, 1 true
     int name_aux1, name_aux2, name_aux3;
+    name_aux1 = name_aux2 = name_aux3 = 0;
+    double w = 0;
 
 
     
@@ -26,10 +27,10 @@ int initEXPL_product_rule (double t, double sigma)
     }
     
     //printf("unique components: %d\n", GLOB_unique_components);
-    if (GLOB_unique_components == 1) {
-        return 0;
-    } 
-    
+  //  if (GLOB_unique_components == 1) {
+  //      return 0;
+  //  } 
+    /*  
     if (GLOB_unique_components == 2) {
         rnd1 = (int)(Random()*NODE_NR);
         rnd2 = 0;
@@ -45,7 +46,9 @@ int initEXPL_product_rule (double t, double sigma)
         add_edge(rnd1,rnd2);
         GLOB_nr_edges++;
         return 1;
-    } 
+    }
+    */
+    
     /*
     if (GLOB_unique_components == 3) {
         rnd1 = (int)(Random()*NODE_NR);
@@ -122,12 +125,30 @@ int initEXPL_product_rule (double t, double sigma)
         size2 = (double) GLOB_component_size[rnd2];
         size3 = (double) GLOB_component_size[rnd3];
         size4 = (double) GLOB_component_size[rnd4];
+        bool_res = 0;
+        if (size1*size2 >= size3*size4) 
+        {
+            bool_res = add_edge(rnd3,rnd4);
+        } 
+        else 
+        {
+            bool_res = add_edge(rnd1,rnd2);
+        }
 #endif
 #ifdef EPES_MECH_compare_r
         size1 = phase_coherence_compt(GLOB_component_name[rnd1]);
         size2 = phase_coherence_compt(GLOB_component_name[rnd2]);
         size3 = phase_coherence_compt(GLOB_component_name[rnd3]);
         size4 = phase_coherence_compt(GLOB_component_name[rnd4]);
+        bool_res = 0;
+        if (size1*size2 >= size3*size4) 
+        {
+            bool_res = add_edge(rnd3,rnd4);
+        } 
+        else 
+        {
+            bool_res = add_edge(rnd1,rnd2);
+        }
 #endif
 #ifdef EPES_MECH_Scale_by_dom_size
         size1 = phase_coherence_compt(GLOB_component_name[rnd1]);
@@ -138,6 +159,15 @@ int initEXPL_product_rule (double t, double sigma)
         size2 /= GLOB_component_size[rnd2];
         size3 /= GLOB_component_size[rnd3];
         size4 /= GLOB_component_size[rnd4];
+        bool_res = 0;
+        if (size1*size2 >= size3*size4) 
+        {
+            bool_res = add_edge(rnd3,rnd4);
+        } 
+        else 
+        {
+            bool_res = add_edge(rnd1,rnd2);
+        }
 #endif
 #ifdef EPES_MECH_weff
         size1 = weff_compt(GLOB_component_name[rnd1], 0, sigma);
@@ -148,17 +178,163 @@ int initEXPL_product_rule (double t, double sigma)
         size2 *= GLOB_component_size[rnd2];
         size3 *= GLOB_component_size[rnd3];
         size4 *= GLOB_component_size[rnd4];
-#endif
-
         bool_res = 0;
-        if (size1*size2 >= size3*size4) {
+        if (size1*size2 >= size3*size4) 
+        {
             bool_res = add_edge(rnd3,rnd4);
-        } else {
+        } 
+        else 
+        {
             bool_res = add_edge(rnd1,rnd2);
         }
-        
+#endif
+#ifdef EPES_MECH_iffs
+        bool_res = 0;
+        if (GLOB_component_name[rnd1] == GLOB_component_name[rnd2]) 
+        {
+            if (GLOB_component_name[rnd3] == GLOB_component_name[rnd4]) 
+            {
+                if (GLOB_component_size[rnd1] >= GLOB_component_size[rnd3] ) 
+                {
+                    bool_res = add_edge(rnd3,rnd4);
+                } 
+                else
+                {
+                    bool_res = add_edge(rnd1,rnd2);
+                }
+            }
+            else
+            {
+                bool_res = add_edge(rnd1,rnd2);
+            }
+        }
+        else
+        {
+            if (GLOB_component_name[rnd3] == GLOB_component_name[rnd4]) 
+            {
+                bool_res = add_edge(rnd3,rnd4);
+            }
+            else
+            {
+                size1 = (double) GLOB_component_size[rnd1];
+                size2 = (double) GLOB_component_size[rnd2];
+                size3 = (double) GLOB_component_size[rnd3];
+                size4 = (double) GLOB_component_size[rnd4];
+                if (size1*size2 >= size3*size4) 
+                {
+                    bool_res = add_edge(rnd3,rnd4);
+                } 
+                else 
+                {
+                    bool_res = add_edge(rnd1,rnd2);
+                }
+            }
+        }
+#endif
+#ifdef EPES_MECH_selfloop
+        rnd1 = (int)(Random()*NODE_NR);
+        int rnd1_size = GLOB_component_size[rnd1];
+        if ( (rnd1_size!=1 && rnd1_size!=2) && rnd1_size!=3 )
+        {
+            // the clustering condition is s.t. there exists teh possibility
+            // of adding a node to the component, though the probability of
+            // this not being the case is quite low for high enough 
+            // clusters
+            //if (localClustering(rnd1) < 1) 
+            {
+w = Random();
+if (w > 4*GLOB_max_component_size/((double)NODE_NR)) 
+{
+    // we dont go outside our domain if this condition holds
+    // we choose a random node within the domain and connect with it
+    rnd2 = random_node_comp(rnd1);//GLOB_component_name[rnd1]);
+    if (rnd2 < 0) {
+        printf("error: returns negative node\n");
+        exit(12);
+    }
+    int count_aux=0;
+    while ( exists_edge(rnd1,rnd2) )
+    {
+        rnd2 = random_node_comp(rnd1);
+        if (rnd2 < 0) {
+            printf("error: returns negative node\n");
+            exit(12);
+        }
+        count_aux++;
+        if (count_aux > rnd1_size) {
+            break;
+        }
+    }
+    bool_res = add_edge(rnd1,rnd2);
+}
+else
+{
+    rnd2 = (int)(Random()*NODE_NR);
+    name_aux1 = GLOB_component_name[rnd1];
+    //while (GLOB_component_name[rnd2] == name_aux1) 
+    {
+        rnd2 = (int)(Random()*NODE_NR);
+    } // now we have two nodes from different domains
+    //printf("rnds1: %d, %d, %d \n", rnd1, rnd2, rnd3);
+    rnd3 = (int)(Random()*NODE_NR);
+    name_aux2 = GLOB_component_name[rnd2];
+    //while ( (GLOB_component_name[rnd3] == name_aux1) ||
+    //        (GLOB_component_name[rnd3] == name_aux2)    ) 
+    {
+        rnd3 = (int)(Random()*NODE_NR);
+    }
+    //printf("rnds2: %d, %d, %d \n", rnd1, rnd2, rnd3);
+    rnd4 = (int)(Random()*NODE_NR);
+    name_aux3 = GLOB_component_name[rnd3];
+    //while (GLOB_component_name[rnd4] == name_aux3) 
+    {
+        rnd4 = (int)(Random()*NODE_NR);
+    }
+    size1 = (double) GLOB_component_size[rnd1];
+    size2 = (double) GLOB_component_size[rnd2];
+    size3 = (double) GLOB_component_size[rnd3];
+    size4 = (double) GLOB_component_size[rnd4];
+    bool_res = 0;
+    if (size1*size2 >= size3*size4) 
+    {
+        bool_res = add_edge(rnd3,rnd4);
+    } 
+    else 
+    {
+        bool_res = add_edge(rnd1,rnd2);
+    }
+}
+            } // clustering if
+        } // component size if
+        else
+        {
+            size1 = (double) GLOB_component_size[rnd1];
+            size2 = (double) GLOB_component_size[rnd2];
+            size3 = (double) GLOB_component_size[rnd3];
+            size4 = (double) GLOB_component_size[rnd4];
+            bool_res = 0;
+            if (size1*size2 >= size3*size4) 
+            {
+                bool_res = add_edge(rnd3,rnd4);
+            } 
+            else 
+            {
+                bool_res = add_edge(rnd1,rnd2);
+            }
+        } // end size if
+#endif
+
+
+
+
+
         if (bool_res == 1) { // this means an edge has been added
             GLOB_nr_edges++;
+
+            //for (int i = 0; i < NODE_NR; i++) {
+            //    GLOB_omega_nat[i] = (double) degree[i];//(double)GLOB_component_size[i];
+            //            //0.5*(-1 + 2*Random());//sampleNormal();
+            //}
         }
 
 /*

@@ -117,7 +117,6 @@ double weff_compt (int id_compt, double t, double sigma)
         crawl = crawl->next;
     }
     weff /= GLOB_dom_size[id_compt];
-    free(crawl); crawl = NULL;
 
     return weff;
 
@@ -130,14 +129,14 @@ double phase_coherence_compt (int id_compt)
     Node crawl = GLOB_dom->suc[id_compt];
     double rx, ry;
     rx = ry = 0;
+    printf("node list: ");
     while(crawl != NULL) {
         i = crawl->id;
         rx += cos(GLOB_theta[i]);
         ry += sin(GLOB_theta[i]);
-        
+        printf("%d", i);
         crawl = crawl->next;
-    }
-    free(crawl); crawl = NULL;
+    } printf("\n");
 
     rx/=GLOB_dom_size[id_compt];
     ry/=GLOB_dom_size[id_compt];
@@ -159,7 +158,6 @@ double psi_coherence_compt (int id_compt)
         
         crawl = crawl->next;
     }
-    free(crawl); crawl = NULL;
 
     return atan2(Nry,Nrx);
 }

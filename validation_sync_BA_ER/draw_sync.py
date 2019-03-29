@@ -62,7 +62,7 @@ for i in range(0,nr_plots):
             )
 
 
-plt.legend(loc="lower right").set_draggable(True)
+plt.legend(loc="upper left").set_draggable(True)
 #plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 # Formating:

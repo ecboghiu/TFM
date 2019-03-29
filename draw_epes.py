@@ -24,10 +24,21 @@ for i in range(len(tableau20)):
 plot_data, labels, colors = [], [], []
 
 #filename = r"trampa_EPES_sigmaVSr_file_N=10000_weff.txt"
-filename = r"EPES_sigmaVSr_file_N=1000_weff.txt"
+filename = r"EPES_if_N=10000_weff_sig=3.txt"
 plot_data.append(genfromtxt(filename,  skip_header=2))
 labels.append(['r_'+filename,'p_'+filename])
-colors.append([tableau20[0],tableau20[2]])
+colors.append([tableau20[0],tableau20[0],tableau20[0]])
+
+filename = r"EPES_N=10000_weff_sig=3.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['r_'+filename,'p_'+filename])
+colors.append([tableau20[2],tableau20[2],tableau20[2]])
+'''
+filename = r"EPES_N=1000_weff_sig=8.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['r_'+filename,'p_'+filename])
+colors.append([tableau20[4],tableau20[4],tableau20[4]])
+'''
 
 fig = plt.figure()
 
@@ -35,7 +46,9 @@ for i in range(0,len(plot_data)):
     plt.errorbar((plot_data[i][:,0]), plot_data[i][:,2], plot_data[i][:,3],
                 label = labels[i][0], color = colors[i][0])
     plt.plot((    plot_data[i][:,0]), plot_data[i][:,1],
-                label = labels[i][1], color = colors[i][1]) 
+                label = labels[i][1], color = colors[i][1])
+    plt.plot((    plot_data[i][:,0]), 10*plot_data[i][:,4],
+                label = labels[i][1], color = colors[i][2])
 
 plt.legend().set_draggable('True')
 
