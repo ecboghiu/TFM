@@ -10,34 +10,12 @@
 
 #include "graph.h"
 
-// Funcion para imprimir en pantalla la red con el fin de poder debugear mas
-// facilmente. No coge parametros porque usa las variables globales.
-void print_linked_list()
-{
-    Node aux_inside = NULL;
-    printf("\n");
-    for(int i = 0; i < NODE_NR; i++)     
-    {
-        aux_inside = GLOB_dom->suc[i];
-        printf("fila %d [ --", i);
-        while ((aux_inside) != NULL) {
-            printf(" %d -", aux_inside->id);
-            aux_inside = aux_inside->next;
-        }
-        if (aux_inside == NULL) {
-            printf("- NULL -");
-        }
-        printf("- ]");
-        printf("\n");
-    }
-}
-
 int main(int args_number, char* args[])
 {
     printf("Initializing program.\n");
 
-    ini_ran(time(NULL));  // Seed for the random generator.
-    //ini_ran(662323);     // we want predictable results
+    //ini_ran(time(NULL));  // Seed for the random generator.
+    ini_ran(662323);     // we want predictable results
 
     init_C_memory(&C, NODE_NR, K_MAX);
     initDom();
@@ -371,8 +349,8 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
 #ifdef SYNC_AND_PERC_ON
     int t_blind  = 0;
     double t_min = 0.0;
-    double t_max = 3;//1.0*(NODE_NR-1)/2;
-    int t_number = 50;//t_max*NODE_NR;//10*(NODE_NR-1)/2.0;
+    double t_max = 3.0;//1.0*(NODE_NR-1)/2;
+    int t_number = 20;//t_max*NODE_NR;//10*(NODE_NR-1)/2.0;
     double t_inc = (t_max-t_min)/(t_number); // sigma increments
     double t     = t_min;
     double fractional_size_noavg[t_number][AVG_NUMBER];
@@ -454,9 +432,9 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
             //init_C(&C, NODE_NR, K_MAX);
             initEXPL_product_rule(t, sigma);  
 
-            //for(int i = 0; i < NODE_NR; i++) {
-            //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
-            //}
+            for(int i = 0; i < NODE_NR; i++) {
+                GLOB_theta[i] = M_PI*(-1 + Random()*2);
+            }
             //for (int i = 0; i < NODE_NR; i++) {
             //    GLOB_omega_nat[i] = (double) degree[i];//(double)GLOB_component_size[i];
             //            //0.5*(-1 + 2*Random());//sampleNormal();

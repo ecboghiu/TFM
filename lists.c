@@ -63,3 +63,25 @@ void shuffle(int *array, size_t n)
         }
     }
 }
+
+// Funcion para imprimir en pantalla la red con el fin de poder debugear mas
+// facilmente. No coge parametros porque usa las variables globales.
+void print_linked_list()
+{
+    Node aux_inside = NULL;
+    printf("\n");
+    for(int i = 0; i < NODE_NR; i++)     
+    {
+        aux_inside = GLOB_dom->suc[i];
+        printf("fila %d [ --", i);
+        while ((aux_inside) != NULL) {
+            printf(" %d -", aux_inside->id);
+            aux_inside = aux_inside->next;
+        }
+        if (aux_inside == NULL) {
+            printf("- NULL -");
+        }
+        printf("- ]");
+        printf("\n");
+    }
+}

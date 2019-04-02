@@ -243,23 +243,15 @@ int initEXPL_product_rule (double t, double sigma)
             //if (localClustering(rnd1) < 1) 
             {
 w = Random();
-if (w > 5*GLOB_max_component_size/((double)NODE_NR)) 
+if (w > 10*GLOB_max_component_size/((double)NODE_NR)) 
 {
     // we dont go outside our domain if this condition holds
     // we choose a random node within the domain and connect with it
     rnd2 = random_node_comp(rnd1);//GLOB_component_name[rnd1]);
-    if (rnd2 < 0) {
-        printf("error: returns negative node\n");
-        exit(12);
-    }
     int count_aux=0;
     while ( exists_edge(rnd1,rnd2) )
     {
         rnd2 = random_node_comp(rnd1);
-        if (rnd2 < 0) {
-            printf("error: returns negative node\n");
-            exit(12);
-        }
         count_aux++;
         if (count_aux > rnd1_size) {
             break;

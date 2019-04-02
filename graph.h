@@ -14,10 +14,10 @@
 //#define ERDOS_RENYI
 #define ERDOS_RENYI_prob 0.0
 //#define SCALE_FREE
-//#define READ_NETWORK_FROM_FILE
+#define READ_NETWORK_FROM_FILE
 #ifdef READ_NETWORK_FROM_FILE
-    #define NET_TYPE "BA"
-    #define NET_CHARACT 3.0
+    #define NET_TYPE "growth"
+    #define NET_CHARACT 0.0
 #endif
 #define EPES
 #ifdef EPES
@@ -40,15 +40,15 @@
     //#define EPES_MECH_Pure_perc
     //#define EPES_MECH_compare_r
     //#define EPES_MECH_Scale_by_dom_size
-    //#define EPES_MECH_weff
+    #define EPES_MECH_weff
     //#define EPES_MECH_iffs
-    #define EPES_MECH_selfloop
+    //#define EPES_MECH_selfloop
 #endif
 
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 4.0
+#define SIGMA_VAL 2.0
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
@@ -61,18 +61,18 @@
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1e-2
+#define DELTA_T 1e-1
 // How many times we measure.
-#define MAX_STEPS 2000
+#define MAX_STEPS 1000
 // Number of updates in between measures.
-#define IN_BETWEEN 10
-#define SIGMA_MIN 1.2
-#define SIGMA_MAX 1.5
-#define NR_SIGMA 2
+#define IN_BETWEEN 0
+#define SIGMA_MIN 0
+#define SIGMA_MAX 100
+#define NR_SIGMA 10
 
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
-#define TERMALIZATION 10
+#define TERMALIZATION 50
 
 //#define EPSILON_OSCILLATOR 1e-3
 
@@ -133,6 +133,7 @@ int exists_edge     (int i, int j);
 void insertNode     (Node *I, int i);
 void removeNode     (Node *I, int j);
 int unique_elements (int arr[], int len);
+int delta_kron      (int i, int j);
 
 int  read           (int i, int j); // works like a[i][j] where a is
                                     // adjacency matris

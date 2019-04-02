@@ -120,3 +120,13 @@ void Histogram (int *data, double *Hist, int N_data, int N_Intervalos,
     printf("%s\n", "Histogram calculated.");
     #endif
 }
+
+int delta_kron (int i, int j)
+{
+    if (i==j) {
+        return 1;
+    } else
+    {
+        return 0;
+    }
+}
