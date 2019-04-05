@@ -18,7 +18,9 @@ void initOmegas()
     GLOB_omega_nat = malloc(NODE_NR*sizeof(*GLOB_omega_nat));
     for (int i = 0; i < NODE_NR; i++) 
     {
-        GLOB_omega_nat[i] = sampleNormal();//(double)degree[i];//0.5*(-1 + 2*Random());//
+        //GLOB_omega_nat[i] = sampleNormal();//(double)degree[i];//0.5*(-1 + 2*Random());//
+        GLOB_omega_nat[i] = M_PI*(-1 + 2*Random());
+        //GLOB_omega_nat[i] = (double)degree[i];
     }
 }
 
@@ -129,14 +131,14 @@ double phase_coherence_compt (int id_compt)
     Node crawl = GLOB_dom->suc[id_compt];
     double rx, ry;
     rx = ry = 0;
-    printf("node list: ");
+    //printf("node list: ");
     while(crawl != NULL) {
         i = crawl->id;
         rx += cos(GLOB_theta[i]);
         ry += sin(GLOB_theta[i]);
-        printf("%d", i);
+        //printf("%d ", i);
         crawl = crawl->next;
-    } printf("\n");
+    } //printf("\n");
 
     rx/=GLOB_dom_size[id_compt];
     ry/=GLOB_dom_size[id_compt];
@@ -177,19 +179,20 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     #endif
 
     double coupling = 0;
-    double weight = 0;
+    double weight = 1.0;
+    /*
     if (degree[i] == 0) 
     {
         weight = 1.0;
     } 
     else
     {
-        weight = 1.0 *1.0/pow(degree[i],1);
+        weight = 1.0 *1.0/pow(degree[i],0);
     }
-    
+    */
     
     for(int j = 0; j < degree[i]; j++) {
-        coupling = sigma * weight; //* degree[j];
+        coupling = sigma * weight;
         sum += coupling * sin( phases[ C[i][j] ] - phases[i] );
     }
     

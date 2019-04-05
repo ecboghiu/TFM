@@ -14,8 +14,8 @@ int main(int args_number, char* args[])
 {
     printf("Initializing program.\n");
 
-    //ini_ran(time(NULL));  // Seed for the random generator.
-    ini_ran(662323);     // we want predictable results
+    ini_ran(time(NULL));  // Seed for the random generator.
+    //ini_ran(662323);     // we want predictable results
 
     init_C_memory(&C, NODE_NR, K_MAX);
     initDom();
@@ -45,6 +45,14 @@ int main(int args_number, char* args[])
         }
         printf("size: %d\n", (int)GLOB_dom_size[i]);
         
+    }
+
+        int m=3;
+    int *nodes = calloc(m, sizeof *nodes);
+    generate_node_BA(m, nodes);
+    printf("generated nodes:\n");
+    for(int i = 0; i < m; i++) {
+        printf("%d", nodes[i]);
     }
 */
 
@@ -178,6 +186,10 @@ int main(int args_number, char* args[])
     init_C(&C, NODE_NR, K_MAX);
     read_edgelist_file_py ("nx_edgelist.txt");
     #endif
+    #ifdef BARABASI_ALBERT
+    init_BA(BA_PARAM_M, NODE_NR);
+    printf("Finished initializing BA network.\n");
+    #endif
     double deg_med, deg_var;
     deg_med = deg_var = 0;
     double *deg_aux;
@@ -237,22 +249,25 @@ int main(int args_number, char* args[])
     }
     //#endif
 
+    char filename2[128];
     // this is for a varying filename
     #ifdef ERDOS_RENYI
-    char filename2[128] = "SF_sigmaVSr.txt";
 snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_ER_N=%d_p=%g.txt", 
                                                 NODE_NR, ERDOS_RENYI_prob);
     #endif
     #ifdef SCALE_FREE
-    char filename2[128] = "SF_sigmaVSr.txt";
 snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_SF_N=%d_gamma=%g.txt", 
                                                 NODE_NR, GAMMA);
     #endif
     #ifdef READ_NETWORK_FROM_FILE
-    char filename2[128] = "aa";
 snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt", 
                                             NODE_NR, NET_TYPE, NET_CHARACT);
     #endif
+    #ifdef BARABASI_ALBERT
+snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_file_N=%d_m=%d.txt", 
+                                            NODE_NR, BA_PARAM_M);
+    #endif
+
 
     FILE *f_out2 = fopen(filename2,"w");
     if (f_out2 == NULL) {
@@ -294,9 +309,9 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
     for ( sigma = sigma_min; sigma < sigma_max; sigma += sigma_inc)
     #endif
     {
-        //for(int i = 0; i < NODE_NR; i++) {
-        //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
-        //}
+        for(int i = 0; i < NODE_NR; i++) {
+            GLOB_theta[i] = M_PI*(-1 + Random()*2);
+        }
         
 
         #ifdef TERMALIZATION // we wait for r to stabilize
@@ -340,7 +355,7 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
     fclose(theta_file); theta_file = NULL ;
     #endif
 
-    free(r_coh);        r_coh = NULL;
+    free(r_coh); r_coh = NULL;
     free(GLOB_theta); GLOB_theta = NULL;
     free(GLOB_omega_nat); GLOB_omega_nat = NULL;
 #endif //end if OSCILLATOR_ON
@@ -348,9 +363,9 @@ snprintf(filename2, sizeof(char) * 128, "ES_sigmaVSr_file_N=%d_%s_%g.txt",
 /////////////////////////////// EPES /////////////////////////////////////////
 #ifdef SYNC_AND_PERC_ON
     int t_blind  = 0;
-    double t_min = 0.0;
+    double t_min = 1.0;
     double t_max = 3.0;//1.0*(NODE_NR-1)/2;
-    int t_number = 20;//t_max*NODE_NR;//10*(NODE_NR-1)/2.0;
+    int t_number = 10;//t_max*NODE_NR;//10*(NODE_NR-1)/2.0;
     double t_inc = (t_max-t_min)/(t_number); // sigma increments
     double t     = t_min;
     double fractional_size_noavg[t_number][AVG_NUMBER];
@@ -584,7 +599,7 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust
     free(GLOB_component_name); GLOB_component_name = NULL;
     free(GLOB_component_size); GLOB_component_size = NULL;
 
-    clear_C_memory(&C, NODE_NR, K_MAX);
+    //clear_C_memory(&C, NODE_NR, K_MAX);
 
     printf("\nYou've reached the end without dying! ;-)\n");
     return 0;

@@ -12,12 +12,16 @@
 /*******CONTROL: type of graph*******/
 //#define SMALL_WORLD
 //#define ERDOS_RENYI
-#define ERDOS_RENYI_prob 0.0
+#define ERDOS_RENYI_prob 0.006
 //#define SCALE_FREE
-#define READ_NETWORK_FROM_FILE
+//#define READ_NETWORK_FROM_FILE
 #ifdef READ_NETWORK_FROM_FILE
     #define NET_TYPE "growth"
     #define NET_CHARACT 0.0
+#endif
+#define BARABASI_ALBERT
+#ifdef BARABASI_ALBERT
+    #define BA_PARAM_M 3
 #endif
 #define EPES
 #ifdef EPES
@@ -28,27 +32,27 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 10000
-#define K_MAX NODE_NR
+#define NODE_NR 1000
+#define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
 
-//#define OSCILLATOR_ON
+#define OSCILLATOR_ON
 //#define PERCOLATION_ON
-#define SYNC_AND_PERC_ON
+//#define SYNC_AND_PERC_ON
 #ifdef SYNC_AND_PERC_ON
     //#define EPES_MECH_Pure_perc
     //#define EPES_MECH_compare_r
     //#define EPES_MECH_Scale_by_dom_size
-    #define EPES_MECH_weff
+    //#define EPES_MECH_weff
     //#define EPES_MECH_iffs
-    //#define EPES_MECH_selfloop
+    #define EPES_MECH_selfloop
 #endif
 
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 2.0
+#define SIGMA_VAL 1.0
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
@@ -67,7 +71,7 @@
 // Number of updates in between measures.
 #define IN_BETWEEN 0
 #define SIGMA_MIN 0
-#define SIGMA_MAX 100
+#define SIGMA_MAX 0.2
 #define NR_SIGMA 10
 
 // If its not defined we dont wait to termalize
@@ -174,6 +178,7 @@ double Clustering       ();
 double Random           (); // Random number in [0,1).
 void   ini_ran          (int SEMILLA); // initializes the generator
 int    generateDegree   (int m, double gamma);
+int generate_node_BA    (int m, int* nodes);
 double sampleNormal     (); // copied from http://stackoverflow.com/a/10645091
 
 // Statistics functions.

@@ -419,6 +419,37 @@ void initScaleFree ()
 }
 
 
+/*
+This function genereated a Barabasi Albert network.
+We assume that N is greater than 2.
+*/
+void init_BA (int m, int N)
+{
+    if (N<2) {
+        printf("warning: N<2 in Ba algorithm\n");
+        exit(45);
+    }
+
+    if (m>N || m<1) {
+        printf("warning: m in Ba algorithm wrong\n");
+        exit(45);
+    }
+    
+
+    add_edge(0,1); // We need to start with some edges
+
+    int *ba_nodes = calloc(m, sizeof *ba_nodes);
+    for(int node_id = 2; node_id < N; node_id++)
+    {
+        generate_node_BA(m, ba_nodes);
+        for(int i = 0; i < m; i++) {
+            add_edge(node_id, ba_nodes[i]);
+        }
+        
+    }
+    free(ba_nodes); ba_nodes = NULL;
+}
+
 // This saves an edges table suitable for the open source program
 // called Gephi.
 void saveAdjGephi (int C[][K_MAX])

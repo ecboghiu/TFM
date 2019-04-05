@@ -35,7 +35,7 @@ for i in range(len(tableau20)):
     tableau20[i] = (r / 255., g / 255., b / 255.) 
 
 NODE_NR = 1000
-GAMMA = 1.69285028
+GAMMA = 3.0
 K_MIN = 2
 K_MAX = NODE_NR
 
@@ -97,8 +97,8 @@ plt.bar(np.array(deg), np.array(cnt), color='b')#, width=0.80, color='b')
 #         NORMALIZING_FACTOR * np.array(deg)**(-GAMMA),
 #   label = 'teor', color = tableau20[1])
     
-#plt.yscale('log')
-#plt.xscale('log')
+plt.yscale('log')
+plt.xscale('log')
 
 plt.title("Degree Histogram")
 plt.ylabel("Count")

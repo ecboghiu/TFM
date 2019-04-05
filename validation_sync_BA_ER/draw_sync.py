@@ -46,8 +46,10 @@ filename = "sync_sigmaVSr_file_N=1000_BA_3.txt"
 plot_data.append(genfromtxt(filename, skip_header=3))
 labels.append(filename)
 colors.append(tableau20[2])
+
+
 filename = "sync_sigmaVSr_file_N=1000_ER_0.006.txt"
-plot_data.append(genfromtxt(filename, skip_header=3))
+plot_data.append(genfromtxt(filename, skip_header=2))
 labels.append(filename)
 colors.append(tableau20[0])
 

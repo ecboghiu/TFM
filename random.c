@@ -134,3 +134,56 @@ int generateDegree (int m, double gamma)
     return k;
 }
 
+
+// Returns a  to which to connect to proportionally to the degree
+// WARNING: nodes must be length m, have it initialized to -1
+int generate_node_BA (int m, int* nodes)
+{
+    int counter = 0;
+    double w = 0;
+    double sum = 0;
+    double sum_norm = 0;
+
+    for(int i = 0; i < m; i++) {
+        nodes[i] = -1;
+    }
+    
+    double *tags = calloc(NODE_NR, sizeof *tags);
+    for(int i = 0; i < NODE_NR; i++) {
+        tags[i] = degree[i];
+    }
+
+    for(int m_idx = 0; m_idx < m; m_idx++)
+    {
+        w = Random();
+
+        sum_norm = 0;
+        for(int i_idx = 0; i_idx < NODE_NR; i_idx++) {
+            sum_norm += tags[i_idx];
+        }
+
+        counter = 0;
+        sum = (double)tags[counter];
+        while(sum < w*sum_norm){
+            counter++;
+            sum += (double)tags[counter];
+        }
+        //printf("sum: %lf counter: %d sum_norm: %d\n", sum, counter, sum_norm);
+
+        nodes[m_idx] = counter;
+        tags[counter] = 0;
+    }
+
+    for(int i = 0; i < m; i++)
+    {
+        if (nodes[i]<0 || nodes[i]>NODE_NR) {
+            printf("error: something went wrong with BA node generator\n");
+            exit(12);
+        }
+        
+    }
+    
+    
+    free(tags); tags = NULL;
+}
+

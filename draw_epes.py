@@ -25,7 +25,10 @@ plot_data, labels, colors = [], [], []
 
 #filename="ES_sigmaVSr_file_N=1000_growth_0.txt"
 #filename = r"trampa_EPES_sigmaVSr_file_N=10000_weff.txt"
-filename = r"EPES_N=1000_tribe_sig=2.txt"
+filename = r"pres_EPES_N=1000_selfloop_sig=1.txt"
+#filename = r"pres_EPES_N=1000_comparer_sig=1.txt"
+#filename = r"pres_EPES_N=1000_weff_sig=1.txt"
+
 plot_data.append(genfromtxt(filename,  skip_header=2))
 labels.append(['r_'+filename,'p_'+filename])
 colors.append([tableau20[0],tableau20[0],tableau20[0]])
