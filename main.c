@@ -1,6 +1,4 @@
 /*
-***Model of complex network synchronization
-***Prácticas BIFI Julio 2016
 ***Emanuel Cr. Boghiu
 ***embogh@gmail.com
 */
