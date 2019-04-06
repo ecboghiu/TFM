@@ -33,14 +33,14 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 1000
+#define NODE_NR 500
 #define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
 
-#define OSCILLATOR_ON
+//#define OSCILLATOR_ON
 //#define PERCOLATION_ON
-//#define SYNC_AND_PERC_ON
+#define SYNC_AND_PERC_ON
 #ifdef SYNC_AND_PERC_ON
     //#define EPES_MECH_Pure_perc
     //#define EPES_MECH_compare_r
@@ -123,21 +123,28 @@ void update_RK      (double t, double sigma, double h);
 
 int initEXPL_product_rule (double t, double sigma);
 
+
+void oscillator_on  ();
+void percolation_on ();
+void epes_on        ();
+
+// initializing various things
 void initOmegas     ();
 void initThetas     ();
 void init_C         (int ***data_ptr, int dim_x, int dim_y);
 void init_C_memory  (int ***data_ptr, int dim_x, int dim_y);
 void initDom        ();
 void clear_C_memory (int ***data_ptr, int dim_x, int dim_y);
+
 void initERmodel    (double prob);
 void initScaleFree  ();
+void init_BA        (int m, int N);
 
 int add_edge        (int i, int j);
 int remove_edge     (int I, int J);
 int exists_edge     (int i, int j);
 void insertNode     (Node *I, int i);
 void removeNode     (Node *I, int j);
-int unique_elements (int arr[], int len);
 int delta_kron      (int i, int j);
 
 int  read           (int i, int j); // works like a[i][j] where a is
@@ -151,10 +158,10 @@ void print_C        ();
 void print_linked_list ();
 void write_C_to_file();
 void saveAdjGephi   (); // writes edges to file in a format usable by Gephi
-int number_of_edges (char* filename);
 void read_edgelist_file_py (char* filename);
 
-// Graph observables, measurables.
+
+// Graph observables, measurables for debugging and other
 void   calculateDegree       (); // calculates array with degrees of all nodes
 double calculateTheta_dot_i  (double t, double *phases, int phases_len,
                                 double sigma, int i);
@@ -171,6 +178,8 @@ int domain_of_node_i_size    (int i);
 int max_domain_size          ();
 int join_domains             (int i, int j);
 int random_node_comp         (int id_compt);
+int number_of_edges          (char* filename);
+int unique_elements          (int arr[], int len);
 // Clustering
 double localClustering  (int i);
 double Clustering       ();

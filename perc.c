@@ -120,7 +120,7 @@ int initEXPL_product_rule (double t, double sigma)
         //printf("rnds3: %d, %d, %d \n", rnd1, rnd2, rnd3);
 */
 
-#ifdef EPES_MECH_Pure_perc
+//#ifdef EPES_MECH_Pure_perc
         size1 = (double) GLOB_component_size[rnd1];
         size2 = (double) GLOB_component_size[rnd2];
         size3 = (double) GLOB_component_size[rnd3];
@@ -134,7 +134,7 @@ int initEXPL_product_rule (double t, double sigma)
         {
             bool_res = add_edge(rnd1,rnd2);
         }
-#endif
+//#endif
 #ifdef EPES_MECH_compare_r
         size1 = phase_coherence_compt(GLOB_component_name[rnd1]);
         size2 = phase_coherence_compt(GLOB_component_name[rnd2]);
