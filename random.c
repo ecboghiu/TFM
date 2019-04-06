@@ -46,7 +46,7 @@ double sampleNormal() {
         double u = Random() * 2 - 1;
         double v = Random() * 2 - 1;
         double r = u * u + v * v;
-        if (r < 1e-10 || r > 1) return sampleNormal();  // I want r==0 but r is
+        if (r < 1e-6 || r > 1) return sampleNormal();  // I want r==0 but r is
                                                         // float so I use 1e-10
         double c = sqrt(-2 * log(r) / r);
         return u * c;

@@ -31,22 +31,6 @@ for i in range(len(tableau20)):
 plot_data, labels, colors = [], [], []
 
 '''
-plot_data.append(genfromtxt("sync_norm_sigmaVSr_ER_N=1000_p=0.006.txt", skip_header=3))
-labels.append(r'ER $p$=0.006 $N$=1000')
-colors.append(tableau20[2])
-
-plot_data.append(genfromtxt("sync_sigmaVSr_SF_N=1000_gamma=2.27838.txt", skip_header=3))
-labels.append(r'SF $\gamma$=2.27838 $N$=1000')
-colors.append(tableau20[4])
-plot_data.append(genfromtxt("sync_sigmaVSr_SF_N=1000_gamma=1.69285.txt", skip_header=3))
-labels.append(r'SF $\gamma$=1.69285 $N$=1000')
-colors.append(tableau20[6])
-
-filename = "sync_bad_sigmaVSr_file_N=1000_m=3.txt"
-plot_data.append(genfromtxt(filename, skip_header=2))
-labels.append(filename)
-colors.append(tableau20[0])
-'''
 filename = "er_ES_sigmaVSr_file_N=1000_growth_0.txt"
 plot_data.append(genfromtxt(filename, skip_header=2))
 labels.append(filename)
@@ -55,6 +39,18 @@ filename = "ba_ES_sigmaVSr_file_N=1000_growth_0.txt"
 plot_data.append(genfromtxt(filename, skip_header=2))
 labels.append(filename)
 colors.append(tableau20[4])
+'''
+'''
+filename = "ES_sigmaVSr_file_N=1000_growth_0.txt"
+plot_data.append(genfromtxt(filename, skip_header=2))
+labels.append(filename)
+colors.append(tableau20[0])
+'''
+filename = "coh_term_1.txt"
+plot_data.append(genfromtxt(filename, skip_header=2))
+labels.append(filename)
+colors.append(tableau20[2])
+
 
 
 
@@ -62,7 +58,7 @@ fig = plt.figure()
 
 nr_plots = len(plot_data)
 for i in range(0,nr_plots):
-    plt.errorbar(plot_data[i][:,0], plot_data[i][:,1], plot_data[i][:,2],
+    plt.plot(plot_data[i][:,0], plot_data[i][:,1], #plot_data[i][:,2],
                 label = labels[i], color = colors[i]
             )
 
@@ -77,8 +73,8 @@ plt.xlim(0,)
 #plt.xlabel(r'Edge density ($t$)')
 #plt.ylabel(r'$C_{max}/N$')
 
-plt.xlabel(r'Coupling: $\sigma$')
-plt.ylabel(r'Phase coherence: $r$')
+#plt.xlabel(r'Coupling: $\sigma$')
+#plt.ylabel(r'Phase coherence: $r$')
 
 plt.gcf().subplots_adjust(bottom=0.15)
 plt.show()

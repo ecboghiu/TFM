@@ -13,8 +13,8 @@ int main(void)
 {
     printf("Initializing program.\n");
 
-    ini_ran(time(NULL));  // Seed for the random generator.
-    //ini_ran(662323);     // we want predictable results
+    //ini_ran(time(NULL));  // Seed for the random generator.
+    ini_ran(662323);     // we want predictable results
 
     init_C_memory(&C, NODE_NR, K_MAX);
     initDom();
@@ -60,7 +60,7 @@ int main(void)
 
 ////////////////////////// PERCOLATION ////////////////////////////////////////
 #ifdef PERCOLATION_ON
-percolation_on();
+//percolation_on();
 #endif
 ////////////////////////// OSCILLATOR /////////////////////////////////////////
 #ifdef OSCILLATOR_ON
@@ -68,7 +68,7 @@ oscillator_on();
 #endif
 ////////////////////////// EPES ///////////////////////////////////////////////
 #ifdef SYNC_AND_PERC_ON
-epes_on();
+//epes_on();
 #endif // endif SYNC_AND_PERC_ON
 //////////////////////////////////////////////////////////////////////////////
 
@@ -76,7 +76,7 @@ epes_on();
     free(GLOB_component_name); GLOB_component_name = NULL;
     free(GLOB_component_size); GLOB_component_size = NULL;
 
-    //clear_C_memory(&C, NODE_NR, K_MAX);
+    clear_C_memory(&C, NODE_NR, K_MAX);
 
     printf("\nYou've reached the end without dying! ;-)\n");
     return 0;

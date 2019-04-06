@@ -1,11 +1,14 @@
--std=c99 -lm -g -O2
+-std=c99 -lm -g -O -march=native
 -Wall
 -Wundef
 -Wshadow
 -Wfloat-equal
+-Werror-implicit-function-declaration
 -Winit-self
 -Wpointer-arith
 -Wcast-align
 -Wstrict-prototypes
+-Wmissing-prototypes
+-pedantic
 -Wwrite-strings
 -Waggregate-return

@@ -67,11 +67,11 @@ void oscillator_on()
 
     double *r_coh;
     r_coh = calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
-    #ifndef TERMALIZATION
+    #ifdef PRINT_EVOLUTION_OF_R
     char filename_coh[128] = ".";
     snprintf(filename_coh, sizeof(char) * 128, "coh_%s_%g.txt",
                                                 "term", SIGMA_VAL);
-    FILE *theta_file = fopen(filename_coh,"a");
+    FILE *theta_file = fopen(filename_coh,"w");
     if (theta_file == NULL) {
         printf("%s\n", "Could not open coh.txt");
         exit(2);
@@ -138,17 +138,19 @@ snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_file_N=%d_m=%d.txt",
     for ( sigma = sigma_min; sigma < sigma_max; sigma += sigma_inc)
     #endif
     {
-        //for(int i = 0; i < NODE_NR; i++) {
-        //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
-        //}
+        for(int i = 0; i < NODE_NR; i++) {
+            GLOB_theta[i] = M_PI*(-1 + Random()*2);
+        }
         
 
         #ifdef TERMALIZATION // we wait for r to stabilize
-        for (int i = 0; i < termalization; i++)
-            for (int t_aux = 0; t_aux < blind; t_aux++)
+        for (int i = 0; i < termalization; i++) {
+            for (int t_aux2 = 0; t_aux2 < blind; t_aux2++) {
                 update_RK(timp, sigma, h);
+                //update_EULER(sigma, h);
+            }
+        }
         #endif
-        //printf("passed termalization\n");
 
         for (int t_idx = 0; t_idx < nr_measurements; t_idx++)
         {
@@ -156,19 +158,20 @@ snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_file_N=%d_m=%d.txt",
             //r_coh[t_idx] = (GLOB_theta[node_nr_aux_term]);
             timp = t_idx*h*(1+blind);
 
-            #ifndef TERMALIZATION
+            #ifdef PRINT_EVOLUTION_OF_R
             fprintf(theta_file, "%lf %lf %lf\n",
      timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
-             r_coh[t_idx], //exp(-0.01*timp));
-                        sin(timp));
+             r_coh[t_idx], 0.0);//exp(-0.01*timp));
             #endif
 
             for (int t_aux = 0; t_aux < blind; t_aux++) {
                 // "blind" because we update without measuring
-                update_RK(timp, sigma, h); 
+                update_RK(timp, sigma, h);
+                //update_EULER(sigma, h); 
             }
 
             update_RK(timp, sigma, h);
+            //update_EULER(sigma, h);
         }
 
         
@@ -180,7 +183,7 @@ snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_file_N=%d_m=%d.txt",
     }
 
     fclose(f_out2);     f_out2 = NULL;
-    #ifndef TERMALIZATION
+    #ifdef PRINT_EVOLUTION_OF_R
     fclose(theta_file); theta_file = NULL ;
     #endif
 
@@ -525,7 +528,7 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust
     }
     fclose(f_out1);                 f_out1                  = NULL;
 */
-    /*
+    
     free(fractional_size);          fractional_size         = NULL;
     free(fractional_size_sigma);    fractional_size_sigma   = NULL;
     free(edge_fraction);            edge_fraction           = NULL;
@@ -533,5 +536,4 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust
     free(r_coh);        r_coh = NULL;
     free(GLOB_theta); GLOB_theta = NULL;
     free(GLOB_omega_nat); GLOB_omega_nat = NULL;
-    */
 }

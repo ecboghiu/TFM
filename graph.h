@@ -12,7 +12,7 @@
 /*******CONTROL: type of graph*******/
 //#define SMALL_WORLD
 //#define ERDOS_RENYI
-#define ERDOS_RENYI_prob 0.000
+#define ERDOS_RENYI_prob 0.006
 //#define SCALE_FREE
 #define READ_NETWORK_FROM_FILE
 #ifdef READ_NETWORK_FROM_FILE
@@ -54,7 +54,8 @@
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 0.0
+#define SIGMA_VAL 1.0
+#define PRINT_EVOLUTION_OF_R
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
@@ -67,18 +68,18 @@
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1e-2
+#define DELTA_T 5e-2
 // How many times we measure.
 #define MAX_STEPS 1000
 // Number of updates in between measures.
-#define IN_BETWEEN 10
+#define IN_BETWEEN 2
 #define SIGMA_MIN 0.0
 #define SIGMA_MAX 0.2
-#define NR_SIGMA 10
+#define NR_SIGMA 20
 
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
-#define TERMALIZATION 50
+#define TERMALIZATION 40
 
 //#define EPSILON_OSCILLATOR 1e-3
 

@@ -156,7 +156,12 @@ void read_edgelist_file_py (const char* filename)
     else {
         int i,j;
         i = j = 0;
+        #ifdef READ_NETWORK_FROM_FILE
         printf("Beginning adding edges from %s\n", FILENAME_FROM_WHICH_TO_READ);
+        #else
+        printf("Beginning adding edges from file.\n");
+        #endif
+
         while ( fscanf(f_in, "%d %d {}\n", &i, &j) != EOF   ) {
             add_edge(i,j);
         }
