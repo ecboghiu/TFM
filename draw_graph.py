@@ -67,6 +67,7 @@ G = nx.read_adjlist("adj_C.txt", nodetype=int)
 #G = nx.erdos_renyi_graph(1000, 0.006)
 #nx.write_edgelist(G, "nx_edgelist.txt")
 
+
 options = {
     'node_color': 'black',
     'node_size': 50,

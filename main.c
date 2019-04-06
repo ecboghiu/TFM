@@ -184,7 +184,7 @@ int main(int args_number, char* args[])
     #endif
     #ifdef READ_NETWORK_FROM_FILE
     init_C(&C, NODE_NR, K_MAX);
-    read_edgelist_file_py ("nx_edgelist.txt");
+    read_edgelist_file_py (FILENAME_FROM_WHICH_TO_READ);
     #endif
     #ifdef BARABASI_ALBERT
     init_BA(BA_PARAM_M, NODE_NR);
@@ -309,9 +309,9 @@ snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_file_N=%d_m=%d.txt",
     for ( sigma = sigma_min; sigma < sigma_max; sigma += sigma_inc)
     #endif
     {
-        for(int i = 0; i < NODE_NR; i++) {
-            GLOB_theta[i] = M_PI*(-1 + Random()*2);
-        }
+        //for(int i = 0; i < NODE_NR; i++) {
+        //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
+        //}
         
 
         #ifdef TERMALIZATION // we wait for r to stabilize

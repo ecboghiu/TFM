@@ -41,16 +41,20 @@ colors.append(tableau20[4])
 plot_data.append(genfromtxt("sync_sigmaVSr_SF_N=1000_gamma=1.69285.txt", skip_header=3))
 labels.append(r'SF $\gamma$=1.69285 $N$=1000')
 colors.append(tableau20[6])
-'''
+
 filename = "sync_bad_sigmaVSr_file_N=1000_m=3.txt"
 plot_data.append(genfromtxt(filename, skip_header=2))
 labels.append(filename)
 colors.append(tableau20[0])
-filename = "ES_sigmaVSr_file_N=1000_growth_0.txt"
+'''
+filename = "er_ES_sigmaVSr_file_N=1000_growth_0.txt"
 plot_data.append(genfromtxt(filename, skip_header=2))
 labels.append(filename)
 colors.append(tableau20[2])
-
+filename = "ba_ES_sigmaVSr_file_N=1000_growth_0.txt"
+plot_data.append(genfromtxt(filename, skip_header=2))
+labels.append(filename)
+colors.append(tableau20[4])
 
 
 

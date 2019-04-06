@@ -179,8 +179,9 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     #endif
 
     double coupling = 0;
-    double weight = 1.0;
     /*
+    double weight = 1.0;
+    
     if (degree[i] == 0) 
     {
         weight = 1.0;
@@ -192,7 +193,7 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     */
     
     for(int j = 0; j < degree[i]; j++) {
-        coupling = sigma * weight;
+        coupling = sigma;
         sum += coupling * sin( phases[ C[i][j] ] - phases[i] );
     }
     

@@ -1,0 +1,4 @@
+# Node_nr = 1000
+# SCALE FREE GAMMA=2.27838 K_MIN=2 K_MAX=1000 <k>=5.008 <k^2>=15.2019 
+# K <r> sigma_r(sig not of average! divide by sqrt(n))
+0.2 0.0607501 0.0191513 

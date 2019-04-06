@@ -12,14 +12,15 @@
 /*******CONTROL: type of graph*******/
 //#define SMALL_WORLD
 //#define ERDOS_RENYI
-#define ERDOS_RENYI_prob 0.006
+#define ERDOS_RENYI_prob 0.000
 //#define SCALE_FREE
-//#define READ_NETWORK_FROM_FILE
+#define READ_NETWORK_FROM_FILE
 #ifdef READ_NETWORK_FROM_FILE
+    #define FILENAME_FROM_WHICH_TO_READ "nx_edgelist_ER.txt"
     #define NET_TYPE "growth"
     #define NET_CHARACT 0.0
 #endif
-#define BARABASI_ALBERT
+//#define BARABASI_ALBERT
 #ifdef BARABASI_ALBERT
     #define BA_PARAM_M 3
 #endif
@@ -70,8 +71,8 @@
 #define MAX_STEPS 1000
 // Number of updates in between measures.
 #define IN_BETWEEN 0
-#define SIGMA_MIN 0
-#define SIGMA_MAX 0.2
+#define SIGMA_MIN 0.0
+#define SIGMA_MAX 0.8
 #define NR_SIGMA 10
 
 // If its not defined we dont wait to termalize
