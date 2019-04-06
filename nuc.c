@@ -23,7 +23,7 @@ void oscillator_on()
     deg_med = deg_var = 0;
     double *deg_aux;
     deg_aux = calloc(NODE_NR, sizeof *deg_aux);
-    for(size_t i = 0; i < NODE_NR; i++) {
+    for(int i = 0; i < NODE_NR; i++) {
         deg_aux[i] = (double) (degree[i]);
     }
     med_var(deg_aux, NODE_NR, &deg_med, &deg_var);
@@ -67,7 +67,7 @@ void oscillator_on()
 
     double *r_coh;
     r_coh = calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
-    //#ifndef TERMALIZATION
+    #ifndef TERMALIZATION
     char filename_coh[128] = ".";
     snprintf(filename_coh, sizeof(char) * 128, "coh_%s_%g.txt",
                                                 "term", SIGMA_VAL);
@@ -76,7 +76,7 @@ void oscillator_on()
         printf("%s\n", "Could not open coh.txt");
         exit(2);
     }
-    //#endif
+    #endif
 
     char filename2[128];
     // this is for a varying filename
@@ -156,12 +156,12 @@ snprintf(filename2, sizeof(char) * 128, "sync_sigmaVSr_file_N=%d_m=%d.txt",
             //r_coh[t_idx] = (GLOB_theta[node_nr_aux_term]);
             timp = t_idx*h*(1+blind);
 
-            //#ifndef TERMALIZATION
+            #ifndef TERMALIZATION
             fprintf(theta_file, "%lf %lf %lf\n",
      timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
              r_coh[t_idx], //exp(-0.01*timp));
                         sin(timp));
-            //#endif
+            #endif
 
             for (int t_aux = 0; t_aux < blind; t_aux++) {
                 // "blind" because we update without measuring
@@ -251,7 +251,7 @@ void percolation_on()
     aux_array = calloc(t_number, sizeof *aux_array);
     idx = 0;
     for ( t=t_min; t<t_max; t += t_inc) {
-        for(size_t j = 0; j < AVG_NUMBER; j++) {
+        for(int j = 0; j < AVG_NUMBER; j++) {
             aux_array[j] = fractional_size_noavg[idx][j];
         }
         med_var(aux_array, AVG_NUMBER, &(fractional_size[idx]),
@@ -304,7 +304,7 @@ void percolation_on()
 
 void epes_on ()
 {
-        int t_blind  = 0;
+    //int t_blind  = 0;
     double t_min = 1.0;
     double t_max = 3.0;//1.0*(NODE_NR-1)/2;
     int t_number = 10;//t_max*NODE_NR;//10*(NODE_NR-1)/2.0;
@@ -478,7 +478,7 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust
     aux_array = calloc(t_number, sizeof *aux_array);
     idx = 0;
     for ( t=t_min; t<t_max; t += t_inc) {
-        for(size_t j = 0; j < AVG_NUMBER; j++) {
+        for(int j = 0; j < AVG_NUMBER; j++) {
             aux_array[j] = fractional_size_noavg[idx][j];
         }
         med_var(aux_array, AVG_NUMBER,  &(fractional_size[idx]),

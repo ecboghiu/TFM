@@ -46,7 +46,8 @@ double sampleNormal() {
         double u = Random() * 2 - 1;
         double v = Random() * 2 - 1;
         double r = u * u + v * v;
-        if (r == 0 || r > 1) return sampleNormal();
+        if (r < 1e-10 || r > 1) return sampleNormal();  // I want r==0 but r is
+                                                        // float so I use 1e-10
         double c = sqrt(-2 * log(r) / r);
         return u * c;
 }
@@ -54,11 +55,10 @@ double sampleNormal() {
 int generateDegree (int m, double gamma)
 {
     // min and max degree; we avoid k=0 because p~k^-GAMMA diverges
-    double w, sum, sum2, norm, sum_norm, P, r;
-    int k;
+    double norm, sum_norm, P, r;
+    int k = 0;
 
-    norm = 0;
-    sum_norm = 0;
+    norm = sum_norm = P = r = 0;
 
     int k1, k_min, k_max;
     k_min = K_MIN;  // to generate connected net with prob 1,
@@ -75,8 +75,8 @@ int generateDegree (int m, double gamma)
 
     // normalization constant of p~k^-GAMMA
     sum_norm = 0;
-    for (int k = k_min; k <= k_max ; k++) {
-        sum_norm += pow(k,-GAMMA);
+    for (int k_idx = k_min; k_idx <= k_max ; k_idx++) {
+        sum_norm += pow(k_idx,-GAMMA);
     }   
     norm = 1.0/sum_norm;
 
@@ -106,6 +106,7 @@ int generateDegree (int m, double gamma)
     // Now we find x such that the sum from k=m to k=x of the area
     // of the probability distribution gives w. We are inverting the
     // quantile function.
+    double sum, sum2, w;
     sum = 0;
     sum2= 0;
     k   = m;
@@ -137,7 +138,7 @@ int generateDegree (int m, double gamma)
 
 // Returns a  to which to connect to proportionally to the degree
 // WARNING: nodes must be length m, have it initialized to -1
-int generate_node_BA (int m, int* nodes)
+void generate_node_BA (int m, int* nodes)
 {
     int counter = 0;
     double w = 0;

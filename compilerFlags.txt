@@ -1,0 +1,11 @@
+-std=c99 -lm -g -O2
+-Wall
+-Wundef
+-Wshadow
+-Wfloat-equal
+-Winit-self
+-Wpointer-arith
+-Wcast-align
+-Wstrict-prototypes
+-Wwrite-strings
+-Waggregate-return

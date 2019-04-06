@@ -20,6 +20,7 @@
     #define NET_TYPE "growth"
     #define NET_CHARACT 0.0
 #endif
+
 //#define BARABASI_ALBERT
 #ifdef BARABASI_ALBERT
     #define BA_PARAM_M 3
@@ -33,14 +34,14 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 500
+#define NODE_NR 1000
 #define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
 
-//#define OSCILLATOR_ON
+#define OSCILLATOR_ON
 //#define PERCOLATION_ON
-#define SYNC_AND_PERC_ON
+//#define SYNC_AND_PERC_ON
 #ifdef SYNC_AND_PERC_ON
     //#define EPES_MECH_Pure_perc
     //#define EPES_MECH_compare_r
@@ -53,7 +54,7 @@
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 1.0
+#define SIGMA_VAL 0.0
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
@@ -66,13 +67,13 @@
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1e-1
+#define DELTA_T 1e-2
 // How many times we measure.
 #define MAX_STEPS 1000
 // Number of updates in between measures.
-#define IN_BETWEEN 0
+#define IN_BETWEEN 10
 #define SIGMA_MIN 0.0
-#define SIGMA_MAX 0.8
+#define SIGMA_MAX 0.2
 #define NR_SIGMA 10
 
 // If its not defined we dont wait to termalize
@@ -124,20 +125,20 @@ void update_RK      (double t, double sigma, double h);
 int initEXPL_product_rule (double t, double sigma);
 
 
-void oscillator_on  ();
-void percolation_on ();
-void epes_on        ();
+void oscillator_on  (void);
+void percolation_on (void);
+void epes_on        (void);
 
 // initializing various things
-void initOmegas     ();
-void initThetas     ();
+void initOmegas     (void);
+void initThetas     (void);
 void init_C         (int ***data_ptr, int dim_x, int dim_y);
 void init_C_memory  (int ***data_ptr, int dim_x, int dim_y);
-void initDom        ();
+void initDom        (void);
 void clear_C_memory (int ***data_ptr, int dim_x, int dim_y);
 
 void initERmodel    (double prob);
-void initScaleFree  ();
+void initScaleFree  (void);
 void init_BA        (int m, int N);
 
 int add_edge        (int i, int j);
@@ -150,46 +151,46 @@ int delta_kron      (int i, int j);
 int  read           (int i, int j); // works like a[i][j] where a is
                                     // adjacency matris
 void readAdj        (int l); // reads from file
-void saveAdj        ();
-void printAdj       ();
+void saveAdj        (void);
+void printAdj       (void);
 void print_vec      (int **vec, int size);
 int int_max_vector  (int **vector, int size);
-void print_C        ();
-void print_linked_list ();
-void write_C_to_file();
-void saveAdjGephi   (); // writes edges to file in a format usable by Gephi
-void read_edgelist_file_py (char* filename);
+void print_C        (void);
+void print_linked_list (void);
+void write_C_to_file(void);
+void saveAdjGephi   (int C_MAT[][K_MAX]); // writes edges to file in a format usable by Gephi
+void read_edgelist_file_py (const char* filename);
 
 
 // Graph observables, measurables for debugging and other
-void   calculateDegree       (); // calculates array with degrees of all nodes
+void   calculateDegree       (void); // calculates array with degrees of all nodes
 double calculateTheta_dot_i  (double t, double *phases, int phases_len,
                                 double sigma, int i);
-double calculateThetaAverage ();
+double calculateThetaAverage (void);
 double weff_compt            (int id_compt, double t, double sigma);
-double phase_coherence       ();
-double psi_coherence         ();
+double phase_coherence       (void);
+double psi_coherence         (void);
 double phase_coherence_compt (int id_compt);
 double psi_coherence_compt   (int id_compt);
-int debug_count_nodes        ();
-int number_of_domains        ();
+int debug_count_nodes        (void);
+int number_of_domains        (void);
 void domain_size_array       (int *size_array, int i, int* domain, int *size);
 int domain_of_node_i_size    (int i);
-int max_domain_size          ();
+int max_domain_size          (void);
 int join_domains             (int i, int j);
 int random_node_comp         (int id_compt);
 int number_of_edges          (char* filename);
 int unique_elements          (int arr[], int len);
 // Clustering
 double localClustering  (int i);
-double Clustering       ();
+double Clustering       (void);
 
 // Functions for generating random numbers.
-double Random           (); // Random number in [0,1).
+double Random           (void); // Random number in [0,1).
 void   ini_ran          (int SEMILLA); // initializes the generator
 int    generateDegree   (int m, double gamma);
-int generate_node_BA    (int m, int* nodes);
-double sampleNormal     (); // copied from http://stackoverflow.com/a/10645091
+void generate_node_BA    (int m, int* nodes);
+double sampleNormal     (void); // copied from http://stackoverflow.com/a/10645091
 
 // Statistics functions.
 void   Histogram        (int *data, double *Hist, int N_data, int N_Intervalos,
@@ -203,7 +204,7 @@ int wheel_sum           (signed int i, signed int aux, int wheel_len);
 int in_pair_list        (int list[][2], int len, int i, int j);
 int  exists_link        (int i, int j); // return 1 if there is link 
                                         // from j to i
-void make_edge_list     ();
+void make_edge_list     (void);
 
 // Functions for lists
 void append_to_list     (signed int *list, signed int elem);

@@ -91,7 +91,7 @@ void Histogram (int *data, double *Hist, int N_data, int N_Intervalos,
     // Calculo la longitud de cada intervalo una vez que
     // sabemos el maximo y minimo.
     *d = (*max-*min)/((double)N_Intervalos);
-    if ( *d == 0 ) {
+    if ( *d < 1e-10 ) { // i want d==0, but d is  afloar
         printf("%s\n", "La longitud del intervalo es nula.");
         exit(6);
     }

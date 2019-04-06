@@ -168,7 +168,8 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
                                             double sigma, int i)
 {
     // \dot{theta_i}=\omega_i+|sigma\sum_{j=0}^{N} a_{ij}\sin{theta_j-theta_i}
-    double sum = 0;
+    double sum = 0*t*phases_len;    // just so I get rid of the gcc warning
+                                    // of unused t and phases_len
     //return cos(t);
     
     #ifdef EPSILON_OSCILLATOR
@@ -191,7 +192,7 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
         weight = 1.0 *1.0/pow(degree[i],0);
     }
     */
-    
+    sum = 0;
     for(int j = 0; j < degree[i]; j++) {
         coupling = sigma;
         sum += coupling * sin( phases[ C[i][j] ] - phases[i] );

@@ -142,7 +142,7 @@ int exists_edge(int i, int j)
     return 0;
 }
 
-void read_edgelist_file_py (char* filename)
+void read_edgelist_file_py (const char* filename)
 {
     // Note, you should have previously initialized C.
     // Take care with how many nodes the network has!
@@ -156,11 +156,11 @@ void read_edgelist_file_py (char* filename)
     else {
         int i,j;
         i = j = 0;
-        printf("beginning reading\n");
+        printf("Beginning adding edges from %s\n", FILENAME_FROM_WHICH_TO_READ);
         while ( fscanf(f_in, "%d %d {}\n", &i, &j) != EOF   ) {
             add_edge(i,j);
-            printf("added edge: %d %d\n", i,j);
         }
+        printf("Last added edge: %d %d\n", i,j);
         fclose(f_in); f_in = NULL;
     }
 }
@@ -186,11 +186,11 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
     GLOB_unique_elements_in_network = NODE_NR;
     degree         = calloc(NODE_NR, sizeof *degree);
     GLOB_component_size = malloc(NODE_NR * sizeof *GLOB_component_size);
-    for(int i = 0; i < NODE_NR; i++){
+    for(i = 0; i < NODE_NR; i++){
         GLOB_component_size[i] = 1; // all nodes are their own cluster
     }
     GLOB_component_name = malloc(NODE_NR* sizeof *GLOB_component_name);
-    for(int i = 0; i < NODE_NR; i++){
+    for(i = 0; i < NODE_NR; i++){
         GLOB_component_name[i] = i; // all nodes are their own cluster
     }
     
@@ -221,7 +221,7 @@ void initDom()
 
 void clear_C_memory(int ***data_ptr, int dim_x, int dim_y)
 {
-    int a = dim_y;
+    //int a = dim_y;
     for (int i = 0; i < dim_x; i++) {
         free((*data_ptr)[i]);
         (*data_ptr)[i] = NULL;
@@ -268,12 +268,12 @@ void initERmodel(double prob)
 /* This should be run after initAdj to ensure a null initial graph. */
 void initScaleFree ()
 {
-    int i, j, sum, len, k_min, k_max;
-    double norm_const, sum_norm;
+    int i, j, sum, len;
+    i = j = sum = len = 0;
 
-    k_min = K_MIN;  // to generate connected net with prob 1,
+    int k_min = K_MIN;  // to generate connected net with prob 1,
                     // see PHYS.REVIEW E71,027103(2005)
-    k_max = NODE_NR-1;
+    //int k_max = NODE_NR-1;
 
 
     printf("Beginning generating degree distribution.\n");
@@ -310,9 +310,9 @@ void initScaleFree ()
     printf("Finished generating degree distribution.\n");
     signed int *list = calloc((sum+1),sizeof(*list)); // sum+1 because we need
     list[0] = -1;                                     // to store -1
-    for (signed int i = 0; i < NODE_NR; i++) {
-        for (j = 0; j < aux_deg[i]; j++) {
-            append_to_list(list, i);
+    for (signed int i_idx = 0; i_idx < NODE_NR; i_idx++) {
+        for (j = 0; j < aux_deg[i_idx]; j++) {
+            append_to_list(list, i_idx);
         }
     }
     len = list_len(list);
@@ -392,9 +392,9 @@ void initScaleFree ()
             #endif
             len = list_len(list);
             if (len < 60) {
-                for(size_t i = 0; i < len; i++)
+                for(int i_4 = 0; i_4 < len; i_4++)
                 {
-                    printf("%d ", list[i]);
+                    printf("%d ", list[i_4]);
                 }   printf("\n");
             }
             
@@ -405,11 +405,11 @@ void initScaleFree ()
     printf("Finished nasty loop.\n");
 
     // Check if correct
-    for(int i = 0; i < NODE_NR; i++)
+    for(int i_5 = 0; i_5 < NODE_NR; i_5++)
     {
-        if (degree[i] != aux_deg[i]) {
+        if (degree[i_5] != aux_deg[i_5]) {
             printf("warning: node %d does not have the degree it should!\n",
-                            i);
+                            i_5);
             exit(7);
         }
         
@@ -452,7 +452,7 @@ void init_BA (int m, int N)
 
 // This saves an edges table suitable for the open source program
 // called Gephi.
-void saveAdjGephi (int C[][K_MAX])
+void saveAdjGephi (int C_MAT[][K_MAX])
 {
     int i, j;
     i = j = 0;
@@ -462,7 +462,7 @@ void saveAdjGephi (int C[][K_MAX])
         fprintf(net, "%s\n", "Source,Target,Type");
         for (i = 0; i < NODE_NR; i++) {
             for (j = 0; j < K_MAX; j++) {
-                if (C[i][j] != 0) {
+                if (C_MAT[i][j] != 0) {
                     fprintf(net, "%d,%d,Undirected\n", i, j);
                 }
             }
@@ -706,10 +706,10 @@ double localClustering (int i)
     int node_j = -1;
     int node_k = -1;
     
-    for(size_t j = 0; j < nr_neigh; j++)
+    for(int j = 0; j < nr_neigh; j++)
     {
         node_j = C[i][j];
-        for(size_t k = 0; k < nr_neigh; k++) {
+        for(int k = 0; k < nr_neigh; k++) {
             node_k = C[i][k];
             //printf("node j,k: %d %d\n", node_j, node_k);
             if ( read(node_j,node_k) ) {

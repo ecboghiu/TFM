@@ -2,7 +2,8 @@
 CC= gcc
 
 # Flags:
-CFLAGS= -Wall -Wextra -std=c99 -lm -g -O3
+# see https://stackoverflow.com/questions/3375697/useful-gcc-flags-for-c
+CFLAGS= @compilerFlags.txt #
 # C files:
 SOURCES=  main.c random.c stat.c adj.c sync.c perc.c lists.c nuc.c
 

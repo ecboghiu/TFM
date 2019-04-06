@@ -11,10 +11,8 @@ int initEXPL_product_rule (double t, double sigma)
     size1 = size2 = size3 = size4 = 0;
     rnd1 = rnd2 = rnd3 = rnd4 = 0;
     int bool_res = 0; // 0 false, 1 true
-    int name_aux1, name_aux2, name_aux3;
-    name_aux1 = name_aux2 = name_aux3 = 0;
-    double w = 0;
-
+    int name_aux2, name_aux3;
+    name_aux2 = name_aux3 = 0;
 
     
     while (GLOB_nr_edges < tot_nr_edges) 
@@ -32,6 +30,7 @@ int initEXPL_product_rule (double t, double sigma)
   //  } 
     /*  
     if (GLOB_unique_components == 2) {
+        int name_aux1 = 0;
         rnd1 = (int)(Random()*NODE_NR);
         rnd2 = 0;
         name_aux1 = GLOB_component_name[rnd1];
@@ -92,6 +91,7 @@ int initEXPL_product_rule (double t, double sigma)
         rnd4 = (int)(Random()*NODE_NR);
 
 /*
+        int name_aux1 = 0;
         rnd1 = (int)(Random()*NODE_NR);
         // TODO: remove thjese conditions
         rnd2 = (int)(Random()*NODE_NR);
@@ -120,7 +120,7 @@ int initEXPL_product_rule (double t, double sigma)
         //printf("rnds3: %d, %d, %d \n", rnd1, rnd2, rnd3);
 */
 
-//#ifdef EPES_MECH_Pure_perc
+#ifdef EPES_MECH_Pure_perc
         size1 = (double) GLOB_component_size[rnd1];
         size2 = (double) GLOB_component_size[rnd2];
         size3 = (double) GLOB_component_size[rnd3];
@@ -134,7 +134,7 @@ int initEXPL_product_rule (double t, double sigma)
         {
             bool_res = add_edge(rnd1,rnd2);
         }
-//#endif
+#endif
 #ifdef EPES_MECH_compare_r
         size1 = phase_coherence_compt(GLOB_component_name[rnd1]);
         size2 = phase_coherence_compt(GLOB_component_name[rnd2]);
@@ -232,6 +232,8 @@ int initEXPL_product_rule (double t, double sigma)
         }
 #endif
 #ifdef EPES_MECH_selfloop
+        int name_aux1 = 0;
+        double w = 0;
         rnd1 = (int)(Random()*NODE_NR);
         int rnd1_size = GLOB_component_size[rnd1];
         if ( (rnd1_size!=1 && rnd1_size!=2) && rnd1_size!=3 )
