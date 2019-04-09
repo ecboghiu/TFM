@@ -107,9 +107,37 @@ plt.xlabel("Degree")
 ax.set_xticks([d + 0.4 for d in deg])
 ax.set_xticklabels(deg)
 
+# data to plot the frequency gap generation method
+def plot_test_fq():
+    plot_data = []
+    filename = "test_theor.txt"
+    plot_data=(genfromtxt(filename, skip_header=0))
+    
+    plot_data2 = []
+    filename = "test_FG.txt"
+    plot_data2=(genfromtxt(filename, skip_header=0))
+    
+    b = np.histogram(plot_data2, bins=np.array([0,1,2,3,4,5,6,7,8,9,10])-0.5)
+    #plt.hist(plot_data2, bins=np.array([0,1,2,3,4,5,6,7,8,9,10])-0.5)
+    theor = np.array(plot_data[:,1])
+    theor = theor/theor.sum()
+    plt.plot(plot_data[:,0],theor,label='theor')
+    exp = b[0]/b[0].sum()
+    plt.plot(list(range(0,10)),exp,label='exp')
+    plt.plot(list(range(0,10)),np.abs(exp-theor),label='diff')
+    #plt.yscale('log')
+    #plt.xscale('log')
+    plt.legend()
+    plt.show()
+
+#plot_test_fq()
+
+
+
+
 #G = nx.barabasi_albert_graph(1000, 3)
 
-
+'''
 # draw graph in inset
 plt.axes([0.4, 0.4, 0.5, 0.5])
 Gcc = sorted(nx.connected_component_subgraphs(G), key=len, reverse=True)[0]
@@ -117,7 +145,7 @@ pos = nx.spring_layout(G)
 plt.axis('off')
 nx.draw_networkx_nodes(G, pos, node_size=20)
 nx.draw_networkx_edges(G, pos, alpha=0.4)
-
+'''
 plt.show()
 
 

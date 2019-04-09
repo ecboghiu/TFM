@@ -188,3 +188,90 @@ void generate_node_BA (int m, int* nodes)
     free(tags); tags = NULL;
 }
 
+void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
+                                double t, double sigma)
+{
+    int counter = 0;
+    double w = 0;
+    double sum = 0;
+    double sum_norm = 0;
+
+    for(int i = 0; i < m; i++) {
+        nodes[i] = -1;
+    }
+
+    double compt_name_i = GLOB_component_name[node_i];
+    double wi = weff_compt(compt_name_i, t, sigma);
+
+
+    double weff_by_domain[NODE_NR];
+    for(int i = 0; i < NODE_NR; i++)
+    {
+        weff_by_domain[i] = FG_WEFF_LOWER_FREQUENCY;
+    }
+    for(int i = 0; i < NODE_NR; i++)
+    {
+        // IF w<FR_WEFF.../10 then it means we have a new component whos weff
+        // hasn't been calculated yet.
+        if (weff_by_domain[GLOB_component_name[i]]<(FG_WEFF_LOWER_FREQUENCY/10)) 
+        {
+            weff_by_domain[GLOB_component_name[i]] =
+                        weff_compt(GLOB_component_name[i], t, sigma);
+        }
+    }
+    
+    double wf = 0;
+    double tags[NODE_NR];
+    for(int i = 0; i < NODE_NR; i++) {
+        wf = weff_by_domain[GLOB_component_name[i]];
+        if (wf<(FG_WEFF_LOWER_FREQUENCY/10)) {
+            printf("warning: something went wrong with FG generator\n");
+            exit(123);
+        }
+        
+        tags[i] = diff_weff_weight(alpha, wi, wf);
+    }
+
+    // Condition that neighbors have prob zero of being chosen
+    for(int j = 0; j < degree[node_i]; j++) {
+        tags[ C[node_i][j] ] = 0;
+    }
+    
+
+    double nr_compare = 0;
+    for(int m_idx = 0; m_idx < m; m_idx++)
+    {
+        w = Random();
+
+        sum_norm = 0;
+        for(int i_idx = 0; i_idx < NODE_NR; i_idx++) {
+            sum_norm += tags[i_idx];
+        }
+
+        counter = 0;
+        sum = tags[counter];
+        nr_compare =  w*sum_norm;
+        while(sum < nr_compare){
+            counter++;
+            sum += tags[counter];
+        }
+        //printf("sum: %lf counter: %d sum_norm: %d\n", sum, counter, sum_norm);
+
+        nodes[m_idx] = counter;
+        tags[counter] = 0; // we remove this node from the list
+    }
+
+    for(int i = 0; i < m; i++)
+    {
+        if (nodes[i]<0 || nodes[i]>NODE_NR) {
+            printf("error: something went wrong with BA node generator\n");
+            exit(12);
+        }
+        
+    }
+}
+
+double diff_weff_weight(double alpha, double wi, double wj)
+{
+    return exp(alpha*(wi-wj));
+}

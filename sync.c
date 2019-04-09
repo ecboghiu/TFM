@@ -19,7 +19,7 @@ void initOmegas()
     for (int i = 0; i < NODE_NR; i++) 
     {
         //GLOB_omega_nat[i] = sampleNormal();//(double)degree[i];//0.5*(-1 + 2*Random());//
-        GLOB_omega_nat[i] = M_PI*(-1 + 2*Random());
+        GLOB_omega_nat[i] = 10*(-1 + 2*Random());
         //GLOB_omega_nat[i] = (double)degree[i];
     }
 }
@@ -106,7 +106,7 @@ double psi_coherence()
     return atan2(Nry,Nrx);
 }
 
-double weff_compt (int id_compt, double t, double sigma)
+double weff_compt_instant (int id_compt, double t, double sigma)
 {
     int i=0;
     Node crawl = GLOB_dom->suc[id_compt];
@@ -121,7 +121,26 @@ double weff_compt (int id_compt, double t, double sigma)
     weff /= GLOB_dom_size[id_compt];
 
     return weff;
+}
 
+double weff_compt (int id_compt, double t, double sigma)
+{
+    double timp = 0;
+    double weff = 0.0;
+    double w_avg = 0;
+    for(int i = 0; i < FG_WEFF_MAX_STEPS; i++)
+    {
+        weff = weff_compt_instant (id_compt, t, sigma);
+        w_avg = ((double)i)/(i+1) * w_avg + weff/(i+1);
+
+        timp = i*DELTA_T*(1+FG_WEFF_IN_BETWEEN);
+        for(int j = 0; j < FG_WEFF_IN_BETWEEN; j++) {
+            update_RK(t+timp, sigma, DELTA_T); 
+        }
+        update_RK(t+timp, sigma, DELTA_T);
+    }
+
+    return w_avg;
 }
 
 double phase_coherence_compt (int id_compt)
@@ -168,9 +187,10 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
                                             double sigma, int i)
 {
     // \dot{theta_i}=\omega_i+|sigma\sum_{j=0}^{N} a_{ij}\sin{theta_j-theta_i}
-    double sum = 0*t*phases_len;    // just so I get rid of the gcc warning
+    double sum = 0;//0*t*phases_len;    // just so I get rid of the gcc warning
                                     // of unused t and phases_len
     //return cos(t);
+    //double omega_nat_i = GLOB_omega_nat[i] ;
     
     #ifdef EPSILON_OSCILLATOR
     double coupling_all_to_all = EPSILON_OSCILLATOR;
@@ -179,7 +199,7 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     }
     #endif
 
-    double coupling = 0;
+    double coupling = sigma;
     /*
     double weight = 1.0;
     
@@ -196,6 +216,7 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     for(int j = 0; j < degree[i]; j++) {
         coupling = sigma;
         sum += coupling * sin( phases[ C[i][j] ] - phases[i] );
+        //printf("%d-%d\n",i,C[i][j]);
     }
     
     return GLOB_omega_nat[i] + sum;

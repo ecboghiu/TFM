@@ -5,7 +5,7 @@ CC= gcc
 # see https://stackoverflow.com/questions/3375697/useful-gcc-flags-for-c
 CFLAGS= @compilerFlags.txt #
 # C files:
-SOURCES=  main.c random.c stat.c adj.c sync.c perc.c lists.c nuc.c
+SOURCES=  main.c random.c stat.c adj.c sync.c top.c lists.c nuc.c
 
 # Name of output:
 TARGET= net

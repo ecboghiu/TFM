@@ -18,45 +18,8 @@ int main(void)
 
     init_C_memory(&C, NODE_NR, K_MAX);
     initDom();
-/*
-    join_domains(2,3);
-    join_domains(0,3);
-    join_domains(0,3);
-    join_domains(0,2);
-    join_domains(3,0);
 
-    add_edge(2,3);
-    add_edge(3,3);
-    add_edge(2,3);
-    add_edge(0,1);
-    add_edge(0,3);
-
-    print_linked_list();
-
-        for(size_t i = 0; i < NODE_NR; i++)
-    {
-        printf("comp: %d ||||| ", i);
-        Node crawl;
-        crawl = GLOB_dom->suc[i];
-        while(crawl != NULL) {
-            printf("%d ", crawl->id);
-            crawl = crawl->next;
-        }
-        printf("size: %d\n", (int)GLOB_dom_size[i]);
-        
-    }
-
-        int m=3;
-    int *nodes = calloc(m, sizeof *nodes);
-    generate_node_BA(m, nodes);
-    printf("generated nodes:\n");
-    for(int i = 0; i < m; i++) {
-        printf("%d", nodes[i]);
-    }
-*/
-
-
-
+    //debug();
 
 ////////////////////////// PERCOLATION ////////////////////////////////////////
 #ifdef PERCOLATION_ON
@@ -64,19 +27,23 @@ int main(void)
 #endif
 ////////////////////////// OSCILLATOR /////////////////////////////////////////
 #ifdef OSCILLATOR_ON
-oscillator_on();
+    oscillator_on();
 #endif
 ////////////////////////// EPES ///////////////////////////////////////////////
 #ifdef SYNC_AND_PERC_ON
-//epes_on();
-#endif // endif SYNC_AND_PERC_ON
-//////////////////////////////////////////////////////////////////////////////
+    epes_on();
+#endif
+////////////////////////// FREQUENCY GAP///////////////////////////////////////
+#ifdef FREQUENCY_GAP
+    frequency_gap_on();
+#endif
+////////////////////////////////////////////////////////////////////////////////
 
     // Freeing other global arrays.
-    free(GLOB_component_name); GLOB_component_name = NULL;
-    free(GLOB_component_size); GLOB_component_size = NULL;
+    //free(GLOB_component_name); GLOB_component_name = NULL;
+    //free(GLOB_component_size); GLOB_component_size = NULL;
 
-    clear_C_memory(&C, NODE_NR, K_MAX);
+    //clear_C_memory(&C, NODE_NR, K_MAX);
 
     printf("\nYou've reached the end without dying! ;-)\n");
     return 0;

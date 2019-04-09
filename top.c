@@ -11,8 +11,8 @@ int initEXPL_product_rule (double t, double sigma)
     size1 = size2 = size3 = size4 = 0;
     rnd1 = rnd2 = rnd3 = rnd4 = 0;
     int bool_res = 0; // 0 false, 1 true
-    int name_aux2, name_aux3;
-    name_aux2 = name_aux3 = 0;
+    int name_aux1, name_aux2, name_aux3;
+    name_aux1 = name_aux2 = name_aux3 = 0;
 
     
     while (GLOB_nr_edges < tot_nr_edges) 
@@ -30,7 +30,6 @@ int initEXPL_product_rule (double t, double sigma)
   //  } 
     /*  
     if (GLOB_unique_components == 2) {
-        int name_aux1 = 0;
         rnd1 = (int)(Random()*NODE_NR);
         rnd2 = 0;
         name_aux1 = GLOB_component_name[rnd1];
@@ -91,7 +90,7 @@ int initEXPL_product_rule (double t, double sigma)
         rnd4 = (int)(Random()*NODE_NR);
 
 /*
-        int name_aux1 = 0;
+        name_aux1 = 0;
         rnd1 = (int)(Random()*NODE_NR);
         // TODO: remove thjese conditions
         rnd2 = (int)(Random()*NODE_NR);
@@ -232,8 +231,8 @@ int initEXPL_product_rule (double t, double sigma)
         }
 #endif
 #ifdef EPES_MECH_selfloop
-        int name_aux1 = 0;
-        double w = 0;
+        name_aux1 = 0;
+        double w = (double)name_aux1; // to get rid of 'unused' gcc flags
         rnd1 = (int)(Random()*NODE_NR);
         int rnd1_size = GLOB_component_size[rnd1];
         if ( (rnd1_size!=1 && rnd1_size!=2) && rnd1_size!=3 )
@@ -381,4 +380,70 @@ else
         //printf("nr_edges: %d \n", nr_edges);
     }
     return 1;
+}
+
+void increase_edges_FREQ_GAP (double t, int m, double alpha,
+                                double tiempo, double sigma)
+{
+    int tot_nr_edges = 0;
+    tot_nr_edges =  (int) (t* ((double)NODE_NR));
+
+    int rnd1 = 0;
+    if (GLOB_nr_edges == 0) {
+        int rnd2 = 0;
+        rnd1 = (int)(Random()*NODE_NR); 
+        rnd2 = (int)(Random()*NODE_NR); 
+        while(rnd1 == rnd2){
+            rnd2 = (int)(Random()*NODE_NR); 
+        }
+        add_edge(rnd1,rnd2);
+        GLOB_nr_edges++;
+    }
+
+    if (m>NODE_NR || m<1) {
+        printf("warning: m in frq.gap algorithm wrong\n");
+        exit(45);
+    }
+
+    int bool_res = 0;
+    int fg_nodes[m];
+    for(int i_idx = 0; i_idx < m; i_idx++) {
+        fg_nodes[i_idx] = -1;
+    }
+    
+    while(GLOB_nr_edges <= tot_nr_edges)
+    {
+        GLOB_unique_components = (int) (GLOB_unique_elements_in_network);
+        if (GLOB_unique_components < 0 || GLOB_unique_components > NODE_NR) {
+            printf("warning: unique components wrong!\n");
+            exit(11);
+        }
+
+        rnd1 = (int)(Random()*NODE_NR);
+        generate_node_FREQUENCY_GAP(alpha, rnd1, m, fg_nodes, tiempo, sigma);
+        for(int i_idx = 0; i_idx < m; i_idx++) 
+        {
+            bool_res = add_edge(rnd1, fg_nodes[i_idx]);
+            //printf("(%d,%d,%d)\n", rnd1, fg_nodes[i_idx],bool_res);
+            if (bool_res == 1) 
+            {
+                GLOB_nr_edges++;
+                
+        //printf("GLOB_nr_edges=%d \t max_comp_size=%g unique_elem:%g\n",
+        //                                GLOB_nr_edges,
+        //                                GLOB_max_component_size,
+        //                                (GLOB_unique_elements_in_network));
+            }
+        }
+        //printf("\n");
+        // Now we thermalize to addapt to new edges.
+#ifdef TERMALIZATION // we wait for r to stabilize
+            for (int i = 0; i < TERMALIZATION; i++)
+                for (int t_aux = 0; t_aux < IN_BETWEEN; t_aux++)
+                    update_RK(tiempo, sigma, DELTA_T);
+#endif
+        
+    }
+    
+
 }
