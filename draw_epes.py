@@ -25,13 +25,23 @@ plot_data, labels, colors = [], [], []
 
 #filename="ES_sigmaVSr_file_N=1000_growth_0.txt"
 #filename = r"trampa_EPES_sigmaVSr_file_N=10000_weff.txt"
-filename = r"pres_EPES_N=1000_selfloop_sig=1.txt"
+#filename = r"pres_EPES_N=1000_selfloop_sig=1.txt"
 #filename = r"pres_EPES_N=1000_comparer_sig=1.txt"
 #filename = r"pres_EPES_N=1000_weff_sig=1.txt"
-
+'''
+filename = r"1FG_N=100_m=1_a=0.5_sig=1.txt"
 plot_data.append(genfromtxt(filename,  skip_header=2))
 labels.append(['r_'+filename,'p_'+filename])
-colors.append([tableau20[0],tableau20[0],tableau20[0]])
+colors.append([tableau20[0],tableau20[1],tableau20[3]])
+filename = r"2FG_N=100_m=1_a=0.5_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['r_'+filename,'p_'+filename])
+colors.append([tableau20[0],tableau20[1],tableau20[3]])
+filename = r"FG_N=100_m=1_a=-1_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['r_'+filename,'p_'+filename])
+colors.append([tableau20[6],tableau20[7],tableau20[8]])
+'''
 '''
 filename = r"EPES_N=10000_weff_sig=3.txt"
 plot_data.append(genfromtxt(filename,  skip_header=2))
@@ -44,6 +54,21 @@ labels.append(['r_'+filename,'p_'+filename])
 colors.append([tableau20[4],tableau20[4],tableau20[4]])
 '''
 
+filename = r"FG_N=300_m=1_a=0_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+colors.append([tableau20[0],tableau20[0],tableau20[0]])
+filename = r"FG_N=300_m=1_a=-100_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+colors.append([tableau20[2],tableau20[2],tableau20[2]])
+filename = r"FG_N=300_m=1_a=100_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+colors.append([tableau20[4],tableau20[4],tableau20[4]])
+
+
+
 fig = plt.figure()
 
 for i in range(0,len(plot_data)):
@@ -51,8 +76,8 @@ for i in range(0,len(plot_data)):
                 label = labels[i][0], color = colors[i][0])
     plt.plot((    plot_data[i][:,0]), plot_data[i][:,1],
                 label = labels[i][1], color = colors[i][1])
-    plt.plot((    plot_data[i][:,0]), plot_data[i][:,4],
-                label = labels[i][1], color = colors[i][2])
+    #plt.plot((    plot_data[i][:,0]), plot_data[i][:,4],
+    #            label = labels[i][1], color = colors[i][2])
 
 plt.legend().set_draggable('True')
 

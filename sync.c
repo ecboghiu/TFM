@@ -19,7 +19,7 @@ void initOmegas()
     for (int i = 0; i < NODE_NR; i++) 
     {
         //GLOB_omega_nat[i] = sampleNormal();//(double)degree[i];//0.5*(-1 + 2*Random());//
-        GLOB_omega_nat[i] = 10*(-1 + 2*Random());
+        GLOB_omega_nat[i] = 0.5*(-1 + 2*Random());
         //GLOB_omega_nat[i] = (double)degree[i];
     }
 }
@@ -141,6 +141,56 @@ double weff_compt (int id_compt, double t, double sigma)
     }
 
     return w_avg;
+}
+
+// This function advances time globally certain amount of units. Then
+// at each timestep it creates a moving average and stores it in weff_dom.
+void weff_compt_efficient (double *weff_dom, int weff_dom_size,
+                                double t, double sigma)
+{
+    
+    double timp = 0;
+    double weff = 0.0;
+    int compont_name = 0;
+    //double weff_by_domain[NODE_NR];
+    for(int i = 0; i < weff_dom_size; i++)
+    {
+        weff_dom[i] = FG_WEFF_LOWER_FREQUENCY;
+    }
+    //We need to do the first step and change from default
+    for(int i = 0; i < NODE_NR; i++)
+    {
+        // IF w<FR_WEFF.../10 then it means we have a new component whos weff
+        // hasn't been calculated yet.
+        if (weff_dom[GLOB_component_name[i]]<(FG_WEFF_LOWER_FREQUENCY/10)) 
+        {
+            weff_dom[GLOB_component_name[i]] =
+                        weff_compt_instant(GLOB_component_name[i], t, sigma);
+        }
+    }
+
+    for(int i = 0; i < FG_WEFF_MAX_STEPS; i++)
+    {
+        for(int idxx = 0; idxx < NODE_NR; idxx++)
+        {
+            // IF w>FR_WEFF.../10 then it means we it is a component which is 
+            // part of the network and we update its average.
+            compont_name = GLOB_component_name[idxx];
+            if (weff_dom[compont_name]>(FG_WEFF_LOWER_FREQUENCY/10)) 
+            {
+                weff = weff_compt_instant (compont_name, t, sigma);
+                weff_dom[compont_name] = 
+                        ((double)i)/(i+1) * weff_dom[compont_name] + weff/(i+1);
+            }
+        }
+        
+
+        timp = i*DELTA_T*(1+FG_WEFF_IN_BETWEEN);
+        for(int j = 0; j < FG_WEFF_IN_BETWEEN; j++) {
+            update_RK(t+timp, sigma, DELTA_T); 
+        }
+        update_RK(t+timp, sigma, DELTA_T);
+    }
 }
 
 double phase_coherence_compt (int id_compt)

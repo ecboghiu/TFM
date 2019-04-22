@@ -9,12 +9,12 @@
 
 #define DEBUG
 
-/*******CONTROL: type of graph*******/
+/*******CONTROL: type of graph in case of oscillator dynamc*******/
 //#define SMALL_WORLD
 //#define ERDOS_RENYI
 #define ERDOS_RENYI_prob 0.006
 //#define SCALE_FREE
-#define READ_NETWORK_FROM_FILE
+//#define READ_NETWORK_FROM_FILE
 #ifdef READ_NETWORK_FROM_FILE
     #define FILENAME_FROM_WHICH_TO_READ "nx_edgelist_BA.txt"
     #define NET_TYPE "growth"
@@ -35,29 +35,29 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 1000
+#define NODE_NR 300
 #define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 5e-2
+#define DELTA_T 1e-1
 // How many times we measure.
-#define MAX_STEPS 1000
+#define MAX_STEPS 2000
 // Number of updates in between measures.
-#define IN_BETWEEN 2
+#define IN_BETWEEN 0
 #define SIGMA_MIN 0.0
 #define SIGMA_MAX 0.2
 #define NR_SIGMA 10
 
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
-#define TERMALIZATION 40
+#define TERMALIZATION 100
 
 //#define EPSILON_OSCILLATOR 1e-3
 
-#define OSCILLATOR_ON
+//#define OSCILLATOR_ON
 //#define PERCOLATION_ON
 //#define SYNC_AND_PERC_ON
 //#ifdef SYNC_AND_PERC_ON
@@ -68,12 +68,12 @@
     //#define EPES_MECH_iffs
     #define EPES_MECH_selfloop
 //#endif
-//#define FREQUENCY_GAP
+#define FREQUENCY_GAP
 //#ifdef FREQUENCY_GAP
     #define FG_M 1
-    #define FG_ALPHA 0.5
+    #define FG_ALPHA +1.0
     #define FG_T_MIN 0.0
-    #define FG_T_MAX 1.0
+    #define FG_T_MAX 1.5
     #define FG_T_NUMBER 100
     #define FG_WEFF_LOWER_FREQUENCY -1e6
     #define FG_WEFF_MAX_STEPS MAX_STEPS
@@ -202,9 +202,11 @@ void    debug                   (void);
 void    calculateDegree         (void);
 double  calculateTheta_dot_i    (double t, double *phases, int phases_len,
                                 double sigma, int i);
-double diff_weff_weight         (double alpha, double wi, double wj);
+double  diff_weff_weight        (double alpha, double wi, double wj);
 double  calculateThetaAverage   (void);
 double  weff_compt              (int id_compt, double t, double sigma);
+void    weff_compt_efficient    (double *weff_dom, int weff_dom_size,
+                                double t, double sigma);
 double  phase_coherence         (void);
 double  psi_coherence           (void);
 double  phase_coherence_compt   (int id_compt);

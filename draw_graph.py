@@ -109,6 +109,7 @@ ax.set_xticklabels(deg)
 
 # data to plot the frequency gap generation method
 def plot_test_fq():
+    plt.figure()
     plot_data = []
     filename = "test_theor.txt"
     plot_data=(genfromtxt(filename, skip_header=0))
@@ -116,7 +117,7 @@ def plot_test_fq():
     plot_data2 = []
     filename = "test_FG.txt"
     plot_data2=(genfromtxt(filename, skip_header=0))
-    
+        
     b = np.histogram(plot_data2, bins=np.array([0,1,2,3,4,5,6,7,8,9,10])-0.5)
     #plt.hist(plot_data2, bins=np.array([0,1,2,3,4,5,6,7,8,9,10])-0.5)
     theor = np.array(plot_data[:,1])
@@ -125,12 +126,12 @@ def plot_test_fq():
     exp = b[0]/b[0].sum()
     plt.plot(list(range(0,10)),exp,label='exp')
     plt.plot(list(range(0,10)),np.abs(exp-theor),label='diff')
-    #plt.yscale('log')
+    plt.yscale('log')
     #plt.xscale('log')
     plt.legend()
     plt.show()
 
-#plot_test_fq()
+plot_test_fq()
 
 
 

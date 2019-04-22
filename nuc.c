@@ -588,8 +588,8 @@ void debug()
     double www = 0;
     for(int ii = 0; ii < NODE_NR; ii++)
     {
-    wi = weff_compt(GLOB_component_name[node_i], 0.0, SIGMA_VAL);
-    wf = weff_compt(GLOB_component_name[ii], 0.0, SIGMA_VAL);
+    //wi = weff_compt(GLOB_component_name[node_i], 0.0, SIGMA_VAL);
+    //wf = weff_compt(GLOB_component_name[ii], 0.0, SIGMA_VAL);
     www = diff_weff_weight(FG_ALPHA, wi, wf);
     for (int j=0; j<degree[node_i]; j++)
     {
