@@ -563,7 +563,7 @@ void debug()
         
     }
     printf("1\n");
-        int m=3;
+    int m=3;
     int *nodes = calloc(m, sizeof *nodes);
     generate_node_BA(m, nodes);
     printf("generated nodes:\n");
@@ -676,7 +676,7 @@ void frequency_gap_on()
     #endif
     
     char filename2[128] = "aa";
-    snprintf(filename2, sizeof(char) * 128, "FG_N=%d_m=%d_a=%g_sig=%g.txt", 
+    snprintf(filename2, sizeof(char) * 128, "data/FG_N=%d_m=%d_a=%g_sig=%g.txt", 
                                         NODE_NR, FG_M, FG_ALPHA, SIGMA_VAL);
 
     FILE *f_out2 = fopen(filename2,"w");

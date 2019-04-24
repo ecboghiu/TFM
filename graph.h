@@ -35,18 +35,18 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 300
+#define NODE_NR 10
 #define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1e-1
+#define DELTA_T 1e-3
 // How many times we measure.
 #define MAX_STEPS 2000
 // Number of updates in between measures.
-#define IN_BETWEEN 0
+#define IN_BETWEEN 100
 #define SIGMA_MIN 0.0
 #define SIGMA_MAX 0.2
 #define NR_SIGMA 10
@@ -71,11 +71,11 @@
 #define FREQUENCY_GAP
 //#ifdef FREQUENCY_GAP
     #define FG_M 1
-    #define FG_ALPHA +1.0
+    #define FG_ALPHA 0.0
     #define FG_T_MIN 0.0
     #define FG_T_MAX 1.5
-    #define FG_T_NUMBER 100
-    #define FG_WEFF_LOWER_FREQUENCY -1e6
+    #define FG_T_NUMBER (FG_T_MAX-FG_T_MIN)*NODE_NR
+    #define FG_WEFF_LOWER_FREQUENCY -1e8
     #define FG_WEFF_MAX_STEPS MAX_STEPS
     #define FG_WEFF_IN_BETWEEN IN_BETWEEN
 //#endif
@@ -84,7 +84,7 @@
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 1.0
+#define SIGMA_VAL 100.0
 #define PRINT_EVOLUTION_OF_R
 
 // For the scale-free probability distribution.

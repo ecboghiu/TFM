@@ -28,45 +28,75 @@ plot_data, labels, colors = [], [], []
 #filename = r"pres_EPES_N=1000_selfloop_sig=1.txt"
 #filename = r"pres_EPES_N=1000_comparer_sig=1.txt"
 #filename = r"pres_EPES_N=1000_weff_sig=1.txt"
-'''
-filename = r"1FG_N=100_m=1_a=0.5_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['r_'+filename,'p_'+filename])
-colors.append([tableau20[0],tableau20[1],tableau20[3]])
-filename = r"2FG_N=100_m=1_a=0.5_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['r_'+filename,'p_'+filename])
-colors.append([tableau20[0],tableau20[1],tableau20[3]])
-filename = r"FG_N=100_m=1_a=-1_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['r_'+filename,'p_'+filename])
-colors.append([tableau20[6],tableau20[7],tableau20[8]])
-'''
-'''
-filename = r"EPES_N=10000_weff_sig=3.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['r_'+filename,'p_'+filename])
-colors.append([tableau20[2],tableau20[2],tableau20[2]])
 
-filename = r"EPES_N=1000_weff_sig=8.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['r_'+filename,'p_'+filename])
-colors.append([tableau20[4],tableau20[4],tableau20[4]])
 '''
-
 filename = r"FG_N=300_m=1_a=0_sig=1.txt"
 plot_data.append(genfromtxt(filename,  skip_header=2))
 labels.append(['RANDOM r_'+filename,'p_'+filename])
-colors.append([tableau20[0],tableau20[0],tableau20[0]])
-filename = r"FG_N=300_m=1_a=-100_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
-colors.append([tableau20[2],tableau20[2],tableau20[2]])
+color_code = 0
+colors.append([tableau20[color_code],
+               tableau20[color_code+1],tableau20[color_code]])
+
 filename = r"FG_N=300_m=1_a=100_sig=1.txt"
 plot_data.append(genfromtxt(filename,  skip_header=2))
 labels.append(['RANDOM r_'+filename,'p_'+filename])
-colors.append([tableau20[4],tableau20[4],tableau20[4]])
+color_code = 2
+colors.append([tableau20[color_code],
+               tableau20[color_code+1],tableau20[color_code]])
+    
+filename = r"FG_N=300_m=1_a=-100_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+color_code = 4
+colors.append([tableau20[color_code],
+               tableau20[color_code+1],tableau20[color_code]])
+    
+filename = r"FG_N=300_m=1_a=0.5_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+color_code = 6
+colors.append([tableau20[color_code],
+               tableau20[color_code+1],tableau20[color_code]])
+    
+filename = r"FG_N=300_m=1_a=-0.5_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+color_code = 8
+colors.append([tableau20[color_code],
+               tableau20[color_code+1],tableau20[color_code]])
+    
+filename = r"FG_N=300_m=1_a=1_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+color_code = 10
+colors.append([tableau20[color_code],
+               tableau20[color_code+1],tableau20[color_code]])
+    
+filename = r"FG_N=300_m=1_a=-1_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+color_code = 12
+colors.append([tableau20[color_code],
+               tableau20[color_code+1],tableau20[color_code]])
+'''
+'''
+filename = r"FG_N=300_m=1_a=0.5_sig=10.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+color_code = 14
+colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
 
+filename = r"FG_N=300_m=1_a=-0.5_sig=10.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['RANDOM r_'+filename,'p_'+filename])
+color_code = 12
+colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]])    
+'''
+filename = r"../data/FG_N=300_m=1_a=0_sig=100.txt"
+plot_data.append(genfromtxt(filename,  skip_header=2))
+labels.append(['r_'+filename,'p_'+filename])
+color_code = 10
+colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]])    
 
 
 fig = plt.figure()

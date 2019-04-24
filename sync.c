@@ -162,10 +162,11 @@ void weff_compt_efficient (double *weff_dom, int weff_dom_size,
     {
         // IF w<FR_WEFF.../10 then it means we have a new component whos weff
         // hasn't been calculated yet.
-        if (weff_dom[GLOB_component_name[i]]<(FG_WEFF_LOWER_FREQUENCY/10)) 
+        compont_name = GLOB_component_name[i];
+        if (weff_dom[compont_name]<(FG_WEFF_LOWER_FREQUENCY/10)) 
         {
-            weff_dom[GLOB_component_name[i]] =
-                        weff_compt_instant(GLOB_component_name[i], t, sigma);
+            weff_dom[compont_name] =
+                        weff_compt_instant(compont_name, t, sigma);
         }
     }
 
