@@ -424,15 +424,10 @@ void increase_edges_FREQ_GAP (double t, int m, double alpha,
         for(int i_idx = 0; i_idx < m; i_idx++) 
         {
             bool_res = add_edge(rnd1, fg_nodes[i_idx]);
-            //printf("(%d,%d,%d)\n", rnd1, fg_nodes[i_idx],bool_res);
+            printf("(%d,%d,%d)\n", rnd1, fg_nodes[i_idx], bool_res);
             if (bool_res == 1) 
             {
                 GLOB_nr_edges++;
-                
-        //printf("GLOB_nr_edges=%d \t max_comp_size=%g unique_elem:%g\n",
-        //                                GLOB_nr_edges,
-        //                                GLOB_max_component_size,
-        //                                (GLOB_unique_elements_in_network));
             }
         }
         //printf("\n");

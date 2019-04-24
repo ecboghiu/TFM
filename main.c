@@ -13,8 +13,8 @@ int main(void)
 {
     printf("Initializing program.\n");
 
-    ini_ran(time(NULL));  // Seed for the random generator.
-    //ini_ran(662323);     // we want predictable results
+    //ini_ran(time(NULL));  // Seed for the random generator.
+    ini_ran(662323);     // we want predictable results
 
     init_C_memory(&C, NODE_NR, K_MAX);
     initDom();

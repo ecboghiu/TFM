@@ -31,34 +31,12 @@ for i in range(len(tableau20)):
 plot_data, labels, colors = [], [], []
 
 
-filename = "er_ES_sigmaVSr_file_N=1000_growth_0.txt"
-plot_data.append(genfromtxt(filename, skip_header=2))
-labels.append(filename)
-colors.append(tableau20[2])
-filename = "ba_ES_sigmaVSr_file_N=1000_growth_0.txt"
-plot_data.append(genfromtxt(filename, skip_header=2))
-labels.append(filename)
-colors.append(tableau20[4])
 
-
-'''
-filename = "ES_sigmaVSr_file_N=1000_growth_0.txt"
-plot_data.append(genfromtxt(filename, skip_header=2))
-labels.append(filename)
-colors.append(tableau20[0])
-
-filename = "coh_term_1.txt"
-plot_data.append(genfromtxt(filename, skip_header=2))
-labels.append(filename)
-colors.append(tableau20[2])
-'''
-'''
-filename = "FG_N=1000_m=3_a=2_sig=1.txt"
+filename = "../data/coh_term_1.txt"
 plot_data.append(genfromtxt(filename, skip_header=2))
 labels.append(filename)
 colors.append(tableau20[2])
 
-'''
 
 
 fig = plt.figure()

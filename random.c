@@ -200,11 +200,8 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
         nodes[i] = -1;
     }
 
-    double compt_name_i = GLOB_component_name[node_i];
-    double wi = weff_compt(compt_name_i, t, sigma);
-
-
-    double weff_by_domain[NODE_NR];
+    double weff_by_domain[NODE_NR]; // initialized in weff_compt_efficient
+    
     /*
     for(int i = 0; i < NODE_NR; i++)
     {
@@ -221,8 +218,10 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
         }
     }
     */
+    
     weff_compt_efficient(weff_by_domain, NODE_NR, t, sigma);
     
+    double wi = weff_by_domain[GLOB_component_name[node_i]];
     double wf = 0;
     double tags[NODE_NR];
     for(int i = 0; i < NODE_NR; i++) {
@@ -239,17 +238,22 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
     for(int j = 0; j < degree[node_i]; j++) {
         tags[ C[node_i][j] ] = 0;
     }
-    
+    tags[node_i] = 0; // node_i also has 0 probability of being chosen
 
+    sum_norm = 0;
+    for(int i_idx = 0; i_idx < NODE_NR; i_idx++) {
+        sum_norm += tags[i_idx];
+    }
+    if (sum_norm = 0)
+    {
+        printf("warning: sum_norm = 0 something wrong!");
+    }
+    
+    double sum_norm_new = sum_norm;
     double nr_compare = 0;
     for(int m_idx = 0; m_idx < m; m_idx++)
     {
         w = Random();
-
-        sum_norm = 0;
-        for(int i_idx = 0; i_idx < NODE_NR; i_idx++) {
-            sum_norm += tags[i_idx];
-        }
 
         counter = 0;
         sum = tags[counter];
@@ -258,9 +262,12 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
             counter++;
             sum += tags[counter];
         }
-        //printf("sum: %lf counter: %d sum_norm: %d\n", sum, counter, sum_norm);
+        printf("sum: %lf counter: %d sum_norm: %lf\n", sum, counter, sum_norm);
 
         nodes[m_idx] = counter;
+        
+        sum_norm = sum_norm-tags[counter];
+
         tags[counter] = 0; // we remove this node from the list
     }
 

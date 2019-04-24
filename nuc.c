@@ -396,7 +396,7 @@ void epes_on ()
                 GLOB_theta[i] = M_PI*(-1 + Random()*2);
             }
             //for (int i = 0; i < NODE_NR; i++) {
-            //    GLOB_omega_nat[i] = (double) degree[i];//(double)GLOB_component_size[i];
+            //    GLOB_omega_nat[i] = (double) degree[i];
             //            //0.5*(-1 + 2*Random());//sampleNormal();
             //}
 
@@ -447,7 +447,7 @@ void epes_on ()
             //printf("Glob_nr_edges= %d\n", GLOB_nr_edges);
             //printf("component name unique elements: %d\n",
             //                unique_elements(GLOB_component_name, NODE_NR));
-    printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust=%g\n",
+printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust=%g\n",
                                             GLOB_nr_edges, NODE_NR,
                                             GLOB_max_component_size,
                                             (GLOB_unique_elements_in_network),
@@ -549,7 +549,7 @@ void debug()
     //add_edge(3,5);
 
     print_linked_list();
-
+/*
         for(size_t i = 0; i < NODE_NR; i++)
     {
         printf("comp: %d ||||| ", i);
@@ -561,14 +561,14 @@ void debug()
         }
         printf("size: %d\n", (int)GLOB_dom_size[i]);
         
-    }
+    }*/
     printf("1\n");
     int m=3;
     int *nodes = calloc(m, sizeof *nodes);
     generate_node_BA(m, nodes);
     printf("generated nodes:\n");
     for(int i = 0; i < m; i++) {
-        printf("%d", nodes[i]);
+        printf("%d ", nodes[i]);
     }
     printf("1\n");
 
@@ -581,10 +581,10 @@ void debug()
 
     double wi, wf;
     wi = wf = 0;
-    printf("1\n");
+    printf("2\n");
     int node_i = 3;
     FILE *f1 = fopen("test_theor.txt","w");
-    printf("1\n");
+    printf("3\n");
     double www = 0;
     for(int ii = 0; ii < NODE_NR; ii++)
     {
@@ -602,14 +602,16 @@ void debug()
     fprintf(f1, "%d %g\n", ii,  www);
     }
     fclose(f1); f1=NULL;
-    printf("1\n");
+    printf("4\n");
 
     FILE *f = fopen("test_FG.txt","w");
-    printf("1\n");
+    printf("6\n");
     int fg_nodes[FG_M];
-    for(long int i = 0; i < (long int)(1e6); i++)
+    for(long int i = 0; i < (long int)(1e3); i++)
     {
-    generate_node_FREQUENCY_GAP(FG_ALPHA, node_i, FG_M, fg_nodes, 0.0, SIGMA_VAL);
+        //generate_node_FREQUENCY_GAP(FG_ALPHA, node_i, FG_M, fg_nodes,
+        //                                                0, SIGMA_VAL);
+        //printf("%d\n", fg_nodes[0]);
     fprintf(f, "%d\n", fg_nodes[0]);
     }
     printf("1\n");
@@ -664,9 +666,9 @@ void frequency_gap_on()
 
     double *r_coh;
     r_coh = calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
-    #ifndef TERMALIZATION
+    #ifdef PRINT_EVOLUTION_OF_R
     char filename_coh[128] = ".";
-    snprintf(filename_coh, sizeof(char) * 128, "coh_%s_%g.txt",
+    snprintf(filename_coh, sizeof(char) * 128, "data/coh_%s_%g.txt",
                                                 "term", SIGMA_VAL);
     FILE *theta_file = fopen(filename_coh,"a");
     if (theta_file == NULL) {
@@ -702,14 +704,14 @@ void frequency_gap_on()
         idx = 0;
         for ( t=t_min; t<=t_max; t += t_inc)
         {   
-            //init_C(&C, NODE_NR, K_MAX);
-            //initEXPL_product_rule(t, sigma);  
             increase_edges_FREQ_GAP(t, FG_M, FG_ALPHA, 0.0, SIGMA_VAL);
-            for(int i = 0; i < NODE_NR; i++) {
-                GLOB_theta[i] = M_PI*(-1 + Random()*2);
-            }
+            
+            //for(int i = 0; i < NODE_NR; i++) {
+            //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
+            //}
+            
             //for (int i = 0; i < NODE_NR; i++) {
-            //    GLOB_omega_nat[i] = (double) degree[i];//(double)GLOB_component_size[i];
+            //    GLOB_omega_nat[i] = (double) degree[i];
             //            //0.5*(-1 + 2*Random());//sampleNormal();
             //}
 
@@ -726,11 +728,10 @@ void frequency_gap_on()
                 //r_coh[t_idx] = (GLOB_theta[node_nr_aux_term]);
                 timp = t_idx*h*(1+blind);
 
-                #ifndef TERMALIZATION
-                fprintf(theta_file, "%lf %lf %lf\n",
-         timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
-                r_coh[t_idx], //exp(-0.01*timp));
-                            sin(timp));
+                #ifdef PRINT_EVOLUTION_OF_R
+                fprintf(theta_file, "%lf %lf\n",
+         timp + (t-t_min)/t_inc * nr_measurements*h*(1+blind),
+                r_coh[t_idx]);
                 #endif
 
                 for (int t_aux = 0; t_aux < blind; t_aux++) {
@@ -812,6 +813,4 @@ void frequency_gap_on()
     free(r_coh);        r_coh = NULL;
     free(GLOB_theta); GLOB_theta = NULL;
     free(GLOB_omega_nat); GLOB_omega_nat = NULL;
-
-
 }

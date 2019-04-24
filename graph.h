@@ -44,7 +44,7 @@
 // sufficently. small
 #define DELTA_T 1e-3
 // How many times we measure.
-#define MAX_STEPS 2000
+#define MAX_STEPS 1000
 // Number of updates in between measures.
 #define IN_BETWEEN 100
 #define SIGMA_MIN 0.0
@@ -71,7 +71,7 @@
 #define FREQUENCY_GAP
 //#ifdef FREQUENCY_GAP
     #define FG_M 1
-    #define FG_ALPHA 0.0
+    #define FG_ALPHA 0.5
     #define FG_T_MIN 0.0
     #define FG_T_MAX 1.5
     #define FG_T_NUMBER (FG_T_MAX-FG_T_MIN)*NODE_NR
@@ -84,7 +84,7 @@
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 100.0
+#define SIGMA_VAL 1.0
 #define PRINT_EVOLUTION_OF_R
 
 // For the scale-free probability distribution.
