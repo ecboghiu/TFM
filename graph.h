@@ -30,12 +30,13 @@
     #define EPES_CHARACT "tribe"
 #endif
 
+#define INITIAL_SEED 314159265
 
 // Define if you want a histogram of the degrees of the graph
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 10
+#define NODE_NR 100
 #define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
@@ -53,7 +54,7 @@
 
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
-#define TERMALIZATION 100
+#define TERMALIZATION 40
 
 //#define EPSILON_OSCILLATOR 1e-3
 
@@ -71,9 +72,9 @@
 #define FREQUENCY_GAP
 //#ifdef FREQUENCY_GAP
     #define FG_M 1
-    #define FG_ALPHA 0.5
+    #define FG_ALPHA 0.0
     #define FG_T_MIN 0.0
-    #define FG_T_MAX 1.5
+    #define FG_T_MAX 1.25
     #define FG_T_NUMBER (FG_T_MAX-FG_T_MIN)*NODE_NR
     #define FG_WEFF_LOWER_FREQUENCY -1e8
     #define FG_WEFF_MAX_STEPS MAX_STEPS
@@ -85,7 +86,7 @@
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
 #define SIGMA_VAL 1.0
-#define PRINT_EVOLUTION_OF_R
+//#define PRINT_EVOLUTION_OF_R
 
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
@@ -102,6 +103,10 @@
 // there are degree[i] neighbors. Everything after the last number has value -1.
 // All nodes are tagged with natural numbers from 0 to NODE_NR-1.
 extern int **C;
+extern int **C_dom;
+
+extern int GLOB_initial_seed; // this is so that we store the seed we used
+                         // and then we can access it to write it to file
 
 // Global array where degrees are stored.
 extern int *degree;
@@ -112,6 +117,7 @@ extern int *GLOB_component_name;
 // GLOB_component_name[i] gives node i's component size (neighbors of neighbors
 // of neighbors etc.)
 extern int *GLOB_component_size;
+extern int GLOB_dom_array_lengths[NODE_NR];
 
 // Gives the total number of edges in the graph.
 extern int GLOB_nr_edges;
@@ -126,7 +132,7 @@ extern double GLOB_max_component_size;
 extern double GLOB_unique_elements_in_network;
 
 // GLOB_dom_size[id_compt] gives the size of component of name id_compt
-extern double *GLOB_dom_size;
+extern double GLOB_dom_size[NODE_NR];
 
 // GLOB_theta[i] gives node i's current phase
 extern double *GLOB_theta;
@@ -145,10 +151,17 @@ struct _Node {
 //}; typedef struct _Connected *Graph_domains;
 
 struct _Graph {
-        Node *suc;
+    Node *suc;
 }; typedef struct _Graph *Graph;
 
+struct _Graph_array {
+    int **suc;
+}; typedef struct _Graph_array *Graph_array;
+
+
+Graph_array GLOB_dom_array;
 Graph GLOB_dom;
+
 
 /*******FUNCTION PROTOTYPES*******/
 void update_EULER   (double sigma, double h);
@@ -207,6 +220,7 @@ double  calculateThetaAverage   (void);
 double  weff_compt              (int id_compt, double t, double sigma);
 void    weff_compt_efficient    (double *weff_dom, int weff_dom_size,
                                 double t, double sigma);
+double  weff_compt_instant      (int id_compt, double t, double sigma);
 double  phase_coherence         (void);
 double  psi_coherence           (void);
 double  phase_coherence_compt   (int id_compt);

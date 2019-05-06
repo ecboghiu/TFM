@@ -407,24 +407,24 @@ void increase_edges_FREQ_GAP (double t, int m, double alpha,
 
     int bool_res = 0;
     int fg_nodes[m];
-    for(int i_idx = 0; i_idx < m; i_idx++) {
-        fg_nodes[i_idx] = -1;
-    }
+    //for(int i_idx = 0; i_idx < m; i_idx++) {
+    //    fg_nodes[i_idx] = -1;
+    //}
     
     while(GLOB_nr_edges <= tot_nr_edges)
     {
-        GLOB_unique_components = (int) (GLOB_unique_elements_in_network);
-        if (GLOB_unique_components < 0 || GLOB_unique_components > NODE_NR) {
-            printf("warning: unique components wrong!\n");
-            exit(11);
-        }
+        GLOB_unique_components = GLOB_unique_elements_in_network;
+        //if (GLOB_unique_components < 0 || GLOB_unique_components > NODE_NR) {
+        //    printf("warning: unique components wrong!\n");
+        //    exit(11);
+        //}
 
         rnd1 = (int)(Random()*NODE_NR);
         generate_node_FREQUENCY_GAP(alpha, rnd1, m, fg_nodes, tiempo, sigma);
         for(int i_idx = 0; i_idx < m; i_idx++) 
         {
             bool_res = add_edge(rnd1, fg_nodes[i_idx]);
-            printf("(%d,%d,%d)\n", rnd1, fg_nodes[i_idx], bool_res);
+            //printf("(%d,%d,%d)\n", rnd1, fg_nodes[i_idx], bool_res);
             if (bool_res == 1) 
             {
                 GLOB_nr_edges++;
@@ -437,7 +437,6 @@ void increase_edges_FREQ_GAP (double t, int m, double alpha,
                 for (int t_aux = 0; t_aux < IN_BETWEEN; t_aux++)
                     update_RK(tiempo, sigma, DELTA_T);
 #endif
-        
     }
     
 

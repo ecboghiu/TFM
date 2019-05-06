@@ -8,18 +8,24 @@
 
 #include "graph.h"
 
+int GLOB_initial_seed;
+
 //int main(int args_number, char* args[])
 int main(void)
 {
     printf("Initializing program.\n");
 
-    //ini_ran(time(NULL));  // Seed for the random generator.
-    ini_ran(662323);     // we want predictable results
-
+#ifdef INITIAL_SEED
+    GLOB_initial_seed = INITIAL_SEED;
+#else
+    GLOB_initial_seed = time(NULL);
+#endif
+    ini_ran(GLOB_initial_seed);     
+    
     init_C_memory(&C, NODE_NR, K_MAX);
     initDom();
 
-    debug();
+    //debug();
 
 ////////////////////////// PERCOLATION ////////////////////////////////////////
 #ifdef PERCOLATION_ON

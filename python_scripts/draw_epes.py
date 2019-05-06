@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 
+import numpy as np
 from pylab import genfromtxt
 
 import seaborn as sns
@@ -23,86 +24,25 @@ for i in range(len(tableau20)):
 
 plot_data, labels, colors = [], [], []
 
-#filename="ES_sigmaVSr_file_N=1000_growth_0.txt"
-#filename = r"trampa_EPES_sigmaVSr_file_N=10000_weff.txt"
-#filename = r"pres_EPES_N=1000_selfloop_sig=1.txt"
-#filename = r"pres_EPES_N=1000_comparer_sig=1.txt"
-#filename = r"pres_EPES_N=1000_weff_sig=1.txt"
 
-'''
-filename = r"FG_N=300_m=1_a=0_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
-color_code = 0
-colors.append([tableau20[color_code],
-               tableau20[color_code+1],tableau20[color_code]])
 
-filename = r"FG_N=300_m=1_a=100_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
-color_code = 2
-colors.append([tableau20[color_code],
-               tableau20[color_code+1],tableau20[color_code]])
-    
-filename = r"FG_N=300_m=1_a=-100_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
+filename = r"../data/FG_N=100_m=1_a=0_sig=1_1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=5))
+labels.append(['r_'+filename,'p_'+filename])
 color_code = 4
-colors.append([tableau20[color_code],
-               tableau20[color_code+1],tableau20[color_code]])
-    
-filename = r"FG_N=300_m=1_a=0.5_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
-color_code = 6
-colors.append([tableau20[color_code],
-               tableau20[color_code+1],tableau20[color_code]])
-    
-filename = r"FG_N=300_m=1_a=-0.5_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
-color_code = 8
-colors.append([tableau20[color_code],
-               tableau20[color_code+1],tableau20[color_code]])
-    
-filename = r"FG_N=300_m=1_a=1_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
-color_code = 10
-colors.append([tableau20[color_code],
-               tableau20[color_code+1],tableau20[color_code]])
-    
-filename = r"FG_N=300_m=1_a=-1_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
-color_code = 12
-colors.append([tableau20[color_code],
-               tableau20[color_code+1],tableau20[color_code]])
-'''
-'''
-filename = r"FG_N=300_m=1_a=0.5_sig=10.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
-color_code = 14
 colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
 
-filename = r"FG_N=300_m=1_a=-0.5_sig=10.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
-labels.append(['RANDOM r_'+filename,'p_'+filename])
-color_code = 12
-colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]])    
-'''
-filename = r"../data/FG_N=300_m=1_a=0_sig=100.txt"
-plot_data.append(genfromtxt(filename,  skip_header=2))
+filename = r"../data/FG_N=100_m=1_a=0_sig=1_1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=5))
 labels.append(['r_'+filename,'p_'+filename])
-color_code = 10
-colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]])    
+color_code = 2
+colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
 
 
 fig = plt.figure()
 
 for i in range(0,len(plot_data)):
-    plt.errorbar((plot_data[i][:,0]), plot_data[i][:,2], plot_data[i][:,3],
+    plt.errorbar((plot_data[i][:,0]), plot_data[i][:,2], np.array(plot_data[i][:,3])/np.sqrt(10000),
                 label = labels[i][0], color = colors[i][0])
     plt.plot((    plot_data[i][:,0]), plot_data[i][:,1],
                 label = labels[i][1], color = colors[i][1])
@@ -115,7 +55,7 @@ plt.legend().set_draggable('True')
 # Formating:
 #plt.xlim(0,1.1)
 plt.xlabel(r'Edge density ($t$)')
-plt.ylabel(r'$C_{max}/N$')
+plt.ylabel(r'$C_{max}/N$,r')
 plt.ylim(0,1.1)
 plt.title(r'Synchronization and maximum component fraction')
 

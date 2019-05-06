@@ -1,0 +1,53 @@
+This is what I should get if it works correctly!!!
+
+
+emanuel@DESKTOP-IARRK9G:/mnt/c/Users/embog/Dropbox/University/TFM/code/EPES$ make clean; make; ./net
+rm -f net
+gcc main.c random.c stat.c adj.c sync.c top.c lists.c nuc.c @compilerFlags.txt  -o net
+Initializing program.
+t=1/30=0        max_comp=2      unique_elem:29  <r>=0.160944    sigma_<r>=0.0823903     clust=0
+t=2/30=0.0333333        max_comp=2      unique_elem:28  <r>=0.173856    sigma_<r>=0.0868093     clust=0
+t=3/30=0.0666667        max_comp=2      unique_elem:27  <r>=0.17677     sigma_<r>=0.0871322     clust=0
+t=4/30=0.1      max_comp=2      unique_elem:26  <r>=0.17862     sigma_<r>=0.0935459     clust=0
+t=5/30=0.133333 max_comp=3      unique_elem:25  <r>=0.174401    sigma_<r>=0.0969013     clust=0
+t=6/30=0.166667 max_comp=3      unique_elem:24  <r>=0.193315    sigma_<r>=0.0989799     clust=0
+t=6/30=0.2      max_comp=3      unique_elem:24  <r>=0.205038    sigma_<r>=0.10962       clust=0
+t=7/30=0.233333 max_comp=4      unique_elem:23  <r>=0.202477    sigma_<r>=0.0800612     clust=0
+t=9/30=0.266667 max_comp=5      unique_elem:21  <r>=0.181521    sigma_<r>=0.103224      clust=0
+t=10/30=0.3     max_comp=5      unique_elem:20  <r>=0.1854      sigma_<r>=0.0950495     clust=0
+t=11/30=0.333333        max_comp=5      unique_elem:19  <r>=0.204742    sigma_<r>=0.0810572     clust=0
+t=12/30=0.366667        max_comp=5      unique_elem:18  <r>=0.231445    sigma_<r>=0.100982      clust=0
+t=12/30=0.4     max_comp=5      unique_elem:18  <r>=0.189731    sigma_<r>=0.11099       clust=0
+t=13/30=0.433333        max_comp=6      unique_elem:17  <r>=0.203821    sigma_<r>=0.097104      clust=0
+t=14/30=0.466667        max_comp=6      unique_elem:16  <r>=0.186669    sigma_<r>=0.0893404     clust=0
+t=15/30=0.5     max_comp=6      unique_elem:15  <r>=0.213155    sigma_<r>=0.119769      clust=0
+t=17/30=0.533333        max_comp=9      unique_elem:13  <r>=0.234971    sigma_<r>=0.116668      clust=0
+t=18/30=0.566667        max_comp=9      unique_elem:12  <r>=0.200449    sigma_<r>=0.116429      clust=0
+t=19/30=0.6     max_comp=9      unique_elem:11  <r>=0.233386    sigma_<r>=0.114757      clust=0
+t=20/30=0.633333        max_comp=18     unique_elem:10  <r>=0.252505    sigma_<r>=0.118676      clust=0
+t=21/30=0.666667        max_comp=18     unique_elem:9   <r>=0.214908    sigma_<r>=0.116445      clust=0
+t=22/30=0.7     max_comp=18     unique_elem:8   <r>=0.226942    sigma_<r>=0.0896166     clust=0
+t=23/30=0.733333        max_comp=18     unique_elem:8   <r>=0.260511    sigma_<r>=0.138025      clust=0
+t=24/30=0.766667        max_comp=20     unique_elem:7   <r>=0.280751    sigma_<r>=0.1559        clust=0
+t=24/30=0.8     max_comp=20     unique_elem:7   <r>=0.291411    sigma_<r>=0.115484      clust=0
+t=25/30=0.833333        max_comp=20     unique_elem:7   <r>=0.390116    sigma_<r>=0.132645      clust=0
+t=26/30=0.866667        max_comp=21     unique_elem:6   <r>=0.366688    sigma_<r>=0.112612      clust=0
+t=27/30=0.9     max_comp=22     unique_elem:5   <r>=0.309236    sigma_<r>=0.113014      clust=0
+t=28/30=0.933333        max_comp=22     unique_elem:5   <r>=0.474452    sigma_<r>=0.0957955     clust=0
+t=29/30=0.966667        max_comp=24     unique_elem:4   <r>=0.445032    sigma_<r>=0.151433      clust=0
+t=30/30=1       max_comp=27     unique_elem:3   <r>=0.42642     sigma_<r>=0.178034      clust=0
+t=31/30=1.03333 max_comp=27     unique_elem:3   <r>=0.367413    sigma_<r>=0.108087      clust=0
+t=33/30=1.06667 max_comp=30     unique_elem:1   <r>=0.311425    sigma_<r>=0.250673      clust=0
+t=34/30=1.1     max_comp=30     unique_elem:1   <r>=0.416709    sigma_<r>=0.183836      clust=0
+t=35/30=1.13333 max_comp=30     unique_elem:1   <r>=0.422099    sigma_<r>=0.204546      clust=0
+t=36/30=1.16667 max_comp=30     unique_elem:1   <r>=0.450749    sigma_<r>=0.054158      clust=0
+t=37/30=1.2     max_comp=30     unique_elem:1   <r>=0.537716    sigma_<r>=0.0383172     clust=0
+t=38/30=1.23333 max_comp=30     unique_elem:1   <r>=0.573063    sigma_<r>=0.0372205     clust=0
+t=39/30=1.26667 max_comp=30     unique_elem:1   <r>=0.55273     sigma_<r>=0.0386308     clust=0
+t=40/30=1.3     max_comp=30     unique_elem:1   <r>=0.610346    sigma_<r>=0.0406044     clust=0
+t=41/30=1.33333 max_comp=30     unique_elem:1   <r>=0.713213    sigma_<r>=0.0274637     clust=0
+t=42/30=1.36667 max_comp=30     unique_elem:1   <r>=0.726747    sigma_<r>=0.000695443   clust=0
+t=43/30=1.4     max_comp=30     unique_elem:1   <r>=0.783652    sigma_<r>=0.00607568    clust=0
+t=44/30=1.43333 max_comp=30     unique_elem:1   <r>=0.856012    sigma_<r>=0.00734523    clust=0
+t=45/30=1.46667 max_comp=30     unique_elem:1   <r>=0.863146    sigma_<r>=0.000529959   clust=0
+avgnr= 0

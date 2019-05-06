@@ -607,6 +607,11 @@ void debug()
     FILE *f = fopen("test_FG.txt","w");
     printf("6\n");
     int fg_nodes[FG_M];
+    for (size_t i = 0; i < FG_M; i++)
+    {
+        fg_nodes[i]=0;
+    }
+    
     for(long int i = 0; i < (long int)(1e3); i++)
     {
         //generate_node_FREQUENCY_GAP(FG_ALPHA, node_i, FG_M, fg_nodes,
@@ -635,13 +640,13 @@ void frequency_gap_on()
         }
     }
 
-    double *fractional_size;
-    fractional_size = calloc(t_number, sizeof *fractional_size);
-    double *fractional_size_sigma ;
-    fractional_size_sigma = calloc(t_number, sizeof *fractional_size_sigma);
-    //print_vec(&fractional_size, (int)t_number);
-    double *edge_fraction ;
-    edge_fraction = calloc(t_number, sizeof *edge_fraction);
+    double fractional_size[t_number], fractional_size_sigma[t_number],
+                                                edge_fraction[t_number];
+    for (int i = 0; i < t_number; i++) {
+        fractional_size[i] = fractional_size_sigma[i] = edge_fraction[i] = 0;
+    }
+    
+    
     int aux_int = 0;
     int idx = 0;
     double clustering = 0;
@@ -668,8 +673,11 @@ void frequency_gap_on()
     r_coh = calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
     #ifdef PRINT_EVOLUTION_OF_R
     char filename_coh[128] = ".";
-    snprintf(filename_coh, sizeof(char) * 128, "data/coh_%s_%g.txt",
-                                                "term", SIGMA_VAL);
+    snprintf(filename_coh, sizeof(char) * 128, "data/coh_N=%d_a=%g_s=%g_m=%d.txt",
+                                                NODE_NR,
+                                                FG_ALPHA,
+                                                SIGMA_VAL,
+                                                FG_M);
     FILE *theta_file = fopen(filename_coh,"a");
     if (theta_file == NULL) {
         printf("%s\n", "Could not open coh.txt");
@@ -686,9 +694,29 @@ void frequency_gap_on()
         printf("Could not open %s.txt", filename2);
         exit(15);
     }
-    fprintf(f_out2, "# Node_nr = %d\n", NODE_NR);
+    fprintf(f_out2, "# Relevant parameters to reproduce this network:\n");
+    fprintf(f_out2, "# %s%d\t %s%d\n", "node_nr=", NODE_NR, "k_max=", K_MAX);
+    fprintf(f_out2, "# %s%d\t %s%g\t %s%d\t %s%d\n",
+                    "initial_seed=", GLOB_initial_seed,
+                    "delta_t=", DELTA_T,
+                    "max_steps=", MAX_STEPS,
+                    "in_between=", IN_BETWEEN);
+    #ifdef FREQUENCY_GAP
+    fprintf(f_out2, "# %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\n",
+                    "fg_m=", (double)FG_M,
+                    "fg_alpha=", (double)FG_ALPHA,
+                    "fg_t_min=", (double)FG_T_MIN,
+                    "fg_t_max=", (double)FG_T_MAX,
+                    "fg_t_number=", (double)FG_T_NUMBER,
+                    "fg_weff_lower_frequency=", (double)FG_WEFF_LOWER_FREQUENCY,
+                    "fg_weff_max_steps=", (double)FG_WEFF_MAX_STEPS,
+                    "fg_weff_in_between=", (double)FG_WEFF_IN_BETWEEN);
+    #endif
+
+    
+
     // Now we print the first with statistical data for the network.
-    fprintf(f_out2,"# K <r> sigma_r(sig not of average! divide by sqrt(n))\n");
+    fprintf(f_out2,"# K Giant_component <r> sigma_r*sqrt(NODE_NR) clustering\n");
     //printf("passed second ifdefs\n");
 
     // INITIAL CONDITIONS:
@@ -702,6 +730,11 @@ void frequency_gap_on()
     {
         init_C(&C, NODE_NR, K_MAX);
         idx = 0;
+        #ifdef TERMALIZATION // we wait for r to stabilize
+        for (int i = 0; i < termalization; i++)
+            for (int t_aux = 0; t_aux < blind; t_aux++)
+                update_RK(timp, sigma, h);
+        #endif
         for ( t=t_min; t<=t_max; t += t_inc)
         {   
             increase_edges_FREQ_GAP(t, FG_M, FG_ALPHA, 0.0, SIGMA_VAL);
@@ -791,8 +824,10 @@ void frequency_gap_on()
     #endif
 
     // calculate averages
-    double *aux_array = 0;
-    aux_array = calloc(t_number, sizeof *aux_array);
+    double aux_array[t_number];
+    for (int i = 0; i < t_number; i++) {
+        aux_array[i] = 0;
+    }
     idx = 0;
     for ( t=t_min; t<t_max; t += t_inc) {
         for(int j = 0; j < AVG_NUMBER; j++) {
@@ -802,15 +837,11 @@ void frequency_gap_on()
                                         &(fractional_size_sigma[idx]));
         idx++;
     }
-    free(aux_array); aux_array = NULL;
 
     write_C_to_file(); // to plot the graph
-    
-    free(fractional_size);          fractional_size         = NULL;
-    free(fractional_size_sigma);    fractional_size_sigma   = NULL;
-    free(edge_fraction);            edge_fraction           = NULL;
 
     free(r_coh);        r_coh = NULL;
     free(GLOB_theta); GLOB_theta = NULL;
     free(GLOB_omega_nat); GLOB_omega_nat = NULL;
 }
+

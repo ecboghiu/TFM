@@ -201,6 +201,11 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
     }
 
     double weff_by_domain[NODE_NR]; // initialized in weff_compt_efficient
+    //for (size_t i = 0; i < NODE_NR; i++)
+    //{
+    //    weff_by_domain[i] = FG_WEFF_LOWER_FREQUENCY;
+    //}
+    
     
     /*
     for(int i = 0; i < NODE_NR; i++)
@@ -220,18 +225,28 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
     */
     
     weff_compt_efficient(weff_by_domain, NODE_NR, t, sigma);
-    
+    //for (size_t i = 0; i < NODE_NR; i++){
+    //    printf("%g\t",weff_by_domain[i]);
+    //}   printf("\n");
+    /*for (size_t i = 0; i < NODE_NR; i++)
+    {
+        printf("%d\t",GLOB_component_name[i]);
+    }   printf("\n");
+    print_linked_list();
+    */
     double wi = weff_by_domain[GLOB_component_name[node_i]];
     double wf = 0;
     double tags[NODE_NR];
     for(int i = 0; i < NODE_NR; i++) {
         wf = weff_by_domain[GLOB_component_name[i]];
-        if (wf<(FG_WEFF_LOWER_FREQUENCY/10)) {
-            printf("warning: something went wrong with FG generator\n");
-            exit(123);
-        }
+        //printf("wi,wf=%g,%g %g\n",wi,wf,FG_WEFF_LOWER_FREQUENCY);
+        //if (wf<(FG_WEFF_LOWER_FREQUENCY/10)) {
+        //    printf("warning: something went wrong with FG generator\n");
+        //    exit(123);
+        //}
         
         tags[i] = diff_weff_weight(alpha, wi, wf);
+        //printf("%d tags[%d]=%lf\n",node_i,i,tags[i]);
     }
 
     // Condition that neighbors have prob zero of being chosen
@@ -239,17 +254,20 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
         tags[ C[node_i][j] ] = 0;
     }
     tags[node_i] = 0; // node_i also has 0 probability of being chosen
-
+    //for (size_t i = 0; i < NODE_NR; i++){
+    //    printf("%lf ", tags[i]);
+    //}   printf("\n");
+    
     sum_norm = 0;
     for(int i_idx = 0; i_idx < NODE_NR; i_idx++) {
         sum_norm += tags[i_idx];
     }
-    if (sum_norm = 0)
+    //printf("sum_norm=%g\n",sum_norm);
+    if (sum_norm < 1e-6)
     {
         printf("warning: sum_norm = 0 something wrong!");
     }
-    
-    double sum_norm_new = sum_norm;
+
     double nr_compare = 0;
     for(int m_idx = 0; m_idx < m; m_idx++)
     {
@@ -262,12 +280,11 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
             counter++;
             sum += tags[counter];
         }
-        printf("sum: %lf counter: %d sum_norm: %lf\n", sum, counter, sum_norm);
+        //printf("sum: %lf counter: %d sum_norm: %lf\n", sum, counter, sum_norm);
 
         nodes[m_idx] = counter;
         
         sum_norm = sum_norm-tags[counter];
-
         tags[counter] = 0; // we remove this node from the list
     }
 
@@ -283,5 +300,5 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
 
 double diff_weff_weight(double alpha, double wi, double wj)
 {
-    return exp(alpha*abs(wi-wj));
+    return exp(alpha*fabs(wi-wj));
 }

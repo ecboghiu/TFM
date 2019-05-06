@@ -5,6 +5,8 @@ double GLOB_unique_elements_in_network;
 int *degree, *GLOB_component_size, *GLOB_component_name;
 int GLOB_nr_edges, GLOB_unique_components;
 int **C;
+int **C_dom;
+int GLOB_dom_array_lengths[NODE_NR];
 
 int add_edge (int i, int j) {
     if (i==j) {
@@ -176,8 +178,10 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
     
     int **data;
     data = (int **) malloc(sizeof(int *) * dim_x);
+    C_dom = (int **) malloc(sizeof(int *) * dim_x);
     for (k = 0; k < dim_x; k++) {
         data[k] = (int *) malloc(sizeof(int) * dim_y);
+        C_dom[k] = (int *) malloc(sizeof(int) * 10);
     }
     for (i = 0; i < dim_x; i++) {
         for (j = 0; j < dim_y; j++) {
@@ -185,6 +189,12 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
         }
     }
     *data_ptr = data;
+    
+    for (i = 0; i < dim_x; i++) {
+        for (j = 0; j < 10; j++) {
+            C_dom[i][j] = -1;
+        }
+    }
 
     
     GLOB_max_component_size = 1;
@@ -204,7 +214,7 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
     GLOB_unique_components = NODE_NR;
 }
 
-double *GLOB_dom_size;
+double GLOB_dom_size[NODE_NR];
 void initDom()
 {
     GLOB_dom      =        malloc(sizeof(*GLOB_dom));
@@ -215,8 +225,35 @@ void initDom()
         //insertNode(&(GLOB_dom->suc[i]),i);
         //insertNode(&(GLOB_dom->suc[i]),i);
     }
+    
+    /*
+    GLOB_dom_array = malloc(sizeof(*GLOB_dom_array));
+    GLOB_dom_array->suc = calloc(NODE_NR,sizeof(*(GLOB_dom_array->suc)));
+    for (size_t i = 0; i < NODE_NR; i++)
+    {
+        GLOB_dom_array->suc[i] = calloc(1,sizeof *GLOB_dom_array->suc[i]);
+    }
+    for (size_t i = 0; i < NODE_NR; i++)
+    {
+        for (size_t j = 0; j < 10; j++)
+        {
+            GLOB_dom_array->suc[i][j] = -1;
+        }
+    }
+    for (size_t i = 0; i < NODE_NR; i++)
+    {
+            GLOB_dom_array->suc[i][0] = i;
+    }
 
-    GLOB_dom_size = malloc(NODE_NR *sizeof *GLOB_dom_size);
+    for (size_t i = 0; i < NODE_NR; i++)
+    {
+        GLOB_dom_array_lengths[i] = 1;
+    }
+    */
+    
+    
+
+    //GLOB_dom_size = malloc(NODE_NR *sizeof *GLOB_dom_size);
     for(int i = 0; i < NODE_NR; i++)
     {
         GLOB_dom_size[i] = 1;
@@ -629,45 +666,30 @@ int join_domains(int dom_i, int dom_j)
             return 1; // both are null so we are joining inexisting domains
         }
     }
-    
+
     /*
-    if (i == j) {
-        printf("warning: no self domain joining allowed");
-        return 0;
-    }
+    int size_j, size_i;
+    size_i = GLOB_dom_size[dom_i];
+    size_j = GLOB_dom_size[dom_j];
 
-    // we will join i to j
-
-    Node crawl_i = GLOB_dom->suc[i];
-    if (crawl_i != NULL)  // if crawl null then we don't do anything, we have 
-                        // nothing to add to j
+    int max_size = GLOB_dom_array_lengths[dom_j];
+    if (size_j+size_i > max_size)
     {
-        Node crawl_j_end = GLOB_dom->suc[j];
-        Node crawl_before = crawl_j_end;
-        while( (crawl_j_end->next) != NULL)
-        {
-            crawl_j_end = crawl_j_end->next;
-        }
-
-        crawl_j_end->next = crawl_i;
-
-        //free(crawl_j_end);  crawl_j_end = NULL;
-        //free(crawl_before); crawl_before= NULL;
+        GLOB_dom_array->suc[dom_j] = 
+                    realloc(GLOB_dom_array->suc[dom_j], 2*max_size);
+        GLOB_dom_array_lengths[dom_j] = 2*max_size;
     }
-    */
-/*
-    // now we clear memory at i
-    //from https://stackoverflow.com/questions/7025328/
-    // linkedlist-how-to-free-the-memory-allocated-using-malloc:
-    Node crawl_zaux = GLOB_dom->suc[i];
-    while ((crawl_i = crawl_zaux) != NULL) { // set curr to head, stop if list empty.
-        crawl_zaux = crawl_zaux->next;          // advance head to next element.
-        free(crawl_i);                // delete saved pointer.
+    
+    
+    for (int i = 0; i < GLOB_dom_size[dom_i]; i++)
+    {
+        GLOB_dom_array->suc[dom_j][size_j+i]=GLOB_dom_array->suc[dom_i][i];
+        GLOB_dom_array->suc[dom_i][i] = -1;
     }
-    free(crawl_zaux); crawl_zaux = NULL;
+    
+
+    return 1;
 */
-
-//return 1;
 }
 
 // Returns 1 if there is a link from j to i.

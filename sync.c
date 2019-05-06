@@ -109,8 +109,10 @@ double psi_coherence()
 double weff_compt_instant (int id_compt, double t, double sigma)
 {
     int i=0;
-    Node crawl = GLOB_dom->suc[id_compt];
+    
     double weff = 0;
+    
+    Node crawl = GLOB_dom->suc[id_compt];
     while(crawl != NULL) {
         i = crawl->id;
 
@@ -118,6 +120,15 @@ double weff_compt_instant (int id_compt, double t, double sigma)
         
         crawl = crawl->next;
     }
+    /*
+    int node_i =0;
+    for (int i = 0; i < GLOB_dom_size[id_compt]; i++)
+    {
+        node_i = GLOB_dom_array->suc[id_compt][i];
+        weff += calculateTheta_dot_i(t, GLOB_theta, NODE_NR, sigma, node_i);
+    }*/
+    
+
     weff /= GLOB_dom_size[id_compt];
 
     return weff;
@@ -167,6 +178,8 @@ void weff_compt_efficient (double *weff_dom, int weff_dom_size,
         {
             weff_dom[compont_name] =
                         weff_compt_instant(compont_name, t, sigma);
+         //   printf("inst:%g i:%d compt:%d\n",weff_dom[compont_name],
+         //                                   i,compont_name);
         }
     }
 

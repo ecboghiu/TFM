@@ -32,7 +32,7 @@ plot_data, labels, colors = [], [], []
 
 
 
-filename = "../data/coh_term_1.txt"
+filename = "../data/coh_term_100.txt"
 plot_data.append(genfromtxt(filename, skip_header=2))
 labels.append(filename)
 colors.append(tableau20[2])
