@@ -27,6 +27,8 @@ int main(void)
 
     //debug();
 
+int tiempo_ini = time(NULL);
+
 ////////////////////////// PERCOLATION ////////////////////////////////////////
 #ifdef PERCOLATION_ON
 //percolation_on();
@@ -51,6 +53,9 @@ int main(void)
 
     //clear_C_memory(&C, NODE_NR, K_MAX);
 
-    printf("\nYou've reached the end without dying! ;-)\n");
+int tiempo_fin = time(NULL);
+
+    printf("\nYou've reached the end without dying! ;-) (runtime: %d s)\n",
+            tiempo_fin-tiempo_ini);
     return 0;
 }

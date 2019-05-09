@@ -26,23 +26,25 @@ plot_data, labels, colors = [], [], []
 
 
 
-filename = r"../data/FG_N=100_m=1_a=0_sig=1_1.txt"
+filename = r"../data/FG_N=200_m=1_a=0_sig=4.5_bueno.txt"
 plot_data.append(genfromtxt(filename,  skip_header=5))
 labels.append(['r_'+filename,'p_'+filename])
-color_code = 4
+color_code = 0
 colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
 
-filename = r"../data/FG_N=100_m=1_a=0_sig=1_1.txt"
+
+filename = r"../data/FG_N=500_m=1_a=0_sig=1.5.txt"
 plot_data.append(genfromtxt(filename,  skip_header=5))
 labels.append(['r_'+filename,'p_'+filename])
 color_code = 2
 colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
 
 
+
 fig = plt.figure()
 
 for i in range(0,len(plot_data)):
-    plt.errorbar((plot_data[i][:,0]), plot_data[i][:,2], np.array(plot_data[i][:,3])/np.sqrt(10000),
+    plt.errorbar((plot_data[i][:,0]), plot_data[i][:,2], np.array(plot_data[i][:,3])/np.sqrt(100),
                 label = labels[i][0], color = colors[i][0])
     plt.plot((    plot_data[i][:,0]), plot_data[i][:,1],
                 label = labels[i][1], color = colors[i][1])

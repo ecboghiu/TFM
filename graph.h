@@ -36,25 +36,36 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 100
+#define NODE_NR 10
 #define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1e-3
+#define DELTA_T 1e-2
 // How many times we measure.
-#define MAX_STEPS 1000
+#define MAX_STEPS 5000
 // Number of updates in between measures.
-#define IN_BETWEEN 100
+#define IN_BETWEEN 10
 #define SIGMA_MIN 0.0
 #define SIGMA_MAX 0.2
 #define NR_SIGMA 10
 
+// only when termalization is undefined, when termalization is
+// defined we make a look going through many sigma values, not one
+#define SIGMA_VAL 1.5
+//#define PRINT_EVOLUTION_OF_R
+
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
 #define TERMALIZATION 40
+
+#define WEFF_MEMORY_LINKED_LIST
+#define WEFF_MEMORY_DYNAMIC_MATRIX
+#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
+    #define WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE 2
+#endif
 
 //#define EPSILON_OSCILLATOR 1e-3
 
@@ -82,12 +93,6 @@
 //#endif
 
 
-
-// only when termalization is undefined, when termalization is
-// defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 1.0
-//#define PRINT_EVOLUTION_OF_R
-
 // For the scale-free probability distribution.
 // Input this into wolfram alpha if you want ot know the gamma for a certain
 // mean degree:
@@ -104,6 +109,7 @@
 // All nodes are tagged with natural numbers from 0 to NODE_NR-1.
 extern int **C;
 extern int **C_dom;
+extern int C_dom_sizes[NODE_NR];
 
 extern int GLOB_initial_seed; // this is so that we store the seed we used
                          // and then we can access it to write it to file

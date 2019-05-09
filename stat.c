@@ -37,8 +37,9 @@ void calcHist(char* filename)
         printf("%s\n", "Something went wrong opening the histogram file.");
         exit(5);
     }
-    fclose(file_hist); file_hist = NULL;
-    free(Hist); Hist = NULL;
+    fclose(file_hist);
+    
+    //free(Hist);
 }
 
 void med_var (double *datos, int numero_de_datos,

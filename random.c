@@ -185,7 +185,7 @@ void generate_node_BA (int m, int* nodes)
     }
     
     
-    free(tags); tags = NULL;
+    //free(tags);
 }
 
 void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,

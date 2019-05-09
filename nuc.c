@@ -23,13 +23,22 @@ void oscillator_on()
     deg_med = deg_var = 0;
     double *deg_aux;
     deg_aux = calloc(NODE_NR, sizeof *deg_aux);
-    for(int i = 0; i < NODE_NR; i++) {
-        deg_aux[i] = (double) (degree[i]);
+    if (deg_aux != NULL)
+    {
+        for(int i = 0; i < NODE_NR; i++) {
+            deg_aux[i] = (double) (degree[i]);
+        }
+        med_var(deg_aux, NODE_NR, &deg_med, &deg_var);
+        printf("Statistical properties. avg: %g var: %g\n", deg_med, deg_var);
+        printf("K_C = %g\n", 1/sqrt(2*M_PI) * deg_med/deg_var);
+        free(deg_aux);
     }
-    med_var(deg_aux, NODE_NR, &deg_med, &deg_var);
-    printf("Statistical properties. avg: %g var: %g\n", deg_med, deg_var);
-    printf("K_C = %g\n", 1/sqrt(2*M_PI) * deg_med/deg_var);
-    free(deg_aux); deg_aux = NULL;
+    else
+    {
+        free(deg_aux);
+    }
+    
+
 
 
 
@@ -187,9 +196,9 @@ void oscillator_on()
     fclose(theta_file); theta_file = NULL ;
     #endif
 
-    free(r_coh); r_coh = NULL;
-    free(GLOB_theta); GLOB_theta = NULL;
-    free(GLOB_omega_nat); GLOB_omega_nat = NULL;
+    //free(r_coh); r_coh = NULL;
+    //free(GLOB_theta); GLOB_theta = NULL;
+    //free(GLOB_omega_nat); GLOB_omega_nat = NULL;
 }
 
 void percolation_on()
@@ -250,7 +259,7 @@ void percolation_on()
     }
 
     // calculate averages
-    double *aux_array = 0;
+    double *aux_array = NULL;
     aux_array = calloc(t_number, sizeof *aux_array);
     idx = 0;
     for ( t=t_min; t<t_max; t += t_inc) {
@@ -299,10 +308,11 @@ void percolation_on()
         fprintf(f_out1, "%g\t%g\t%g\n", edge_fraction[i], fractional_size[i],
                                 sqrt(fractional_size_sigma[i]/AVG_NUMBER));
     }
-    fclose(f_out1);                 f_out1                  = NULL;
-    free(fractional_size);          fractional_size         = NULL;
-    free(fractional_size_sigma);    fractional_size_sigma   = NULL;
-    free(edge_fraction);            edge_fraction           = NULL;
+    fclose(f_out1);                
+    
+    //free(fractional_size);          
+    //free(fractional_size_sigma);
+    //free(edge_fraction);            
 }
 
 void epes_on ()
@@ -488,7 +498,7 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust
                                         &(fractional_size_sigma[idx]));
         idx++;
     }
-    free(aux_array); aux_array = NULL;
+    free(aux_array);
 
     write_C_to_file(); // to plot the graph
 
@@ -528,14 +538,15 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust
     }
     fclose(f_out1);                 f_out1                  = NULL;
     */
-    
-    free(fractional_size);          fractional_size         = NULL;
-    free(fractional_size_sigma);    fractional_size_sigma   = NULL;
-    free(edge_fraction);            edge_fraction           = NULL;
+    /*
+    free(fractional_size);          
+    free(fractional_size_sigma);    
+    free(edge_fraction);            
 
-    free(r_coh);        r_coh = NULL;
-    free(GLOB_theta); GLOB_theta = NULL;
-    free(GLOB_omega_nat); GLOB_omega_nat = NULL;
+    free(r_coh);       
+    free(GLOB_theta); 
+    free(GLOB_omega_nat); 
+    */
 }
 
 void debug()
@@ -839,9 +850,10 @@ void frequency_gap_on()
     }
 
     write_C_to_file(); // to plot the graph
-
-    free(r_coh);        r_coh = NULL;
-    free(GLOB_theta); GLOB_theta = NULL;
-    free(GLOB_omega_nat); GLOB_omega_nat = NULL;
+/*
+    free(r_coh);        
+    free(GLOB_theta); 
+    free(GLOB_omega_nat); 
+*/
 }
 

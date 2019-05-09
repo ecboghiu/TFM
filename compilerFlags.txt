@@ -1,4 +1,4 @@
--std=c99 -lm -g -O -march=native
+-std=c99 -lm -g -march=native
 -Wall
 -Wundef
 -Wshadow

@@ -6,7 +6,9 @@ int *degree, *GLOB_component_size, *GLOB_component_name;
 int GLOB_nr_edges, GLOB_unique_components;
 int **C;
 int **C_dom;
+double GLOB_dom_size[NODE_NR];
 int GLOB_dom_array_lengths[NODE_NR];
+int C_dom_sizes[NODE_NR];
 
 int add_edge (int i, int j) {
     if (i==j) {
@@ -29,6 +31,24 @@ int add_edge (int i, int j) {
 
     if (new_name != old_name) {
         join_domains(old_name,new_name);
+
+printf("weff matrix:\n");
+for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
+{
+    printf("%d:%d: ",i_idx,C_dom_sizes[i_idx]);
+    for (int j_idx = 0; j_idx < C_dom_sizes[i_idx]; j_idx++)
+    {
+        printf("%d ", C_dom[i_idx][j_idx]);
+    }
+    printf("\n");
+    
+}
+printf("GLOB_component_size: ");
+for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
+{
+    printf("%d ",GLOB_component_size[i_idx]);
+}   printf("\n");
+
     }
     
 
@@ -41,17 +61,18 @@ int add_edge (int i, int j) {
     {
          // diff comps sum
         new_size = GLOB_component_size[i] + GLOB_component_size[j];
+        //printf("new_size: %d, %d %d", new_size, i, j);
         (GLOB_unique_elements_in_network)--;
-        //printf("names: %d %d\n", new_name, old_name);
+        //printf("names: %d %d %d\n", new_name, old_name, new_size);
     }
 
     if (new_size > GLOB_max_component_size) {
-        GLOB_max_component_size = new_size;
-        //printf("max components: %d of %d\n", GLOB_max_component_size,
-        //                                                     NODE_NR);
-        if (GLOB_max_component_size > NODE_NR) {
-            printf("warning: too big a component");
-            exit(9);
+        GLOB_max_component_size = (double)new_size;
+        //printf("max components: %f of %d\n", GLOB_max_component_size, NODE_NR);
+        if (GLOB_max_component_size > NODE_NR) 
+        {
+            printf("warning: too big a component\n");
+            //exit(9);
         }
     }
     
@@ -82,26 +103,6 @@ int add_edge (int i, int j) {
         GLOB_dom_size[new_name]=new_size;
     }
     
-    
-
-/*
-    //print_linked_list();
-        for(int i = 0; i < NODE_NR; i++)
-    {
-        printf("comp: %d ||||| ", i);
-        Node crawl = GLOB_dom->suc[i];
-        while(crawl != NULL) {
-            printf("%d ", crawl->id);
-            crawl = crawl->next;
-        }
-        printf("size: %d\n", (int)GLOB_dom_size[i]);
-        
-    }
-*/
-
-    //GLOB_dom_size[old_name] = 0;
-    //GLOB_dom_size[new_name] = new_size;
-
     return 1;
 }
 
@@ -177,11 +178,10 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
     int i,j,k;
     
     int **data;
-    data = (int **) malloc(sizeof(int *) * dim_x);
-    C_dom = (int **) malloc(sizeof(int *) * dim_x);
+    data =  malloc(sizeof(*data) * dim_x);
+    
     for (k = 0; k < dim_x; k++) {
-        data[k] = (int *) malloc(sizeof(int) * dim_y);
-        C_dom[k] = (int *) malloc(sizeof(int) * 10);
+        data[k] =  malloc(sizeof(data[k][0]) * dim_y);
     }
     for (i = 0; i < dim_x; i++) {
         for (j = 0; j < dim_y; j++) {
@@ -189,15 +189,27 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
         }
     }
     *data_ptr = data;
-    
+
+#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
+    int col_nr = WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE;
+    C_dom =  malloc(NODE_NR * sizeof *C_dom);
+    for (k = 0; k < dim_x; k++) {
+        C_dom[k] =  malloc(col_nr * sizeof(C_dom[k][0]) );
+    }
     for (i = 0; i < dim_x; i++) {
         for (j = 0; j < 10; j++) {
             C_dom[i][j] = -1;
         }
     }
 
+    for (i = 0; i < dim_x; i++)
+    {
+        C_dom_sizes[i] = col_nr;
+    }
+#endif
+
     
-    GLOB_max_component_size = 1;
+    
     GLOB_unique_elements_in_network = NODE_NR;
     degree         = calloc(NODE_NR, sizeof *degree);
     GLOB_component_size = malloc(NODE_NR * sizeof *GLOB_component_size);
@@ -209,12 +221,9 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
         GLOB_component_name[i] = i; // all nodes are their own cluster
     }
     
-
-    GLOB_nr_edges = 0;
-    GLOB_unique_components = NODE_NR;
 }
 
-double GLOB_dom_size[NODE_NR];
+
 void initDom()
 {
     GLOB_dom      =        malloc(sizeof(*GLOB_dom));
@@ -222,8 +231,6 @@ void initDom()
     for(int i = 0; i < NODE_NR; i++)
     {
         insertNode(&(GLOB_dom->suc[i]),i);
-        //insertNode(&(GLOB_dom->suc[i]),i);
-        //insertNode(&(GLOB_dom->suc[i]),i);
     }
     
     /*
@@ -250,7 +257,13 @@ void initDom()
         GLOB_dom_array_lengths[i] = 1;
     }
     */
-    
+
+#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
+    // at first, disconnected network
+    for (int i = 0; i < NODE_NR; i++) {
+            C_dom[i][0] = i;
+    }
+#endif
     
 
     //GLOB_dom_size = malloc(NODE_NR *sizeof *GLOB_dom_size);
@@ -268,7 +281,7 @@ void clear_C_memory(int ***data_ptr, int dim_x, int dim_y)
         free((*data_ptr)[i]);
         (*data_ptr)[i] = NULL;
     }
-    free(*data_ptr); *data_ptr = NULL;
+    free(*data_ptr);
 }
 
 // TODO: MAKE A FUNC TO ASSIGN MEMORY; MAKE ANOTHER TO CLEAR VALUES!!!!!!
@@ -456,8 +469,8 @@ void initScaleFree ()
         }
         
     }
-    free(aux_deg); aux_deg = NULL;
-    free(list); list = NULL;
+    free(aux_deg);
+    free(list); 
 }
 
 
@@ -489,7 +502,7 @@ void init_BA (int m, int N)
         }
         
     }
-    free(ba_nodes); ba_nodes = NULL;
+    free(ba_nodes);
 }
 
 // This saves an edges table suitable for the open source program
@@ -645,6 +658,51 @@ int join_domains(int dom_i, int dom_j)
         return 0;
     }
 
+#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
+// first without realloc, assume size is NODE_NR
+int idx_old = GLOB_dom_size[dom_j];
+int length_i = GLOB_dom_size[dom_i];
+if (length_i+idx_old >= C_dom_sizes[dom_j])
+{
+    int *aux_ptr = NULL;
+    aux_ptr = realloc(C[dom_j], 2*(length_i+idx_old) * sizeof(int)  );
+    if  (aux_ptr==NULL)
+    {
+        free(aux_ptr);
+        printf("warning: error using realloc!\n");
+        exit(222);
+    }
+    else
+    {
+        C[dom_j] = aux_ptr;
+        
+        for (int i = idx_old ; i < 2*(length_i+idx_old); i++)
+        {
+            C[dom_j][i]=-1;
+        }
+        C_dom_sizes[dom_j] = 2 * (length_i+idx_old);
+    }
+}
+
+if(C_dom[dom_j][0] == -1)
+{
+    printf("warning: an inexisting component should not have been selected!\n");
+    exit(111);
+}
+if(C_dom[dom_i][0] != -1)
+{
+    printf("dom_i dom_j: %d %d\n", dom_i, dom_j);
+    printf("idx_old length_i: %d %d\n", idx_old, length_i);
+    for (int i = 0; i < length_i; i++)
+    {
+        C_dom[dom_j][idx_old+i]=C_dom[dom_i][i];
+        C_dom[dom_i][i]=-1;
+    }
+    //C_dom[dom_i] = realloc(C_dom[dom_i], sizeof(int));
+}
+#endif
+
+#ifdef WEFF_MEMORY_LINKED_LIST
     Node crawl_j_end = GLOB_dom->suc[dom_j];
     if (crawl_j_end != NULL) {
         while( (crawl_j_end->next) != NULL) {
@@ -666,6 +724,9 @@ int join_domains(int dom_i, int dom_j)
             return 1; // both are null so we are joining inexisting domains
         }
     }
+#endif
+
+
 
     /*
     int size_j, size_i;
@@ -690,6 +751,8 @@ int join_domains(int dom_i, int dom_j)
 
     return 1;
 */
+
+
 }
 
 // Returns 1 if there is a link from j to i.
