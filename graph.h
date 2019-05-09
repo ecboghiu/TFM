@@ -30,14 +30,14 @@
     #define EPES_CHARACT "tribe"
 #endif
 
-#define INITIAL_SEED 314159265
+//#define INITIAL_SEED 314159265
 
 // Define if you want a histogram of the degrees of the graph
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 10
-#define K_MAX 100
+#define NODE_NR 200
+#define K_MAX NODE_NR/10
 #define K_MIN 2
 #define AVG_NUMBER 1
 
@@ -61,10 +61,10 @@
 // we need to wait around 4s
 #define TERMALIZATION 40
 
-#define WEFF_MEMORY_LINKED_LIST
+//#define WEFF_MEMORY_LINKED_LIST 1   // THIS IS OBSOLTE NOW
 #define WEFF_MEMORY_DYNAMIC_MATRIX
 #ifdef WEFF_MEMORY_DYNAMIC_MATRIX
-    #define WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE 2
+    #define WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE NODE_NR
 #endif
 
 //#define EPSILON_OSCILLATOR 1e-3
@@ -188,6 +188,7 @@ void initOmegas     (void);
 void initThetas     (void);
 void init_C         (int ***data_ptr, int dim_x, int dim_y);
 void init_C_memory  (int ***data_ptr, int dim_x, int dim_y);
+void init_glob_vect_memory (void);
 void initDom        (void);
 void clear_C_memory (int ***data_ptr, int dim_x, int dim_y);
 
@@ -225,6 +226,8 @@ double  diff_weff_weight        (double alpha, double wi, double wj);
 double  calculateThetaAverage   (void);
 double  weff_compt              (int id_compt, double t, double sigma);
 void    weff_compt_efficient    (double *weff_dom, int weff_dom_size,
+                                double t, double sigma);
+void    weff_compt_DOUBLY_efficient    (double *weff_dom, int weff_dom_size,
                                 double t, double sigma);
 double  weff_compt_instant      (int id_compt, double t, double sigma);
 double  phase_coherence         (void);

@@ -10,6 +10,106 @@ double GLOB_dom_size[NODE_NR];
 int GLOB_dom_array_lengths[NODE_NR];
 int C_dom_sizes[NODE_NR];
 
+void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
+{
+    int i,j,k;
+    
+    int **data;
+    data =  malloc(sizeof(*data) * dim_x);
+    if (data==NULL)
+    {
+        printf("warning: malloc gives bad results...\n");
+        exit(111);
+    }
+    
+    
+    for (k = 0; k < dim_x; k++) {
+        data[k] =  malloc(sizeof (*(data[k])) * dim_y);
+        if (data[k]==NULL)
+        {
+            printf("warning: malloc gives bad results...\n");
+            exit(111);
+        }
+    }
+    for (i = 0; i < dim_x; i++) {
+        for (j = 0; j < dim_y; j++) {
+            data[i][j] = -1; // -1 means no connection
+        }
+    }
+    *data_ptr = data;
+
+#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
+    int col_nr = WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE;
+    C_dom =  malloc(NODE_NR * sizeof *C_dom);
+    if (C_dom==NULL)
+        {
+            printf("warning: malloc gives bad results...\n");
+            exit(111);
+        }
+    for (k = 0; k < dim_x; k++) {
+        C_dom[k] =  (int *)malloc(col_nr * sizeof *(C_dom[k]) );
+        if (C_dom[k]==NULL)
+        {
+            printf("warning: malloc gives bad results...\n");
+            exit(111);
+        }
+    }
+    for (i = 0; i < dim_x; i++) {
+        for (j = 0; j < 10; j++) {
+            C_dom[i][j] = -1;
+        }
+    }
+
+    for (i = 0; i < dim_x; i++)
+    {
+        C_dom_sizes[i] = col_nr;
+    }
+#endif
+}
+
+void init_glob_vect_memory(void)
+{    
+    int i=0;
+    GLOB_unique_elements_in_network = NODE_NR;
+
+    degree = malloc(NODE_NR * sizeof *degree);
+    if (degree==NULL)
+        {
+            printf("warning: malloc gives bad results...\n");
+            exit(111);
+        }
+    else
+    {
+        for (i = 0; i < NODE_NR; i++)
+        {
+            degree[i]=0;
+        }
+        
+    }
+    
+    
+
+    GLOB_component_size = malloc(NODE_NR * sizeof *GLOB_component_size);
+    if (GLOB_component_size==NULL)
+        {
+            printf("warning: malloc gives bad results...\n");
+            exit(111);
+        } 
+    for(i = 0; i < NODE_NR; i++){
+        GLOB_component_size[i] = 1; // all nodes are their own cluster
+    }
+    GLOB_component_name = malloc(NODE_NR* sizeof *GLOB_component_name);
+    if (GLOB_component_name==NULL)
+        {
+            printf("warning: malloc gives bad results...\n");
+            exit(111);
+        }
+    for(i = 0; i < NODE_NR; i++){
+        GLOB_component_name[i] = i; // all nodes are their own cluster
+    }
+    
+}
+
 int add_edge (int i, int j) {
     if (i==j) {
         //printf("warning: no self-loops!\n");
@@ -31,7 +131,7 @@ int add_edge (int i, int j) {
 
     if (new_name != old_name) {
         join_domains(old_name,new_name);
-
+/*
 printf("weff matrix:\n");
 for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
 {
@@ -43,12 +143,7 @@ for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
     printf("\n");
     
 }
-printf("GLOB_component_size: ");
-for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
-{
-    printf("%d ",GLOB_component_size[i_idx]);
-}   printf("\n");
-
+*/
     }
     
 
@@ -173,55 +268,7 @@ void read_edgelist_file_py (const char* filename)
     }
 }
 
-void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
-{
-    int i,j,k;
-    
-    int **data;
-    data =  malloc(sizeof(*data) * dim_x);
-    
-    for (k = 0; k < dim_x; k++) {
-        data[k] =  malloc(sizeof(data[k][0]) * dim_y);
-    }
-    for (i = 0; i < dim_x; i++) {
-        for (j = 0; j < dim_y; j++) {
-            data[i][j] = -1; // -1 means no connection
-        }
-    }
-    *data_ptr = data;
 
-#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
-    int col_nr = WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE;
-    C_dom =  malloc(NODE_NR * sizeof *C_dom);
-    for (k = 0; k < dim_x; k++) {
-        C_dom[k] =  malloc(col_nr * sizeof(C_dom[k][0]) );
-    }
-    for (i = 0; i < dim_x; i++) {
-        for (j = 0; j < 10; j++) {
-            C_dom[i][j] = -1;
-        }
-    }
-
-    for (i = 0; i < dim_x; i++)
-    {
-        C_dom_sizes[i] = col_nr;
-    }
-#endif
-
-    
-    
-    GLOB_unique_elements_in_network = NODE_NR;
-    degree         = calloc(NODE_NR, sizeof *degree);
-    GLOB_component_size = malloc(NODE_NR * sizeof *GLOB_component_size);
-    for(i = 0; i < NODE_NR; i++){
-        GLOB_component_size[i] = 1; // all nodes are their own cluster
-    }
-    GLOB_component_name = malloc(NODE_NR* sizeof *GLOB_component_name);
-    for(i = 0; i < NODE_NR; i++){
-        GLOB_component_name[i] = i; // all nodes are their own cluster
-    }
-    
-}
 
 
 void initDom()
@@ -662,10 +709,12 @@ int join_domains(int dom_i, int dom_j)
 // first without realloc, assume size is NODE_NR
 int idx_old = GLOB_dom_size[dom_j];
 int length_i = GLOB_dom_size[dom_i];
+/*
 if (length_i+idx_old >= C_dom_sizes[dom_j])
 {
+    int new_size = 2*(length_i+idx_old);
     int *aux_ptr = NULL;
-    aux_ptr = realloc(C[dom_j], 2*(length_i+idx_old) * sizeof(int)  );
+    aux_ptr = (int *)realloc(C_dom[dom_j], new_size * sizeof(*aux_ptr)  );
     if  (aux_ptr==NULL)
     {
         free(aux_ptr);
@@ -674,30 +723,35 @@ if (length_i+idx_old >= C_dom_sizes[dom_j])
     }
     else
     {
-        C[dom_j] = aux_ptr;
+        C_dom[dom_j] = aux_ptr;
         
-        for (int i = idx_old ; i < 2*(length_i+idx_old); i++)
+        for (int i = idx_old ; i < new_size; i++)
         {
-            C[dom_j][i]=-1;
+            C_dom[dom_j][i]=-1;
         }
-        C_dom_sizes[dom_j] = 2 * (length_i+idx_old);
+        C_dom_sizes[dom_j] = new_size;
     }
 }
+*/
 
+/*
 if(C_dom[dom_j][0] == -1)
 {
     printf("warning: an inexisting component should not have been selected!\n");
     exit(111);
 }
-if(C_dom[dom_i][0] != -1)
+*/
+
+//if(C_dom[dom_i][0] != -1) //this should probably be uncommented
 {
-    printf("dom_i dom_j: %d %d\n", dom_i, dom_j);
-    printf("idx_old length_i: %d %d\n", idx_old, length_i);
+    //printf("dom_i dom_j: %d %d\n", dom_i, dom_j);
+    //printf("idx_old length_i: %d %d\n", idx_old, length_i);
     for (int i = 0; i < length_i; i++)
     {
         C_dom[dom_j][idx_old+i]=C_dom[dom_i][i];
-        C_dom[dom_i][i]=-1;
+        
     }
+    C_dom[dom_i][0]=-1;
     //C_dom[dom_i] = realloc(C_dom[dom_i], sizeof(int));
 }
 #endif
@@ -726,6 +780,7 @@ if(C_dom[dom_i][0] != -1)
     }
 #endif
 
+return 1;
 
 
     /*

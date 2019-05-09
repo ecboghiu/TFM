@@ -224,7 +224,7 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
     }
     */
     
-    weff_compt_efficient(weff_by_domain, NODE_NR, t, sigma);
+    weff_compt_DOUBLY_efficient(weff_by_domain, NODE_NR, t, sigma);
     //for (size_t i = 0; i < NODE_NR; i++){
     //    printf("%g\t",weff_by_domain[i]);
     //}   printf("\n");
@@ -239,7 +239,7 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
     double tags[NODE_NR];
     for(int i = 0; i < NODE_NR; i++) {
         wf = weff_by_domain[GLOB_component_name[i]];
-        //printf("wi,wf=%g,%g %g\n",wi,wf,FG_WEFF_LOWER_FREQUENCY);
+        //printf("wi,wf=%g,%g\n",wi,wf);
         //if (wf<(FG_WEFF_LOWER_FREQUENCY/10)) {
         //    printf("warning: something went wrong with FG generator\n");
         //    exit(123);

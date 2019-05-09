@@ -255,7 +255,10 @@ void percolation_on()
 
 
         }
-        printf("avgnr= %d\n", avg_idx);
+        if (AVG_NUMBER > 2)
+        {
+            printf("avgnr= %d\n", avg_idx);
+        }
     }
 
     // calculate averages
@@ -270,7 +273,7 @@ void percolation_on()
                                         &(fractional_size_sigma[idx]));
         idx++;
     }
-    free(aux_array); aux_array = NULL;
+    free(aux_array); //aux_array = NULL;
 
     write_C_to_file(); // to plot the graph
 
@@ -471,7 +474,10 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust
             idx++;
             
         }
-        printf("avgnr= %d\n", avg_idx);
+        if (AVG_NUMBER >= 2)
+        {
+            printf("avgnr= %d\n", avg_idx);
+        }
     }
     
 
@@ -819,7 +825,10 @@ void frequency_gap_on()
             idx++;
             
         }
-        printf("avgnr= %d\n", avg_idx);
+        if (AVG_NUMBER > 2)
+        {
+            printf("avgnr= %d\n", avg_idx);
+        }
     }
     
 

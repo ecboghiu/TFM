@@ -23,6 +23,7 @@ int main(void)
     ini_ran(GLOB_initial_seed);     
     
     init_C_memory(&C, NODE_NR, K_MAX);
+    init_glob_vect_memory();
     initDom();
 
     //debug();
@@ -55,7 +56,7 @@ int tiempo_ini = time(NULL);
 
 int tiempo_fin = time(NULL);
 
-    printf("\nYou've reached the end without dying! ;-) (runtime: %d s)\n",
-            tiempo_fin-tiempo_ini);
+    printf("\nYou've reached the end without dying! ;-) (runtime: %g min)\n",
+            (tiempo_fin-tiempo_ini)/60.0);
     return 0;
 }

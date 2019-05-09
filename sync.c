@@ -111,7 +111,9 @@ double weff_compt_instant (int id_compt, double t, double sigma)
     int i=0;
     
     double weff = 0;
+    int comp_size = GLOB_dom_size[id_compt];
     
+#ifdef WEFF_MEMORY_LINKED_LIST
     Node crawl = GLOB_dom->suc[id_compt];
     while(crawl != NULL) {
         i = crawl->id;
@@ -120,16 +122,20 @@ double weff_compt_instant (int id_compt, double t, double sigma)
         
         crawl = crawl->next;
     }
-    /*
-    int node_i =0;
-    for (int i = 0; i < GLOB_dom_size[id_compt]; i++)
+#endif
+#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
+    
+    for (i = 0; i < comp_size; i++)
     {
-        node_i = GLOB_dom_array->suc[id_compt][i];
-        weff += calculateTheta_dot_i(t, GLOB_theta, NODE_NR, sigma, node_i);
-    }*/
+        weff += calculateTheta_dot_i(t, GLOB_theta, NODE_NR,
+                                        sigma, C_dom[id_compt][i]);
+    }
+#endif
     
 
-    weff /= GLOB_dom_size[id_compt];
+
+
+    weff /= comp_size;
 
     return weff;
 }
@@ -207,24 +213,159 @@ void weff_compt_efficient (double *weff_dom, int weff_dom_size,
     }
 }
 
+void weff_compt_DOUBLY_efficient (double *weff_dom, int weff_dom_size,
+                                double t, double sigma)
+{
+    
+    double timp = 0;
+
+    int aux_deg=0;
+    double aux_time_average_theta_dot[NODE_NR];
+    for (int i = 0; i < NODE_NR; i++)
+    {
+        aux_time_average_theta_dot[i]=0;
+    }
+    
+    //double weff_by_domain[NODE_NR];
+    for(int i = 0; i < weff_dom_size; i++)
+    {
+        weff_dom[i] = FG_WEFF_LOWER_FREQUENCY;
+    }
+    //We need to do the first step and change from default
+
+    /* 
+        double weff = 0.0;
+    for(int i = 0; i < NODE_NR; i++)
+    {
+        // IF w<FR_WEFF.../10 then it means we have a new component whos weff
+        // hasn't been calculated yet.
+        compont_name = GLOB_component_name[i];
+        if (weff_dom[compont_name]<(FG_WEFF_LOWER_FREQUENCY/10)) 
+        {
+            weff_dom[compont_name] =
+                        weff_compt_instant(compont_name, t, sigma);
+         //   printf("inst:%g i:%d compt:%d\n",weff_dom[compont_name],
+         //                                   i,compont_name);
+        }
+    }
+    */
+    for(int i = 0; i < FG_WEFF_MAX_STEPS; i++)
+    {
+        /*
+        for(int idxx = 0; idxx < NODE_NR; idxx++)
+        {
+            // IF w>FR_WEFF.../10 then it means we it is a component which is 
+            // part of the network and we update its average.
+            compont_name = GLOB_component_name[idxx];
+            if (weff_dom[compont_name]>(FG_WEFF_LOWER_FREQUENCY/10)) 
+            {
+                weff = weff_compt_instant (compont_name, t, sigma);
+                weff_dom[compont_name] = 
+                        ((double)i)/(i+1) * weff_dom[compont_name] + weff/(i+1);
+            }
+        }
+        */
+
+        for (int m = 0; m < NODE_NR; m++)
+        {
+            aux_deg=degree[m];
+            for (int n = 0; n < aux_deg; n++)
+            {
+                // this means that add current theta_dot_ij to the running avg
+aux_time_average_theta_dot[m] = ((double)i)/(i+1) * aux_time_average_theta_dot[m]
+            + 1.0/(i+1) * calculateTheta_dot_i(t, GLOB_theta, NODE_NR, sigma, m);;
+            }
+            
+        }
+        
+        
+
+        timp = i*DELTA_T*(1+FG_WEFF_IN_BETWEEN);
+        for(int j = 0; j < FG_WEFF_IN_BETWEEN; j++) {
+            update_RK(t+timp, sigma, DELTA_T); 
+        }
+        update_RK(t+timp, sigma, DELTA_T);
+    }
+
+
+    // after this we have the matrix of time averaged effective frequencies-
+    // if space is a probelm use commented out version from above
+    // now we need to do the "spatial" or component averaging 
+/*
+printf("tdot avg: ");
+for (int i = 0; i < NODE_NR; i++)
+{
+    printf("%g ",aux_time_average_theta_dot[i]);
+}   printf("\n");
+*/
+
+
+    double aux_size = 0;
+    double aux_sum  = 0;
+    for (int i = 0; i < NODE_NR; i++)
+    {
+        if  (C_dom[i][0]!=-1)
+        {
+            aux_sum = 0;
+            aux_size = (double) GLOB_dom_size[i];
+            for (int j = 0; j < aux_size; j++)
+            {
+                aux_sum += aux_time_average_theta_dot[ C_dom[i][j] ];
+                //printf("%d ", C_dom[i][j]); 
+            }//printf("\n");
+            aux_sum /= aux_size;
+            weff_dom[i]=aux_sum;
+        }
+        
+        //printf("\n");
+    }
+
+/*
+printf("wefdom: ");
+for (int i = 0; i < NODE_NR; i++)
+{
+    printf("%g ",weff_dom[i]);
+}   printf("\n");
+*/
+}
+
 double phase_coherence_compt (int id_compt)
 {
 
     int i=0;
-    Node crawl = GLOB_dom->suc[id_compt];
+    
     double rx, ry;
-    rx = ry = 0;
+    int phase=0;
+
     //printf("node list: ");
+
+    int comp_size = GLOB_dom_size[id_compt];
+#ifdef WEFF_MEMORY_LINKED_LIST
+    rx = ry = 0;
+    phase = 0;
+    Node crawl = GLOB_dom->suc[id_compt];
     while(crawl != NULL) {
         i = crawl->id;
-        rx += cos(GLOB_theta[i]);
-        ry += sin(GLOB_theta[i]);
+        phase = GLOB_theta[i];
+        rx += cos(phase);
+        ry += sin(phase);
         //printf("%d ", i);
         crawl = crawl->next;
     } //printf("\n");
+#endif
+#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
+    rx = ry = 0;
+    phase=0;
+    for (i = 0; i < comp_size; i++)
+    {
+        phase = GLOB_theta[C_dom[id_compt][i]];
+        rx += cos(phase);
+        ry += sin(phase);
+    }
+#endif
 
-    rx/=GLOB_dom_size[id_compt];
-    ry/=GLOB_dom_size[id_compt];
+    rx/=comp_size;
+    ry/=comp_size;
 
     return sqrt(rx*rx+ry*ry);
 }
@@ -233,8 +374,10 @@ double psi_coherence_compt (int id_compt)
 {
     double Nrx, Nry;
     Nrx = Nry = 0;
-
+    int phase=0;
     int i=0;
+/*
+    
     Node crawl = GLOB_dom->suc[id_compt];
     while(crawl != NULL) {
         i = crawl->id;
@@ -243,6 +386,32 @@ double psi_coherence_compt (int id_compt)
         
         crawl = crawl->next;
     }
+*/
+    int comp_size = GLOB_dom_size[id_compt];
+#ifdef WEFF_MEMORY_LINKED_LIST
+    i=0;
+    Nrx = Nry = 0;
+    phase = 0;
+    Node crawl = GLOB_dom->suc[id_compt];
+    while(crawl != NULL) {
+        i = crawl->id;
+        phase = GLOB_theta[i];
+        Nrx += cos(phase);
+        Nry += sin(phase);
+        //printf("%d ", i);
+        crawl = crawl->next;
+    } //printf("\n");
+#endif
+#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
+    Nrx = Nry = 0;
+    phase=0;
+    for (i = 0; i < comp_size; i++)
+    {
+        phase = GLOB_theta[ C_dom[id_compt][i] ];
+        Nrx += cos(phase);
+        Nry += sin(phase);
+    }
+#endif
 
     return atan2(Nry,Nrx);
 }
@@ -251,8 +420,7 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
                                             double sigma, int i)
 {
     // \dot{theta_i}=\omega_i+|sigma\sum_{j=0}^{N} a_{ij}\sin{theta_j-theta_i}
-    double sum = 0;//0*t*phases_len;    // just so I get rid of the gcc warning
-                                    // of unused t and phases_len
+    double sum = 0;//0*t*phases_len;
     //return cos(t);
     //double omega_nat_i = GLOB_omega_nat[i] ;
     
@@ -263,7 +431,8 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     }
     #endif
 
-    double coupling = sigma;
+    //double coupling = sigma;
+    
     /*
     double weight = 1.0;
     
@@ -277,11 +446,14 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     }
     */
     sum = 0;
-    for(int j = 0; j < degree[i]; j++) {
-        coupling = sigma;
-        sum += coupling * sin( phases[ C[i][j] ] - phases[i] );
+    double phase_i=phases[i];
+    int deg=degree[i];
+    for(int j = 0; j < deg; j++) {
+        //coupling = sigma;
+        //sum += sigma * sin( phases[ C[i][j] ] - phase[i]);
+        sum += sin( phases[ C[i][j] ] - phase_i);
         //printf("%d-%d\n",i,C[i][j]);
     }
     
-    return GLOB_omega_nat[i] + sum;
+    return GLOB_omega_nat[i] + sigma*sum;
 }
