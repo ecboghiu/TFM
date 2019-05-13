@@ -23,28 +23,93 @@ for i in range(len(tableau20)):
     tableau20[i] = (r / 255., g / 255., b / 255.) 
 
 plot_data, labels, colors = [], [], []
+data_labels_colors = [plot_data, labels, colors]
+
+def take_from_txt (out, filename, color):
+    out[0].append(genfromtxt(filename,  skip_header=5))
+    out[1].append(['r_'+filename,'p_'+filename])
+    color_code = color
+    out[2].append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
+   
+def take_from_txt_Nas (out, N, a, sig, color):
+    filename = r"../data/FG_N="+str(N)+"_m=1_a="+str(a)+"_sig="+str(sig)+".txt"
+    out[0].append(genfromtxt(filename,  skip_header=5))
+    out[1].append(['r_'+filename,'p_'+filename])
+    color_code = color
+    out[2].append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
+  
+
+# Sigma slices
+def plot_sig_slice(SIG):
+    #take_from_txt_Nas(data_labels_colors, 200, -3, SIG, 14)
+    take_from_txt_Nas(data_labels_colors, 200, -1, SIG, 0)
+    take_from_txt_Nas(data_labels_colors, 200, -0.5, SIG, 2)
+    take_from_txt_Nas(data_labels_colors, 200, 0, SIG, 4)
+    take_from_txt_Nas(data_labels_colors, 200, 0.5, SIG, 6)
+    take_from_txt_Nas(data_labels_colors, 200, 1, SIG, 8)
+    take_from_txt_Nas(data_labels_colors, 200, 3, SIG, 10)
+    take_from_txt_Nas(data_labels_colors, 200, 5, SIG, 12)
+    
+# Alpha slices
+def plot_alph_slice (ALPHA):
+    take_from_txt_Nas(data_labels_colors, 200, ALPHA, 0.5, 0)
+    take_from_txt_Nas(data_labels_colors, 200, ALPHA, 1, 2)
+    take_from_txt_Nas(data_labels_colors, 200, ALPHA, 1.5, 4)
+    take_from_txt_Nas(data_labels_colors, 200, ALPHA, 3, 6)
+
+#plot_sig_slice(0.1)
+
+#plot_alph_slice(0)
+
+#ALPHA=-1
+#take_from_txt_Nas(data_labels_colors, 200, 0, 1.5, 0)
+
+take_from_txt_Nas(data_labels_colors, 200, 0, 1.5, 0)
+take_from_txt_Nas(data_labels_colors, 200, 0.1, 1.5, 2)
+take_from_txt_Nas(data_labels_colors, 200, 0.5, 1.5, 4)
+#take_from_txt_Nas(data_labels_colors, 200, 0, 1.5, 0.7)
 
 
-
-filename = r"../data/FG_N=200_m=1_a=0_sig=4.5_bueno.txt"
+'''
+filename = r"../data/FG_N=200_m=1_a=-0.5_sig=0.1.txt"
 plot_data.append(genfromtxt(filename,  skip_header=5))
 labels.append(['r_'+filename,'p_'+filename])
 color_code = 0
 colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
 
+filename = r"../data/FG_N=200_m=1_a=-0.5_sig=1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=5))
+labels.append(['r_'+filename,'p_'+filename])
+color_code = 2
+colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
 
-filename = r"../data/FG_N=500_m=1_a=0_sig=1.5.txt"
+filename = r"../data/FG_N=200_m=1_a=-0.5_sig=1.5.txt"
+plot_data.append(genfromtxt(filename,  skip_header=5))
+labels.append(['r_'+filename,'p_'+filename])
+color_code = 4
+colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
+'''
+
+'''
+filename = r"../data/FG_N=200_m=1_a=-0.5_sig=0.1.txt"
 plot_data.append(genfromtxt(filename,  skip_header=5))
 labels.append(['r_'+filename,'p_'+filename])
 color_code = 2
 colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
 
 
+filename = r"../data/FG_N=200_m=1_a=0.5_sig=0.1.txt"
+plot_data.append(genfromtxt(filename,  skip_header=5))
+labels.append(['r_'+filename,'p_'+filename])
+color_code = 4
+colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
+'''
+
 
 fig = plt.figure()
 
 for i in range(0,len(plot_data)):
-    plt.errorbar((plot_data[i][:,0]), plot_data[i][:,2], np.array(plot_data[i][:,3])/np.sqrt(100),
+    plt.errorbar((plot_data[i][:,0]), plot_data[i][:,2], np.array(plot_data[i][:,3])/np.sqrt(3000),
                 label = labels[i][0], color = colors[i][0])
     plt.plot((    plot_data[i][:,0]), plot_data[i][:,1],
                 label = labels[i][1], color = colors[i][1])

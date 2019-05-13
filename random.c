@@ -1,12 +1,13 @@
 #include "graph.h"
 
-/*Parisi-Rapuano [0,1) random number generator.*/
+//Parisi-Rapuano [0,1) random number generator.
 
 #define NormRANu (2.3283063671E-10F)
 unsigned int  irr[256];
 unsigned int  ir1;
 unsigned char ind_ran, ig1, ig2, ig3;
 
+/*
 double Random  (void)
 {
     double r;
@@ -21,6 +22,7 @@ double Random  (void)
 
     return r;
 }
+*/
 
 void   ini_ran (int SEMILLA)
 {
@@ -200,6 +202,7 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
         nodes[i] = -1;
     }
 
+    double r_dom[NODE_NR];
     double weff_by_domain[NODE_NR]; // initialized in weff_compt_efficient
     //for (size_t i = 0; i < NODE_NR; i++)
     //{
@@ -224,7 +227,7 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
     }
     */
     
-    weff_compt_DOUBLY_efficient(weff_by_domain, NODE_NR, t, sigma);
+    weff_compt_DOUBLY_efficient(weff_by_domain, r_dom, NODE_NR, t, sigma);
     //for (size_t i = 0; i < NODE_NR; i++){
     //    printf("%g\t",weff_by_domain[i]);
     //}   printf("\n");
@@ -236,16 +239,20 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
     */
     double wi = weff_by_domain[GLOB_component_name[node_i]];
     double wf = 0;
+    double rf = 0;
     double tags[NODE_NR];
+    int aux_name=0;
     for(int i = 0; i < NODE_NR; i++) {
-        wf = weff_by_domain[GLOB_component_name[i]];
+        aux_name = GLOB_component_name[i];
+        wf = weff_by_domain[aux_name];
+        rf = r_dom[aux_name];
         //printf("wi,wf=%g,%g\n",wi,wf);
         //if (wf<(FG_WEFF_LOWER_FREQUENCY/10)) {
         //    printf("warning: something went wrong with FG generator\n");
         //    exit(123);
         //}
         
-        tags[i] = diff_weff_weight(alpha, wi, wf);
+        tags[i] = diff_weff_weight(alpha, wi, wf, 0, rf);
         //printf("%d tags[%d]=%lf\n",node_i,i,tags[i]);
     }
 
@@ -297,8 +304,9 @@ void generate_node_FREQUENCY_GAP (double alpha, int node_i, int m, int *nodes,
         
     }
 }
-
+/*
 double diff_weff_weight(double alpha, double wi, double wj)
 {
     return exp(alpha*fabs(wi-wj));
 }
+*/

@@ -30,7 +30,9 @@
     #define EPES_CHARACT "tribe"
 #endif
 
-//#define INITIAL_SEED 314159265
+//#define INITIAL_SEED 1557414566
+#define INITIAL_SEED 1557414222
+
 
 // Define if you want a histogram of the degrees of the graph
 //#define DEGREE_HISTOGRAM
@@ -43,11 +45,11 @@
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1e-2
+#define DELTA_T 1e-1
 // How many times we measure.
-#define MAX_STEPS 5000
+#define MAX_STEPS 3000
 // Number of updates in between measures.
-#define IN_BETWEEN 10
+#define IN_BETWEEN 0
 #define SIGMA_MIN 0.0
 #define SIGMA_MAX 0.2
 #define NR_SIGMA 10
@@ -59,7 +61,7 @@
 
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
-#define TERMALIZATION 40
+#define TERMALIZATION 100
 
 //#define WEFF_MEMORY_LINKED_LIST 1   // THIS IS OBSOLTE NOW
 #define WEFF_MEMORY_DYNAMIC_MATRIX
@@ -83,9 +85,9 @@
 #define FREQUENCY_GAP
 //#ifdef FREQUENCY_GAP
     #define FG_M 1
-    #define FG_ALPHA 0.0
+    #define FG_ALPHA 0.5
     #define FG_T_MIN 0.0
-    #define FG_T_MAX 1.25
+    #define FG_T_MAX 1.2
     #define FG_T_NUMBER (FG_T_MAX-FG_T_MIN)*NODE_NR
     #define FG_WEFF_LOWER_FREQUENCY -1e8
     #define FG_WEFF_MAX_STEPS MAX_STEPS
@@ -145,6 +147,11 @@ extern double *GLOB_theta;
 // GLOB_omega_nat[j] gives node j's natural frequency \omega_j
 extern double *GLOB_omega_nat;
 
+#define NormRANu (2.3283063671E-10F)
+extern unsigned int  irr[256];
+extern unsigned int  ir1;
+extern unsigned char ind_ran, ig1, ig2, ig3;
+
 /*******STRUCT DEFINITIONS*******/
 struct _Node {
         int id;
@@ -168,9 +175,9 @@ struct _Graph_array {
 Graph_array GLOB_dom_array;
 Graph GLOB_dom;
 
-
 /*******FUNCTION PROTOTYPES*******/
 void update_EULER   (double sigma, double h);
+
 void update_RK      (double t, double sigma, double h);
 
 int  initEXPL_product_rule      (double t, double sigma);
@@ -220,18 +227,80 @@ void read_edgelist_file_py  (const char* filename);
 // Graph observables, measurables for debugging and other
 void    debug                   (void);
 void    calculateDegree         (void);
-double  calculateTheta_dot_i    (double t, double *phases, int phases_len,
-                                double sigma, int i);
-double  diff_weff_weight        (double alpha, double wi, double wj);
+
+//double  calculateTheta_dot_i    (double t, double *phases, int phases_len,
+//                                double sigma, int i);
+inline 
+double calculateTheta_dot_i(double t, double *phases, int phases_len,
+                                            double sigma, int i)
+{
+    // \dot{theta_i}=\omega_i+|sigma\sum_{j=0}^{N} a_{ij}\sin{theta_j-theta_i}
+    double sum = 0;//0*t*phases_len;
+    //return cos(t);
+    //double omega_nat_i = GLOB_omega_nat[i] ;
+    #ifdef EPSILON_OSCILLATOR
+    double coupling_all_to_all = EPSILON_OSCILLATOR;
+    for(int j = 0; j < phases_len; j++) {
+        sum += coupling_all_to_all * sin(phases[j]-phases[i]);
+    }
+    #endif
+    //double coupling = sigma;
+    /*
+    double weight = 1.0;
+    if (degree[i] == 0)  {
+        weight = 1.0;
+    }  else {
+        weight = 1.0 *1.0/pow(degree[i],0);
+    }
+    */
+    sum = 0;
+    double phase_i=phases[i];
+    int deg=degree[i];
+    for(int j = 0; j < deg; j++) {
+        //coupling = sigma;
+        //sum += sigma * sin( phases[ C[i][j] ] - phase[i]);
+        sum += sin( phases[ C[i][j] ] - phase_i);
+        //printf("%d-%d\n",i,C[i][j]);
+    }
+    return GLOB_omega_nat[i] + sigma*sum;
+}
+
+
+//double  diff_weff_weight        (double alpha, double wi, double wj);
+inline
+double diff_weff_weight(double alpha, double wi, double wj, double ri, double rj)
+{
+    return exp(alpha*rj*fabs(wi-wj));
+}
+
 double  calculateThetaAverage   (void);
 double  weff_compt              (int id_compt, double t, double sigma);
 void    weff_compt_efficient    (double *weff_dom, int weff_dom_size,
                                 double t, double sigma);
-void    weff_compt_DOUBLY_efficient    (double *weff_dom, int weff_dom_size,
+void    weff_compt_DOUBLY_efficient    (double *weff_dom, double *r_dom, int weff_dom_size,
                                 double t, double sigma);
 double  weff_compt_instant      (int id_compt, double t, double sigma);
 double  phase_coherence         (void);
-double  psi_coherence           (void);
+
+//double  psi_coherence           (void);
+inline
+double psi_coherence(void)
+{
+    double Nrx, Nry;
+    Nrx = Nry = 0;
+    double phase=0;
+    for (int i = 0; i < NODE_NR; i++) {
+        phase=GLOB_theta[i];
+        Nrx += cos(phase);
+        Nry += sin(phase);
+    }
+    //if  (Nrx < 1e-6){
+    //    printf("warning: ry too small for division?");
+    //    return atan2(Nry,Nrx);
+    //}
+    return atan2(Nry,Nrx);
+}
+
 double  phase_coherence_compt   (int id_compt);
 double  psi_coherence_compt     (int id_compt);
 int     debug_count_nodes       (void);
@@ -248,7 +317,23 @@ double localClustering (int i);
 double Clustering      (void);
 
 // Functions for generating random numbers.
-double  Random                      (void); // Random number in [0,1).
+//double  Random                      (void); // Random number in [0,1).
+inline
+double Random  (void)
+{
+    double r;
+
+    ig1 = ind_ran - 24;
+    ig2 = ind_ran - 55;
+    ig3 = ind_ran - 61;
+    irr[ind_ran] = irr[ig1] + irr[ig2];
+    ir1 = (irr[ind_ran]^irr[ig3]);
+    ind_ran++;
+    r=ir1*NormRANu;
+
+    return r;
+}
+
 void    ini_ran                     (int SEMILLA); // initializes the generator
 int     generateDegree              (int m, double gamma);
 void    generate_node_BA            (int m, int* nodes);
@@ -277,5 +362,7 @@ void append_to_list     (signed int *list, signed int elem);
 int  list_len           (signed int *list);
 void remove_from_list   (signed int *list, signed int loc, int length);
 void shuffle            (int *array, size_t n);
+
+
 
 #endif

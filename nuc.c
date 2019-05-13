@@ -607,7 +607,7 @@ void debug()
     {
     //wi = weff_compt(GLOB_component_name[node_i], 0.0, SIGMA_VAL);
     //wf = weff_compt(GLOB_component_name[ii], 0.0, SIGMA_VAL);
-    www = diff_weff_weight(FG_ALPHA, wi, wf);
+    www = diff_weff_weight(FG_ALPHA, wi, wf, 0, 0);
     for (int j=0; j<degree[node_i]; j++)
     {
         if (C[node_i][j]==ii)

@@ -90,21 +90,23 @@ double phase_coherence()
     return sqrt(rx*rx+ry*ry);
 }
 
+// the following is inlined 
+/*
 double psi_coherence()
 {
     double Nrx, Nry;
     Nrx = Nry = 0;
-
     for (int i = 0; i < NODE_NR; i++) {
         Nrx += cos(GLOB_theta[i]);
         Nry += sin(GLOB_theta[i]);
     }
-    if  (Nrx < 1e-6){
-        printf("warning: ry too small for division?");
-        return atan2(Nry,Nrx);
-    }
+    //if  (Nrx < 1e-6){
+    //    printf("warning: ry too small for division?");
+    //    return atan2(Nry,Nrx);
+    //}
     return atan2(Nry,Nrx);
 }
+*/
 
 double weff_compt_instant (int id_compt, double t, double sigma)
 {
@@ -213,7 +215,7 @@ void weff_compt_efficient (double *weff_dom, int weff_dom_size,
     }
 }
 
-void weff_compt_DOUBLY_efficient (double *weff_dom, int weff_dom_size,
+void weff_compt_DOUBLY_efficient (double *weff_dom, double *r_dom, int weff_dom_size,
                                 double t, double sigma)
 {
     
@@ -230,6 +232,7 @@ void weff_compt_DOUBLY_efficient (double *weff_dom, int weff_dom_size,
     for(int i = 0; i < weff_dom_size; i++)
     {
         weff_dom[i] = FG_WEFF_LOWER_FREQUENCY;
+        r_dom[i] = -1;
     }
     //We need to do the first step and change from default
 
@@ -249,6 +252,9 @@ void weff_compt_DOUBLY_efficient (double *weff_dom, int weff_dom_size,
         }
     }
     */
+
+    // first hte time averages
+
     for(int i = 0; i < FG_WEFF_MAX_STEPS; i++)
     {
         /*
@@ -273,10 +279,18 @@ void weff_compt_DOUBLY_efficient (double *weff_dom, int weff_dom_size,
             {
                 // this means that add current theta_dot_ij to the running avg
 aux_time_average_theta_dot[m] = ((double)i)/(i+1) * aux_time_average_theta_dot[m]
-            + 1.0/(i+1) * calculateTheta_dot_i(t, GLOB_theta, NODE_NR, sigma, m);;
+            + 1.0/(i+1) * calculateTheta_dot_i(t, GLOB_theta, NODE_NR, sigma, m);
             }
-            
         }
+
+        for (int i_dom = 0; i_dom < NODE_NR; i_dom++)
+        {
+            if (C[i_dom][0] != 1)
+            {
+r_dom[i_dom] = ((double)i)/(i+1) * r_dom[i_dom]+ 1.0/(i+1) * phase_coherence_compt(i_dom);
+            }
+        }
+        
         
         
 
@@ -416,6 +430,8 @@ double psi_coherence_compt (int id_compt)
     return atan2(Nry,Nrx);
 }
 
+//the following is inlined
+/*
 double calculateTheta_dot_i(double t, double *phases, int phases_len,
                                             double sigma, int i)
 {
@@ -433,18 +449,18 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
 
     //double coupling = sigma;
     
-    /*
-    double weight = 1.0;
     
-    if (degree[i] == 0) 
-    {
-        weight = 1.0;
-    } 
-    else
-    {
-        weight = 1.0 *1.0/pow(degree[i],0);
-    }
-    */
+    //double weight = 1.0;
+    //
+    //if (degree[i] == 0) 
+    //{
+    //    weight = 1.0;
+    //} 
+    //else
+    //{
+    //    weight = 1.0 *1.0/pow(degree[i],0);
+    //}
+    
     sum = 0;
     double phase_i=phases[i];
     int deg=degree[i];
@@ -457,3 +473,4 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     
     return GLOB_omega_nat[i] + sigma*sum;
 }
+*/
