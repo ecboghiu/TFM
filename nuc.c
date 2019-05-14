@@ -22,7 +22,7 @@ void oscillator_on()
     double deg_med, deg_var;
     deg_med = deg_var = 0;
     double *deg_aux;
-    deg_aux = calloc(NODE_NR, sizeof *deg_aux);
+    deg_aux = (double*)calloc(NODE_NR, sizeof *deg_aux);
     if (deg_aux != NULL)
     {
         for(int i = 0; i < NODE_NR; i++) {
@@ -75,7 +75,7 @@ void oscillator_on()
     #endif
 
     double *r_coh;
-    r_coh = calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
+    r_coh = (double*)calloc(nr_measurements, sizeof(*r_coh));
     #ifdef PRINT_EVOLUTION_OF_R
     char filename_coh[128] = ".";
     snprintf(filename_coh, sizeof(char) * 128, "coh_%s_%g.txt",
@@ -219,12 +219,12 @@ void percolation_on()
 
 
     double *fractional_size;
-    fractional_size = calloc(t_number, sizeof *fractional_size);
+    fractional_size = (double*)calloc(t_number, sizeof *fractional_size);
     double *fractional_size_sigma ;
-    fractional_size_sigma = calloc(t_number, sizeof *fractional_size_sigma);
+    fractional_size_sigma = (double*)calloc(t_number, sizeof *fractional_size_sigma);
     //print_vec(&fractional_size, (int)t_number);
     double *edge_fraction ;
-    edge_fraction = calloc(t_number, sizeof *edge_fraction);
+    edge_fraction = (double*)calloc(t_number, sizeof *edge_fraction);
     int aux_int = 0;
     int idx = 0;
 
@@ -263,7 +263,7 @@ void percolation_on()
 
     // calculate averages
     double *aux_array = NULL;
-    aux_array = calloc(t_number, sizeof *aux_array);
+    aux_array = (double*)calloc(t_number, sizeof *aux_array);
     idx = 0;
     for ( t=t_min; t<t_max; t += t_inc) {
         for(int j = 0; j < AVG_NUMBER; j++) {
@@ -334,12 +334,12 @@ void epes_on ()
     }
 
     double *fractional_size;
-    fractional_size = calloc(t_number, sizeof *fractional_size);
+    fractional_size = (double*)calloc(t_number, sizeof *fractional_size);
     double *fractional_size_sigma ;
-    fractional_size_sigma = calloc(t_number, sizeof *fractional_size_sigma);
+    fractional_size_sigma = (double*)calloc(t_number, sizeof *fractional_size_sigma);
     //print_vec(&fractional_size, (int)t_number);
     double *edge_fraction ;
-    edge_fraction = calloc(t_number, sizeof *edge_fraction);
+    edge_fraction = (double*)calloc(t_number, sizeof *edge_fraction);
     int aux_int = 0;
     int idx = 0;
     double clustering = 0;
@@ -363,7 +363,7 @@ void epes_on ()
     #endif
 
     double *r_coh;
-    r_coh = calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
+    r_coh = (double*)calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
     #ifndef TERMALIZATION
     char filename_coh[128] = ".";
     snprintf(filename_coh, sizeof(char) * 128, "coh_%s_%g.txt",
@@ -494,7 +494,7 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust
 
     // calculate averages
     double *aux_array = 0;
-    aux_array = calloc(t_number, sizeof *aux_array);
+    aux_array = (double*)calloc(t_number, sizeof *aux_array);
     idx = 0;
     for ( t=t_min; t<t_max; t += t_inc) {
         for(int j = 0; j < AVG_NUMBER; j++) {
@@ -581,7 +581,7 @@ void debug()
     }*/
     printf("1\n");
     int m=3;
-    int *nodes = calloc(m, sizeof *nodes);
+    int *nodes = (int*)calloc(m, sizeof *nodes);
     generate_node_BA(m, nodes);
     printf("generated nodes:\n");
     for(int i = 0; i < m; i++) {
@@ -678,6 +678,7 @@ void frequency_gap_on()
     // a single sigma and plot coh.txt to see how much we should wait until the
     // phase coherence reaches a stable value, if at all.
     double sigma = SIGMA_VAL;
+    double fg_alpha = FG_ALPHA;
 
     double h               = DELTA_T;   // time increment
     int nr_measurements    = MAX_STEPS; // number of time increments we measure
@@ -687,7 +688,7 @@ void frequency_gap_on()
     #endif
 
     double *r_coh;
-    r_coh = calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
+    r_coh = (double*)calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
     #ifdef PRINT_EVOLUTION_OF_R
     char filename_coh[128] = ".";
     snprintf(filename_coh, sizeof(char) * 128, "data/coh_N=%d_a=%g_s=%g_m=%d.txt",
@@ -754,11 +755,13 @@ void frequency_gap_on()
         #endif
         for ( t=t_min; t<=t_max; t += t_inc)
         {   
-            increase_edges_FREQ_GAP(t, FG_M, FG_ALPHA, 0.0, SIGMA_VAL);
+            increase_edges_FREQ_GAP(t, FG_M, fg_alpha, 0.0, sigma);
             
-            //for(int i = 0; i < NODE_NR; i++) {
-            //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
-            //}
+            for(int i = 0; i < NODE_NR; i++) {
+                //GLOB_theta[i] = M_PI*(-1 + Random()*2);
+                GLOB_theta[i] /= M_PI;
+                GLOB_theta[i] = (GLOB_theta[i]-floor(GLOB_theta[i]))*M_PI;
+            }
             
             //for (int i = 0; i < NODE_NR; i++) {
             //    GLOB_omega_nat[i] = (double) degree[i];

@@ -60,7 +60,7 @@ NORMALIZING_FACTOR = 1/(promedio_dif(GAMMA)[1])
 print("Norm const python:", NORMALIZING_FACTOR)
 print("promedio teorico:", (promedio_dif(GAMMA)[2]))
 
-G = nx.read_adjlist("adj_C.txt", nodetype=int)
+G = nx.read_adjlist("../adj_C.txt", nodetype=int)
 
 #G = nx.barabasi_albert_graph(1000, 3)
 
@@ -111,11 +111,11 @@ ax.set_xticklabels(deg)
 def plot_test_fq():
     plt.figure()
     plot_data = []
-    filename = "test_theor.txt"
+    filename = "../test_theor.txt"
     plot_data=(genfromtxt(filename, skip_header=0))
     
     plot_data2 = []
-    filename = "test_FG.txt"
+    filename = "../test_FG.txt"
     plot_data2=(genfromtxt(filename, skip_header=0))
         
     b = np.histogram(plot_data2, bins=np.array([0,1,2,3,4,5,6,7,8,9,10])-0.5)
@@ -131,14 +131,14 @@ def plot_test_fq():
     plt.legend()
     plt.show()
 
-plot_test_fq()
+#plot_test_fq()
 
 
 
 
 #G = nx.barabasi_albert_graph(1000, 3)
 
-'''
+
 # draw graph in inset
 plt.axes([0.4, 0.4, 0.5, 0.5])
 Gcc = sorted(nx.connected_component_subgraphs(G), key=len, reverse=True)[0]
@@ -146,7 +146,7 @@ pos = nx.spring_layout(G)
 plt.axis('off')
 nx.draw_networkx_nodes(G, pos, node_size=20)
 nx.draw_networkx_edges(G, pos, alpha=0.4)
-'''
+
 plt.show()
 
 

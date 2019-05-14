@@ -151,7 +151,7 @@ void generate_node_BA (int m, int* nodes)
         nodes[i] = -1;
     }
     
-    double *tags = calloc(NODE_NR, sizeof *tags);
+    double *tags = (double*)calloc(NODE_NR, sizeof *tags);
     for(int i = 0; i < NODE_NR; i++) {
         tags[i] = degree[i];
     }

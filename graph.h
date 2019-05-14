@@ -38,7 +38,7 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 200
+#define NODE_NR 10
 #define K_MAX NODE_NR/10
 #define K_MIN 2
 #define AVG_NUMBER 1
@@ -63,10 +63,10 @@
 // we need to wait around 4s
 #define TERMALIZATION 100
 
-//#define WEFF_MEMORY_LINKED_LIST 1   // THIS IS OBSOLTE NOW
+#define WEFF_MEMORY_LINKED_LIST 1   // THIS IS OBSOLTE NOW
 #define WEFF_MEMORY_DYNAMIC_MATRIX
 #ifdef WEFF_MEMORY_DYNAMIC_MATRIX
-    #define WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE NODE_NR
+    #define WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE 3
 #endif
 
 //#define EPSILON_OSCILLATOR 1e-3
@@ -85,7 +85,7 @@
 #define FREQUENCY_GAP
 //#ifdef FREQUENCY_GAP
     #define FG_M 1
-    #define FG_ALPHA 0.5
+    #define FG_ALPHA -1.0
     #define FG_T_MIN 0.0
     #define FG_T_MAX 1.2
     #define FG_T_NUMBER (FG_T_MAX-FG_T_MIN)*NODE_NR
@@ -215,8 +215,10 @@ int  read            (int i, int j); // works like a[i][j] where a is
 void readAdj                (int l); // reads from file
 void saveAdj                (void);
 void printAdj               (void);
-void print_vec              (int **vec, int size);
+void print_vec              (int *vec, int size);
 int  int_max_vector         (int **vector, int size);
+void copy_vector            (int *target, int *source,
+                             int i_from, int len);
 void print_C                (void);
 void print_linked_list      (void);
 void write_C_to_file        (void);
@@ -230,6 +232,7 @@ void    calculateDegree         (void);
 
 //double  calculateTheta_dot_i    (double t, double *phases, int phases_len,
 //                                double sigma, int i);
+
 inline 
 double calculateTheta_dot_i(double t, double *phases, int phases_len,
                                             double sigma, int i)
@@ -245,14 +248,14 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     }
     #endif
     //double coupling = sigma;
-    /*
-    double weight = 1.0;
-    if (degree[i] == 0)  {
-        weight = 1.0;
-    }  else {
-        weight = 1.0 *1.0/pow(degree[i],0);
-    }
-    */
+    //
+    //double weight = 1.0;
+    //if (degree[i] == 0)  {
+    //    weight = 1.0;
+    //}  else {
+    //    weight = 1.0 *1.0/pow(degree[i],0);
+    //}
+    
     sum = 0;
     double phase_i=phases[i];
     int deg=degree[i];
@@ -266,6 +269,7 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
 }
 
 
+
 //double  diff_weff_weight        (double alpha, double wi, double wj);
 inline
 double diff_weff_weight(double alpha, double wi, double wj, double ri, double rj)
@@ -276,9 +280,10 @@ double diff_weff_weight(double alpha, double wi, double wj, double ri, double rj
 double  calculateThetaAverage   (void);
 double  weff_compt              (int id_compt, double t, double sigma);
 void    weff_compt_efficient    (double *weff_dom, int weff_dom_size,
-                                double t, double sigma);
-void    weff_compt_DOUBLY_efficient    (double *weff_dom, double *r_dom, int weff_dom_size,
-                                double t, double sigma);
+                                 double t, double sigma);
+void    weff_compt_DOUBLY_efficient    (double *weff_dom, double *r_dom,
+                                        int weff_dom_size,
+                                        double t, double sigma);
 double  weff_compt_instant      (int id_compt, double t, double sigma);
 double  phase_coherence         (void);
 
@@ -362,7 +367,6 @@ void append_to_list     (signed int *list, signed int elem);
 int  list_len           (signed int *list);
 void remove_from_list   (signed int *list, signed int loc, int length);
 void shuffle            (int *array, size_t n);
-
 
 
 #endif

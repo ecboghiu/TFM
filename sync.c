@@ -3,7 +3,7 @@
 double *GLOB_theta;
 void initThetas()
 {
-    GLOB_theta = malloc(NODE_NR*sizeof(*GLOB_theta));
+    GLOB_theta = (double*)malloc(NODE_NR*sizeof(*GLOB_theta));
     for (int i = 0; i < NODE_NR; ++i) {
         GLOB_theta[i] = -M_PI + Random()*(2*M_PI);
     }
@@ -15,7 +15,7 @@ double *GLOB_omega_nat;
 void initOmegas()
 {
     // omega_nat IS GLOBAL
-    GLOB_omega_nat = malloc(NODE_NR*sizeof(*GLOB_omega_nat));
+    GLOB_omega_nat = (double*)malloc(NODE_NR*sizeof(*GLOB_omega_nat));
     for (int i = 0; i < NODE_NR; i++) 
     {
         //GLOB_omega_nat[i] = sampleNormal();//(double)degree[i];//0.5*(-1 + 2*Random());//

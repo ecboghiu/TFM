@@ -63,10 +63,17 @@ def plot_alph_slice (ALPHA):
 
 #ALPHA=-1
 #take_from_txt_Nas(data_labels_colors, 200, 0, 1.5, 0)
+'''
+take_from_txt_Nas(data_labels_colors, 1000, -1, "1.50", 0)
+take_from_txt_Nas(data_labels_colors, 1000, 0, "1.50", 2)
+take_from_txt_Nas(data_labels_colors, 1000, 1, "1.50", 4)
+'''
+take_from_txt_Nas(data_labels_colors, 1000, -1, 1.5, 6)
+take_from_txt_Nas(data_labels_colors, 1000, 0, 1.5, 8)
+take_from_txt_Nas(data_labels_colors, 1000, 1, 1.5, 10)
 
-take_from_txt_Nas(data_labels_colors, 200, 0, 1.5, 0)
-take_from_txt_Nas(data_labels_colors, 200, 0.1, 1.5, 2)
-take_from_txt_Nas(data_labels_colors, 200, 0.5, 1.5, 4)
+
+
 #take_from_txt_Nas(data_labels_colors, 200, 0, 1.5, 0.7)
 
 

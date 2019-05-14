@@ -6,7 +6,7 @@ void calcHist(char* filename)
     int N_Intervalos = NODE_NR-1;
     int N_data = NODE_NR;
     double *Hist;
-    Hist = calloc(N_Intervalos, sizeof *Hist);
+    Hist = (double*)calloc(N_Intervalos, sizeof *Hist);
     Histogram(degree, Hist, N_data, N_Intervalos, &d, &min, &max);
     #ifdef DEBUG
     printf("%s%g\n", "min=", min);

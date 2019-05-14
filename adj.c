@@ -15,16 +15,17 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
     int i,j,k;
     
     int **data;
-    data =  malloc(sizeof(*data) * dim_x);
+    data = (int**)malloc(sizeof(*data) * dim_x);
     if (data==NULL)
     {
         printf("warning: malloc gives bad results...\n");
         exit(111);
     }
     
-    
+    int *ax2;
     for (k = 0; k < dim_x; k++) {
-        data[k] =  malloc(sizeof (*(data[k])) * dim_y);
+        ax2 = (int*)malloc(sizeof (*(data[k])) * dim_y);
+        data[k] =  ax2;
         if (data[k]==NULL)
         {
             printf("warning: malloc gives bad results...\n");
@@ -40,14 +41,18 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
 
 #ifdef WEFF_MEMORY_DYNAMIC_MATRIX
     int col_nr = WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE;
-    C_dom =  malloc(NODE_NR * sizeof *C_dom);
+    C_dom =  (int**)malloc(NODE_NR * sizeof *C_dom);
     if (C_dom==NULL)
-        {
-            printf("warning: malloc gives bad results...\n");
-            exit(111);
-        }
+    {
+        printf("warning: malloc gives bad results...\n");
+        exit(111);
+    }
+    int *ax;
     for (k = 0; k < dim_x; k++) {
-        C_dom[k] =  (int *)malloc(col_nr * sizeof *(C_dom[k]) );
+        //ax = (int *)malloc(col_nr * sizeof *(C_dom[k]) );
+        //C_dom[k] = ax;
+        C_dom[k] = malloc(col_nr * sizeof *(C_dom[k]) );
+        printf("apple's address = %p\n", C_dom[k]);
         if (C_dom[k]==NULL)
         {
             printf("warning: malloc gives bad results...\n");
@@ -72,7 +77,7 @@ void init_glob_vect_memory(void)
     int i=0;
     GLOB_unique_elements_in_network = NODE_NR;
 
-    degree = malloc(NODE_NR * sizeof *degree);
+    degree = (int*)malloc(NODE_NR * sizeof *degree);
     if (degree==NULL)
         {
             printf("warning: malloc gives bad results...\n");
@@ -89,16 +94,16 @@ void init_glob_vect_memory(void)
     
     
 
-    GLOB_component_size = malloc(NODE_NR * sizeof *GLOB_component_size);
+    GLOB_component_size = (int*)malloc(NODE_NR * sizeof *GLOB_component_size);
     if (GLOB_component_size==NULL)
-        {
-            printf("warning: malloc gives bad results...\n");
-            exit(111);
-        } 
+    {
+        printf("warning: malloc gives bad results...\n");
+        exit(111);
+    } 
     for(i = 0; i < NODE_NR; i++){
         GLOB_component_size[i] = 1; // all nodes are their own cluster
     }
-    GLOB_component_name = malloc(NODE_NR* sizeof *GLOB_component_name);
+    GLOB_component_name = (int*)malloc(NODE_NR* sizeof *GLOB_component_name);
     if (GLOB_component_name==NULL)
         {
             printf("warning: malloc gives bad results...\n");
@@ -131,7 +136,7 @@ int add_edge (int i, int j) {
 
     if (new_name != old_name) {
         join_domains(old_name,new_name);
-/*
+printf("add edge: %d %d\n", i, j);
 printf("weff matrix:\n");
 for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
 {
@@ -143,7 +148,9 @@ for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
     printf("\n");
     
 }
-*/
+
+print_linked_list();
+
     }
     
 
@@ -273,7 +280,7 @@ void read_edgelist_file_py (const char* filename)
 
 void initDom()
 {
-    GLOB_dom      =        malloc(sizeof(*GLOB_dom));
+    GLOB_dom      =    (Graph) malloc(sizeof(*GLOB_dom));
     GLOB_dom->suc = (Node*)calloc(NODE_NR,sizeof(*(GLOB_dom->suc)));
     for(int i = 0; i < NODE_NR; i++)
     {
@@ -380,7 +387,7 @@ void initScaleFree ()
 
     printf("Beginning generating degree distribution.\n");
     int *aux_deg;
-    aux_deg = calloc(NODE_NR, sizeof *aux_deg);
+    aux_deg = (int*)calloc(NODE_NR, sizeof *aux_deg);
     if (aux_deg == NULL)
     {
         printf("warning: null memory allocation\n");
@@ -410,8 +417,8 @@ void initScaleFree ()
     */
 
     printf("Finished generating degree distribution.\n");
-    signed int *list = calloc((sum+1),sizeof(*list)); // sum+1 because we need
-    list[0] = -1;                                     // to store -1
+    signed int *list = (int* )calloc((sum+1),sizeof(*list)); // sum+1 because we 
+    list[0] = -1;                                     // need to store -1
     for (signed int i_idx = 0; i_idx < NODE_NR; i_idx++) {
         for (j = 0; j < aux_deg[i_idx]; j++) {
             append_to_list(list, i_idx);
@@ -540,7 +547,7 @@ void init_BA (int m, int N)
 
     add_edge(0,1); // We need to start with some edges
 
-    int *ba_nodes = calloc(m, sizeof *ba_nodes);
+    int *ba_nodes = (int*)calloc(m, sizeof *ba_nodes);
     for(int node_id = 2; node_id < N; node_id++)
     {
         generate_node_BA(m, ba_nodes);
@@ -603,11 +610,11 @@ int unique_elements(int arr[], int len) {
     return count;
 }
 
-void print_vec (int **vec, int size)
+void print_vec (int *vec, int size)
 {
     for(int i = 0; i < size; i++)
     {
-        printf("%d    ", (int)(*vec)[i]);
+        printf("%d    ", (int)vec[i]);
     }
     printf("\n");
     
@@ -667,7 +674,7 @@ void insertNode (Node *I, int i)
     aux = *I; // s is now a pointer to a struct of type Node
     // Now we make *I point to new blank memory and give it id
     // value i and make it point to the old head: head insertion.
-    (*I) = malloc( sizeof *(*I) );
+    (*I) = (Node)malloc( sizeof *(*I) );
     (*I)->id=i;
     (*I)->next=aux;
 }
@@ -709,6 +716,11 @@ int join_domains(int dom_i, int dom_j)
 // first without realloc, assume size is NODE_NR
 int idx_old = GLOB_dom_size[dom_j];
 int length_i = GLOB_dom_size[dom_i];
+
+int size_old = GLOB_dom_size[dom_i];
+int size_new = GLOB_dom_size[dom_j];
+
+
 /*
 if (length_i+idx_old >= C_dom_sizes[dom_j])
 {
@@ -734,15 +746,68 @@ if (length_i+idx_old >= C_dom_sizes[dom_j])
 }
 */
 
-/*
+
 if(C_dom[dom_j][0] == -1)
 {
     printf("warning: an inexisting component should not have been selected!\n");
     exit(111);
 }
-*/
 
-//if(C_dom[dom_i][0] != -1) //this should probably be uncommented
+if (size_new+size_old > C_dom_sizes[dom_j])
+{
+    printf("step1 domi %d domj %d\n", dom_i, dom_j);
+    int size_lb = size_new+size_old;
+    int aux_vect[NODE_NR];
+    copy_vector(aux_vect, C_dom[dom_i], 0, C_dom_sizes[dom_i]);
+    //for (int i = 0; i < C_dom_sizes[dom_i]; i++) {
+    //    aux_vect[i] = C_dom[dom_i][i];
+    //}
+    //for (int i = 0; i < NODE_NR; i++)
+    {
+        printf("apple's address = %p dom = %d\n", C_dom[dom_i], dom_i);
+    }
+    
+    print_vec(aux_vect, C_dom_sizes[dom_i]);
+
+    free(C_dom[dom_i]);
+
+    // Now we will try to realoc dom_j.
+    if (C_dom[dom_j]!=NULL) {
+        printf("step2\n");
+        //int *aux_ptr2 = (void*)C_dom[dom_i];
+        //free(aux_ptr2);
+        printf("step3\n");
+    }
+    
+    printf("step4\n");
+    //C_dom[dom_i] =  (int*) malloc(2*size_lb * sizeof(int));
+    int* tmp =  realloc(C_dom[dom_j], 10 * sizeof(int));
+    if (tmp) {
+        C_dom[dom_j] = tmp;
+    } else
+    {
+        printf("warning: malloc failed! \n");
+        exit(1111);
+    }
+    printf("step4\n");
+
+    // Now we copy from i onto newly resized j
+    for (int i = 0; i < size_old; i++) {
+        C_dom[dom_j][size_new + i] = aux_vect[i];
+        C_dom[dom_i][i] = -1;
+    }
+    for (int i = 0; i < size_lb; i++)
+    {
+        C_dom[dom_j][size_lb + i] = -1; 
+    }
+    
+    C_dom_sizes[dom_i] = 1;
+    C_dom_sizes[dom_j] = 2*size_lb;
+}
+
+
+
+if(C_dom[dom_i][0] != -1) //this should probably be uncommented
 {
     //printf("dom_i dom_j: %d %d\n", dom_i, dom_j);
     //printf("idx_old length_i: %d %d\n", idx_old, length_i);

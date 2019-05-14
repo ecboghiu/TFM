@@ -85,3 +85,10 @@ void print_linked_list()
         printf("\n");
     }
 }
+
+void copy_vector (int *target, int *source, int i_from, int len)
+{
+    for (int i = i_from; i < len; i++) {
+        target[i] = source[i];
+    }    
+}
