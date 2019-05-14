@@ -41,18 +41,19 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
 
 #ifdef WEFF_MEMORY_DYNAMIC_MATRIX
     int col_nr = WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE;
-    C_dom =  (int**)malloc(NODE_NR * sizeof *C_dom);
+    C_dom =  malloc(NODE_NR * sizeof *C_dom);
     if (C_dom==NULL)
     {
         printf("warning: malloc gives bad results...\n");
         exit(111);
     }
-    int *ax;
+
     for (k = 0; k < dim_x; k++) {
         //ax = (int *)malloc(col_nr * sizeof *(C_dom[k]) );
         //C_dom[k] = ax;
         C_dom[k] = malloc(col_nr * sizeof *(C_dom[k]) );
-        printf("apple's address = %p\n", C_dom[k]);
+                
+        //printf("apple's address = %p\n", (void*)(C_dom[k]));
         if (C_dom[k]==NULL)
         {
             printf("warning: malloc gives bad results...\n");
@@ -60,8 +61,12 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
         }
     }
     for (i = 0; i < dim_x; i++) {
-        for (j = 0; j < 10; j++) {
+        for (j = 0; j < col_nr; j++) {
             C_dom[i][j] = -1;
+            if(j==0)
+            {
+                C_dom[i][j] = i;
+            }
         }
     }
 
@@ -136,6 +141,7 @@ int add_edge (int i, int j) {
 
     if (new_name != old_name) {
         join_domains(old_name,new_name);
+/*        
 printf("add edge: %d %d\n", i, j);
 printf("weff matrix:\n");
 for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
@@ -150,7 +156,7 @@ for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
 }
 
 print_linked_list();
-
+*/
     }
     
 
@@ -311,14 +317,7 @@ void initDom()
         GLOB_dom_array_lengths[i] = 1;
     }
     */
-
-#ifdef WEFF_MEMORY_DYNAMIC_MATRIX
-    // at first, disconnected network
-    for (int i = 0; i < NODE_NR; i++) {
-            C_dom[i][0] = i;
-    }
-#endif
-    
+  
 
     //GLOB_dom_size = malloc(NODE_NR *sizeof *GLOB_dom_size);
     for(int i = 0; i < NODE_NR; i++)
@@ -714,11 +713,11 @@ int join_domains(int dom_i, int dom_j)
 
 #ifdef WEFF_MEMORY_DYNAMIC_MATRIX
 // first without realloc, assume size is NODE_NR
-int idx_old = GLOB_dom_size[dom_j];
-int length_i = GLOB_dom_size[dom_i];
+//int idx_old = GLOB_dom_size[dom_j];
+//int length_i = GLOB_dom_size[dom_i];
 
-int size_old = GLOB_dom_size[dom_i];
-int size_new = GLOB_dom_size[dom_j];
+int size_i_old = GLOB_dom_size[dom_i];
+int size_j_new = GLOB_dom_size[dom_j];
 
 
 /*
@@ -753,23 +752,89 @@ if(C_dom[dom_j][0] == -1)
     exit(111);
 }
 
-if (size_new+size_old > C_dom_sizes[dom_j])
+int old_capacity = C_dom_sizes[dom_j];
+int new_size = size_i_old + size_j_new;
+int new_capacity = 2*new_size;
+// https://stackoverflow.com/questions/3850749/
+// does-realloc-overwrite-old-contents
+if ( new_size >= old_capacity)
+{
+    //printf("sizenew, capacity: %d %d\n", new_size, old_capacity);
+    int *oldpointer = C_dom[dom_j];
+    int *newpointer = realloc(oldpointer, new_capacity*sizeof(int));
+    if (newpointer == NULL) {
+        printf("warning: problems with pointer\n");
+        exit(11);
+    } else {
+        /* everything ok                                                                 */
+        /* `newpointer` now points to a new memory block with the contents of oldpointer */
+        /* `oldpointer` points to an invalid address                                     */
+        oldpointer = newpointer;
+        C_dom[dom_j] = newpointer;
+        
+        /* oldpointer points to the correct address                                */
+        /* the contents at oldpointer have been copied while realloc did its thing */
+        /* if the new size is smaller than the old size, some data was lost        */
+        
+    }
+    C_dom_sizes[dom_j]=new_capacity;
+}
+
+for (int i = 0; i < size_i_old; i++)
+{
+    C_dom[dom_j][size_j_new + i] = C_dom[dom_i][i];
+}
+int *old_pointer2 = C_dom[dom_i];
+int *new_pointer2 = realloc(old_pointer2, 1*sizeof(int));
+if (new_pointer2 == NULL)
+{
+    printf("warning: problems with pointer\n");
+    exit(11);
+}
+else
+{
+    old_pointer2 = new_pointer2;
+    C_dom[dom_i] = new_pointer2;
+    C_dom[dom_i][0] = -1;
+    C_dom_sizes[dom_i] = 1;
+}
+
+
+
+for (int i = new_size; i < C_dom_sizes[dom_j]; i++)
+{
+    C_dom[dom_j][i] = -1;
+}
+
+
+
+/*
+int actual_size = C_dom_sizes[dom_j];
+if (size_j_new+size_i_old > actual_size)
+{
+    realloc(C_dom[dom_j], 100*sizeof(int));
+    C_dom_sizes[dom_j]=100;
+}
+*/
+
+/*
+if //(size_j_new+size_i_old > C_dom_sizes[dom_j])
 {
     printf("step1 domi %d domj %d\n", dom_i, dom_j);
-    int size_lb = size_new+size_old;
+    int size_lb = size_j_new+size_i_old;
     int aux_vect[NODE_NR];
-    copy_vector(aux_vect, C_dom[dom_i], 0, C_dom_sizes[dom_i]);
-    //for (int i = 0; i < C_dom_sizes[dom_i]; i++) {
-    //    aux_vect[i] = C_dom[dom_i][i];
-    //}
+    //copy_vector(aux_vect, C_dom[dom_i], 0, C_dom_sizes[dom_i]);
+    for (int i = 0; i < C_dom_sizes[dom_i]; i++) {
+        aux_vect[i] = C_dom[dom_i][i];
+    }
     //for (int i = 0; i < NODE_NR; i++)
     {
-        printf("apple's address = %p dom = %d\n", C_dom[dom_i], dom_i);
+        printf("apple's address = %p %p dom = %d\n", (void*)C_dom[dom_i], (void*)(C_dom_original)[dom_i], dom_i);
     }
     
     print_vec(aux_vect, C_dom_sizes[dom_i]);
 
-    free(C_dom[dom_i]);
+    //free((C_dom_original)[0]);
 
     // Now we will try to realoc dom_j.
     if (C_dom[dom_j]!=NULL) {
@@ -781,7 +846,7 @@ if (size_new+size_old > C_dom_sizes[dom_j])
     
     printf("step4\n");
     //C_dom[dom_i] =  (int*) malloc(2*size_lb * sizeof(int));
-    int* tmp =  realloc(C_dom[dom_j], 10 * sizeof(int));
+    int* tmp =  realloc(C_dom[dom_j], 2*size_lb * sizeof(int));
     if (tmp) {
         C_dom[dom_j] = tmp;
     } else
@@ -792,8 +857,8 @@ if (size_new+size_old > C_dom_sizes[dom_j])
     printf("step4\n");
 
     // Now we copy from i onto newly resized j
-    for (int i = 0; i < size_old; i++) {
-        C_dom[dom_j][size_new + i] = aux_vect[i];
+    for (int i = 0; i < size_i_old; i++) {
+        C_dom[dom_j][size_j_new + i] = aux_vect[i];
         C_dom[dom_i][i] = -1;
     }
     for (int i = 0; i < size_lb; i++)
@@ -805,8 +870,8 @@ if (size_new+size_old > C_dom_sizes[dom_j])
     C_dom_sizes[dom_j] = 2*size_lb;
 }
 
-
-
+*/
+/*
 if(C_dom[dom_i][0] != -1) //this should probably be uncommented
 {
     //printf("dom_i dom_j: %d %d\n", dom_i, dom_j);
@@ -819,6 +884,7 @@ if(C_dom[dom_i][0] != -1) //this should probably be uncommented
     C_dom[dom_i][0]=-1;
     //C_dom[dom_i] = realloc(C_dom[dom_i], sizeof(int));
 }
+*/
 #endif
 
 #ifdef WEFF_MEMORY_LINKED_LIST

@@ -13,7 +13,7 @@ int GLOB_initial_seed;
 //int main(int args_number, char* args[])
 int main(void)
 {
-    printf("Initializing program.\n");
+    printf("\nInitializing program.\n\n");
 
 #ifdef INITIAL_SEED
     GLOB_initial_seed = INITIAL_SEED;

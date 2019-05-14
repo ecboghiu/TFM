@@ -702,6 +702,40 @@ void frequency_gap_on()
         exit(2);
     }
     #endif
+
+////////
+/*
+    int col_nr = WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE;
+    C_dom =  (int**)malloc(NODE_NR * sizeof *C_dom);
+    if (C_dom==NULL)
+    {
+        printf("warning: malloc gives bad results...\n");
+        exit(111);
+    }
+    int *ax;
+    for (int k = 0; k < NODE_NR; k++) {
+        //ax = (int *)malloc(col_nr * sizeof *(C_dom[k]) );
+        //C_dom[k] = ax;
+        C_dom[k] = malloc(col_nr * sizeof *(C_dom[k]) );
+        printf("apple's address = %p\n", C_dom[k]);
+        if (C_dom[k]==NULL)
+        {
+            printf("warning: malloc gives bad results...\n");
+            exit(111);
+        }
+    }
+    for (int i = 0; i < NODE_NR; i++) {
+        for (int j = 0; j < col_nr; j++) {
+            C_dom[i][j] = -1;
+        }
+    }
+
+    for (int i = 0; i < NODE_NR; i++)
+    {
+        C_dom_sizes[i] = col_nr;
+    }
+*/
+////
     
     char filename2[128] = "aa";
     snprintf(filename2, sizeof(char) * 128, "data/FG_N=%d_m=%d_a=%g_sig=%g.txt", 

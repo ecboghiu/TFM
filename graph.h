@@ -39,7 +39,7 @@
 
 // Number of nodes in the graph.
 #define NODE_NR 10
-#define K_MAX NODE_NR/10
+#define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
 
@@ -63,10 +63,10 @@
 // we need to wait around 4s
 #define TERMALIZATION 100
 
-#define WEFF_MEMORY_LINKED_LIST 1   // THIS IS OBSOLTE NOW
+//#define WEFF_MEMORY_LINKED_LIST 1   // THIS IS OBSOLTE NOW
 #define WEFF_MEMORY_DYNAMIC_MATRIX
 #ifdef WEFF_MEMORY_DYNAMIC_MATRIX
-    #define WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE 3
+    #define WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE NODE_NR/2
 #endif
 
 //#define EPSILON_OSCILLATOR 1e-3
@@ -172,7 +172,7 @@ struct _Graph_array {
 }; typedef struct _Graph_array *Graph_array;
 
 
-Graph_array GLOB_dom_array;
+//Graph_array GLOB_dom_array;
 Graph GLOB_dom;
 
 /*******FUNCTION PROTOTYPES*******/
