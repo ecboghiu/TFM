@@ -671,6 +671,8 @@ void frequency_gap_on()
     // For coherece
     double r_med, r_var;
     r_med = r_var = 0;
+    double r_dpsidt, r_dpsidt_var;
+    r_dpsidt = r_dpsidt_var = 0;    
 
     
     double timp = 0;
@@ -687,8 +689,9 @@ void frequency_gap_on()
     int termalization = TERMALIZATION;
     #endif
 
-    double *r_coh;
+    double *r_coh, *r_psi;
     r_coh = (double*)calloc(nr_measurements, sizeof(*r_coh)); // r from phase coherence
+    r_psi = (double*)calloc(nr_measurements, sizeof(*r_psi));
     #ifdef PRINT_EVOLUTION_OF_R
     char filename_coh[128] = ".";
     snprintf(filename_coh, sizeof(char) * 128, "data/coh_N=%d_a=%g_s=%g_m=%d.txt",
@@ -791,16 +794,15 @@ void frequency_gap_on()
         {   
             increase_edges_FREQ_GAP(t, FG_M, fg_alpha, 0.0, sigma);
             
-            for(int i = 0; i < NODE_NR; i++) {
-                //GLOB_theta[i] = M_PI*(-1 + Random()*2);
-                GLOB_theta[i] /= M_PI;
-                GLOB_theta[i] = (GLOB_theta[i]-floor(GLOB_theta[i]))*M_PI;
-            }
-            
-            //for (int i = 0; i < NODE_NR; i++) {
-            //    GLOB_omega_nat[i] = (double) degree[i];
-            //            //0.5*(-1 + 2*Random());//sampleNormal();
+            //for(int i = 0; i < NODE_NR; i++) {
+            //    //GLOB_theta[i] = M_PI*(-1 + Random()*2);
+            //    GLOB_theta[i] = (GLOB_theta[i]/M_PI-floor(GLOB_theta[i]/M_PI))*M_PI;
             //}
+            
+            for (int i = 0; i < NODE_NR; i++) {
+                GLOB_omega_nat[i] = 2*(double) degree[i];
+                        //0.5*(-1 + 2*Random());//sampleNormal();
+            }
 
             #ifdef TERMALIZATION // we wait for r to stabilize
             for (int i = 0; i < termalization; i++)
@@ -809,11 +811,18 @@ void frequency_gap_on()
             #endif
             //printf("passed termalization\n");
 
+            //r_coh[0] = phase_coherence();
+            //r_psi[0] = psi_coherence();
             for (int t_idx = 0; t_idx < nr_measurements; t_idx++)
             {
-                r_coh[t_idx] = phase_coherence();
-                //r_coh[t_idx] = (GLOB_theta[node_nr_aux_term]);
                 timp = t_idx*h*(1+blind);
+                r_coh[t_idx] = phase_coherence();
+                //r_psi[t_idx] = psi_coherence();
+                //if (r_med > 0.5)
+                {
+                //    r_psi[t_idx] = (psi_coherence()-r_psi[t_idx-1])/(h*(1+blind));
+                }
+                //r_coh[t_idx] = (GLOB_theta[node_nr_aux_term]);
 
                 #ifdef PRINT_EVOLUTION_OF_R
                 fprintf(theta_file, "%lf %lf\n",
@@ -828,6 +837,8 @@ void frequency_gap_on()
 
                 update_RK(timp, sigma, h);
             }
+            //r_psi[0]=r_psi[1];
+            //print_vec(r_psi, nr_measurements);
 
 
             //aux_int = int_max_vector(&GLOB_component_size, NODE_NR);
@@ -838,6 +849,9 @@ void frequency_gap_on()
             //clustering = Clustering();
             clustering=0;
             med_var(r_coh, nr_measurements, &r_med, &r_var);
+            //med_var(r_psi, nr_measurements, &r_dpsidt, &r_dpsidt_var);
+            //r_dpsidt = (r_psi[nr_measurements-1]-r_psi[0])/timp;
+            
             fprintf(f_out2, "%g %g %g %g %g\n", 
     t, fractional_size_noavg[idx][avg_idx], r_med, sqrt(r_var), clustering);
     //printf("One loop finished! \t sigma=%g \t <r>=%g \t sigma_<r>=%g \n",
@@ -848,13 +862,14 @@ void frequency_gap_on()
             //printf("Glob_nr_edges= %d\n", GLOB_nr_edges);
             //printf("component name unique elements: %d\n",
             //                unique_elements(GLOB_component_name, NODE_NR));
-    printf("t=%d/%d=%g\tmax_comp=%g\tunique_elem:%g\t<r>=%g\tsigma_<r>=%g\tclust=%g\n",
+    printf("t=%d/%d=%g\tmax_comp=%g\tunique_elem:%g\t r=%g\t N^0.5sig_r =%g\t psi=%g sig_psi=%g\n",
                                             GLOB_nr_edges, NODE_NR, t, 
                                             GLOB_max_component_size,
                                             (GLOB_unique_elements_in_network),
                                             r_med,
                                             sqrt(r_var),
-                                            clustering);
+                                            r_dpsidt,
+                                            sqrt(r_dpsidt_var));
                         
 
 

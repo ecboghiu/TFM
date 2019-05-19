@@ -6,7 +6,7 @@ int *degree, *GLOB_component_size, *GLOB_component_name;
 int GLOB_nr_edges, GLOB_unique_components;
 int **C;
 int **C_dom;
-double GLOB_dom_size[NODE_NR];
+int GLOB_dom_size[NODE_NR];
 int GLOB_dom_array_lengths[NODE_NR];
 int C_dom_sizes[NODE_NR];
 
@@ -141,20 +141,18 @@ int add_edge (int i, int j) {
 
     if (new_name != old_name) {
         join_domains(old_name,new_name);
-/*        
+/*
 printf("add edge: %d %d\n", i, j);
 printf("weff matrix:\n");
 for (int i_idx = 0; i_idx < NODE_NR; i_idx++)
 {
-    printf("%d:%d: ",i_idx,C_dom_sizes[i_idx]);
+    printf("%d:%d:%d: ",i_idx,C_dom_sizes[i_idx], GLOB_dom_size[i_idx]);
     for (int j_idx = 0; j_idx < C_dom_sizes[i_idx]; j_idx++)
     {
         printf("%d ", C_dom[i_idx][j_idx]);
     }
     printf("\n");
-    
 }
-
 print_linked_list();
 */
     }
@@ -210,6 +208,9 @@ print_linked_list();
         GLOB_dom_size[old_name]=new_size;
         GLOB_dom_size[new_name]=new_size;
     }
+
+
+
     
     return 1;
 }
@@ -752,6 +753,13 @@ if(C_dom[dom_j][0] == -1)
     exit(111);
 }
 
+if(C_dom[dom_i][0] == -1)
+{
+    //printf("warning: an inexisting component should not have been selected!\n");
+    //exit(111);
+    return 0;
+}
+
 int old_capacity = C_dom_sizes[dom_j];
 int new_size = size_i_old + size_j_new;
 int new_capacity = 2*new_size;
@@ -784,6 +792,9 @@ for (int i = 0; i < size_i_old; i++)
 {
     C_dom[dom_j][size_j_new + i] = C_dom[dom_i][i];
 }
+C_dom[dom_i][0] = -1;
+C_dom[dom_j][new_size+1] = -1;
+/*
 int *old_pointer2 = C_dom[dom_i];
 int *new_pointer2 = realloc(old_pointer2, 1*sizeof(int));
 if (new_pointer2 == NULL)
@@ -797,92 +808,6 @@ else
     C_dom[dom_i] = new_pointer2;
     C_dom[dom_i][0] = -1;
     C_dom_sizes[dom_i] = 1;
-}
-
-
-
-for (int i = new_size; i < C_dom_sizes[dom_j]; i++)
-{
-    C_dom[dom_j][i] = -1;
-}
-
-
-
-/*
-int actual_size = C_dom_sizes[dom_j];
-if (size_j_new+size_i_old > actual_size)
-{
-    realloc(C_dom[dom_j], 100*sizeof(int));
-    C_dom_sizes[dom_j]=100;
-}
-*/
-
-/*
-if //(size_j_new+size_i_old > C_dom_sizes[dom_j])
-{
-    printf("step1 domi %d domj %d\n", dom_i, dom_j);
-    int size_lb = size_j_new+size_i_old;
-    int aux_vect[NODE_NR];
-    //copy_vector(aux_vect, C_dom[dom_i], 0, C_dom_sizes[dom_i]);
-    for (int i = 0; i < C_dom_sizes[dom_i]; i++) {
-        aux_vect[i] = C_dom[dom_i][i];
-    }
-    //for (int i = 0; i < NODE_NR; i++)
-    {
-        printf("apple's address = %p %p dom = %d\n", (void*)C_dom[dom_i], (void*)(C_dom_original)[dom_i], dom_i);
-    }
-    
-    print_vec(aux_vect, C_dom_sizes[dom_i]);
-
-    //free((C_dom_original)[0]);
-
-    // Now we will try to realoc dom_j.
-    if (C_dom[dom_j]!=NULL) {
-        printf("step2\n");
-        //int *aux_ptr2 = (void*)C_dom[dom_i];
-        //free(aux_ptr2);
-        printf("step3\n");
-    }
-    
-    printf("step4\n");
-    //C_dom[dom_i] =  (int*) malloc(2*size_lb * sizeof(int));
-    int* tmp =  realloc(C_dom[dom_j], 2*size_lb * sizeof(int));
-    if (tmp) {
-        C_dom[dom_j] = tmp;
-    } else
-    {
-        printf("warning: malloc failed! \n");
-        exit(1111);
-    }
-    printf("step4\n");
-
-    // Now we copy from i onto newly resized j
-    for (int i = 0; i < size_i_old; i++) {
-        C_dom[dom_j][size_j_new + i] = aux_vect[i];
-        C_dom[dom_i][i] = -1;
-    }
-    for (int i = 0; i < size_lb; i++)
-    {
-        C_dom[dom_j][size_lb + i] = -1; 
-    }
-    
-    C_dom_sizes[dom_i] = 1;
-    C_dom_sizes[dom_j] = 2*size_lb;
-}
-
-*/
-/*
-if(C_dom[dom_i][0] != -1) //this should probably be uncommented
-{
-    //printf("dom_i dom_j: %d %d\n", dom_i, dom_j);
-    //printf("idx_old length_i: %d %d\n", idx_old, length_i);
-    for (int i = 0; i < length_i; i++)
-    {
-        C_dom[dom_j][idx_old+i]=C_dom[dom_i][i];
-        
-    }
-    C_dom[dom_i][0]=-1;
-    //C_dom[dom_i] = realloc(C_dom[dom_i], sizeof(int));
 }
 */
 #endif

@@ -30,15 +30,13 @@
     #define EPES_CHARACT "tribe"
 #endif
 
-//#define INITIAL_SEED 1557414566
-#define INITIAL_SEED 1557414222
 
 
 // Define if you want a histogram of the degrees of the graph
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 10
+#define NODE_NR 100
 #define K_MAX 100
 #define K_MIN 2
 #define AVG_NUMBER 1
@@ -47,7 +45,7 @@
 // sufficently. small
 #define DELTA_T 1e-1
 // How many times we measure.
-#define MAX_STEPS 3000
+#define MAX_STEPS 2500
 // Number of updates in between measures.
 #define IN_BETWEEN 0
 #define SIGMA_MIN 0.0
@@ -56,7 +54,7 @@
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 1.5
+#define SIGMA_VAL 3.0
 //#define PRINT_EVOLUTION_OF_R
 
 // If its not defined we dont wait to termalize
@@ -66,7 +64,7 @@
 //#define WEFF_MEMORY_LINKED_LIST 1   // THIS IS OBSOLTE NOW
 #define WEFF_MEMORY_DYNAMIC_MATRIX
 #ifdef WEFF_MEMORY_DYNAMIC_MATRIX
-    #define WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE NODE_NR/2
+    #define WEFF_MEMORY_DYNAMIC_MATRIX_INI_SIZE K_MAX
 #endif
 
 //#define EPSILON_OSCILLATOR 1e-3
@@ -85,9 +83,9 @@
 #define FREQUENCY_GAP
 //#ifdef FREQUENCY_GAP
     #define FG_M 1
-    #define FG_ALPHA -1.0
+    #define FG_ALPHA 0.5
     #define FG_T_MIN 0.0
-    #define FG_T_MAX 1.2
+    #define FG_T_MAX 10.0
     #define FG_T_NUMBER (FG_T_MAX-FG_T_MIN)*NODE_NR
     #define FG_WEFF_LOWER_FREQUENCY -1e8
     #define FG_WEFF_MAX_STEPS MAX_STEPS
@@ -140,7 +138,7 @@ extern double GLOB_max_component_size;
 extern double GLOB_unique_elements_in_network;
 
 // GLOB_dom_size[id_compt] gives the size of component of name id_compt
-extern double GLOB_dom_size[NODE_NR];
+extern int GLOB_dom_size[NODE_NR];
 
 // GLOB_theta[i] gives node i's current phase
 extern double *GLOB_theta;
@@ -299,10 +297,10 @@ double psi_coherence(void)
         Nrx += cos(phase);
         Nry += sin(phase);
     }
-    //if  (Nrx < 1e-6){
-    //    printf("warning: ry too small for division?");
-    //    return atan2(Nry,Nrx);
-    //}
+    if  (Nrx < 1e-6){
+        //printf("warning: ry too small for division?\n");
+        return M_PI/2;
+    }
     return atan2(Nry,Nrx);
 }
 
