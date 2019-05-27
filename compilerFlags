@@ -1,8 +1,10 @@
--std=c99 -lm -Ofast -march=native -g
+-std=c99 -lm -Ofast -march=native
 -Wall
 -Wundef
 -Wshadow
 -Wfloat-equal
+-Wno-unused-but-set-variable
+-Wno-unused-variable
 -Werror-implicit-function-declaration
 -Winit-self
 -Wpointer-arith

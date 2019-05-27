@@ -30,22 +30,22 @@
     #define EPES_CHARACT "tribe"
 #endif
 
-
+#define INITIAL_SEED 1557414222
 
 // Define if you want a histogram of the degrees of the graph
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 100
-#define K_MAX 100
+#define NODE_NR 2000
+#define K_MAX 500
 #define K_MIN 2
 #define AVG_NUMBER 1
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1e-1
+#define DELTA_T 5e-2
 // How many times we measure.
-#define MAX_STEPS 2500
+#define MAX_STEPS 5000
 // Number of updates in between measures.
 #define IN_BETWEEN 0
 #define SIGMA_MIN 0.0
@@ -54,12 +54,12 @@
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
-#define SIGMA_VAL 3.0
+#define SIGMA_VAL 0.08
 //#define PRINT_EVOLUTION_OF_R
 
 // If its not defined we dont wait to termalize
 // we need to wait around 4s
-#define TERMALIZATION 100
+#define TERMALIZATION 1500
 
 //#define WEFF_MEMORY_LINKED_LIST 1   // THIS IS OBSOLTE NOW
 #define WEFF_MEMORY_DYNAMIC_MATRIX
@@ -72,20 +72,20 @@
 //#define OSCILLATOR_ON
 //#define PERCOLATION_ON
 //#define SYNC_AND_PERC_ON
-//#ifdef SYNC_AND_PERC_ON
+#ifdef SYNC_AND_PERC_ON
     //#define EPES_MECH_Pure_perc
     //#define EPES_MECH_compare_r
     //#define EPES_MECH_Scale_by_dom_size
     //#define EPES_MECH_weff
     //#define EPES_MECH_iffs
     #define EPES_MECH_selfloop
-//#endif
+#endif
 #define FREQUENCY_GAP
 //#ifdef FREQUENCY_GAP
     #define FG_M 1
-    #define FG_ALPHA 0.5
+    #define FG_ALPHA 10.0
     #define FG_T_MIN 0.0
-    #define FG_T_MAX 10.0
+    #define FG_T_MAX 3.0
     #define FG_T_NUMBER (FG_T_MAX-FG_T_MIN)*NODE_NR
     #define FG_WEFF_LOWER_FREQUENCY -1e8
     #define FG_WEFF_MAX_STEPS MAX_STEPS
@@ -144,6 +144,7 @@ extern int GLOB_dom_size[NODE_NR];
 extern double *GLOB_theta;
 // GLOB_omega_nat[j] gives node j's natural frequency \omega_j
 extern double *GLOB_omega_nat;
+extern double GLOB_sum_omega_nat;
 
 #define NormRANu (2.3283063671E-10F)
 extern unsigned int  irr[256];
@@ -181,7 +182,8 @@ void update_RK      (double t, double sigma, double h);
 int  initEXPL_product_rule      (double t, double sigma);
 int  init_FREQ_GAP              (double t, double sigma);
 void increase_edges_FREQ_GAP    (double t, int m, double alpha,
-                                double tiempo, double sigma);
+                                double tiempo, double sigma,
+                                FILE *f_out_edgelist);
 
 void oscillator_on      (void);
 void percolation_on     (void);
@@ -272,7 +274,7 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
 inline
 double diff_weff_weight(double alpha, double wi, double wj, double ri, double rj)
 {
-    return exp(alpha*rj*fabs(wi-wj));
+    return exp(alpha*fabs(wi-wj));
 }
 
 double  calculateThetaAverage   (void);
@@ -340,8 +342,9 @@ double Random  (void)
 void    ini_ran                     (int SEMILLA); // initializes the generator
 int     generateDegree              (int m, double gamma);
 void    generate_node_BA            (int m, int* nodes);
-void    generate_node_FREQUENCY_GAP (double alpha, int node_i, int m,
-                                    int *nodes, double t, double sigma);
+int     generate_node_FREQUENCY_GAP (double alpha, int *node_i, double *node_i_freq, 
+                                int m, int *nodes, double *nodes_freq,
+                                double t, double sigma);
 
 // copied from http://stackoverflow.com/a/10645091
 double sampleNormal     (void); 

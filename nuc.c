@@ -321,9 +321,9 @@ void percolation_on()
 void epes_on ()
 {
     //int t_blind  = 0;
-    double t_min = 1.0;
+    double t_min = 0.0;
     double t_max = 3.0;//1.0*(NODE_NR-1)/2;
-    int t_number = 10;//t_max*NODE_NR;//10*(NODE_NR-1)/2.0;
+    int t_number = t_max*NODE_NR;//10*(NODE_NR-1)/2.0;
     double t_inc = (t_max-t_min)/(t_number); // sigma increments
     double t     = t_min;
     double fractional_size_noavg[t_number][AVG_NUMBER];
@@ -405,9 +405,9 @@ void epes_on ()
             //init_C(&C, NODE_NR, K_MAX);
             initEXPL_product_rule(t, sigma);  
 
-            for(int i = 0; i < NODE_NR; i++) {
-                GLOB_theta[i] = M_PI*(-1 + Random()*2);
-            }
+            //for(int i = 0; i < NODE_NR; i++) {
+            //    GLOB_theta[i] = M_PI*(-1 + Random()*2);
+            //}
             //for (int i = 0; i < NODE_NR; i++) {
             //    GLOB_omega_nat[i] = (double) degree[i];
             //            //0.5*(-1 + 2*Random());//sampleNormal();
@@ -768,6 +768,21 @@ void frequency_gap_on()
                     "fg_weff_in_between=", (double)FG_WEFF_IN_BETWEEN);
     #endif
 
+    // in the following file we will write edges added with their weff's
+    char filename3[128] = "aa";
+    snprintf(filename3, sizeof(char) * 128, 
+                        "data/FG_N=%d_m=%d_a=%g_sig=%g_EDGELIST.txt", 
+                                        NODE_NR, FG_M, FG_ALPHA, SIGMA_VAL);
+
+    FILE *f_out_edgelist = fopen(filename3,"w");
+    if (f_out_edgelist == NULL) {
+        printf("Could not open %s.txt", filename3);
+        exit(16);
+    }
+    fprintf(f_out_edgelist,
+        "See main file without _EDGELIST for data for netwk parameters.\n");
+
+
     
 
     // Now we print the first with statistical data for the network.
@@ -792,17 +807,18 @@ void frequency_gap_on()
         #endif
         for ( t=t_min; t<=t_max; t += t_inc)
         {   
-            increase_edges_FREQ_GAP(t, FG_M, fg_alpha, 0.0, sigma);
+            increase_edges_FREQ_GAP(t, FG_M, fg_alpha, 0.0, sigma,
+                                         f_out_edgelist);
             
             //for(int i = 0; i < NODE_NR; i++) {
             //    //GLOB_theta[i] = M_PI*(-1 + Random()*2);
             //    GLOB_theta[i] = (GLOB_theta[i]/M_PI-floor(GLOB_theta[i]/M_PI))*M_PI;
             //}
             
-            for (int i = 0; i < NODE_NR; i++) {
-                GLOB_omega_nat[i] = 2*(double) degree[i];
-                        //0.5*(-1 + 2*Random());//sampleNormal();
-            }
+            //for (int i = 0; i < NODE_NR; i++) {
+            //    GLOB_omega_nat[i] = 2*(double) degree[i];
+            //            //0.5*(-1 + 2*Random());//sampleNormal();
+            //}
 
             #ifdef TERMALIZATION // we wait for r to stabilize
             for (int i = 0; i < termalization; i++)
@@ -851,7 +867,8 @@ void frequency_gap_on()
             med_var(r_coh, nr_measurements, &r_med, &r_var);
             //med_var(r_psi, nr_measurements, &r_dpsidt, &r_dpsidt_var);
             //r_dpsidt = (r_psi[nr_measurements-1]-r_psi[0])/timp;
-            
+
+
             fprintf(f_out2, "%g %g %g %g %g\n", 
     t, fractional_size_noavg[idx][avg_idx], r_med, sqrt(r_var), clustering);
     //printf("One loop finished! \t sigma=%g \t <r>=%g \t sigma_<r>=%g \n",
@@ -862,7 +879,7 @@ void frequency_gap_on()
             //printf("Glob_nr_edges= %d\n", GLOB_nr_edges);
             //printf("component name unique elements: %d\n",
             //                unique_elements(GLOB_component_name, NODE_NR));
-    printf("t=%d/%d=%g\tmax_comp=%g\tunique_elem:%g\t r=%g\t N^0.5sig_r =%g\t psi=%g sig_psi=%g\n",
+    printf("t=%d/%d=%.3lf \t max_comp=%g\tunique_elem:%g\t r=%g\t N^0.5sig_r=%g\t psi=%g sig_psi=%g\n",
                                             GLOB_nr_edges, NODE_NR, t, 
                                             GLOB_max_component_size,
                                             (GLOB_unique_elements_in_network),
@@ -891,6 +908,7 @@ void frequency_gap_on()
     
     ///////////////////////////
     fclose(f_out2);     f_out2 = NULL;
+    fclose(f_out_edgelist); f_out_edgelist = NULL;
     #ifndef TERMALIZATION
     fclose(theta_file); theta_file = NULL ;
     #endif

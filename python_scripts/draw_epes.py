@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 import numpy as np
 from pylab import genfromtxt
@@ -76,65 +77,58 @@ take_from_txt_Nas(data_labels_colors, 1000, 0, 1.5, 2)
 take_from_txt_Nas(data_labels_colors, 1000, +0.8, 1.5, 4)
 '''
 
-
-take_from_txt_Nas(data_labels_colors, 100, 0.5, 3, 0)
-
+take_from_txt_Nas(data_labels_colors, 2000, 10, 0.1, 0)
+take_from_txt_Nas(data_labels_colors, 2000, 10, 0.05, 2)
+take_from_txt_Nas(data_labels_colors, 2000, 10, 0.04, 4)
+take_from_txt_Nas(data_labels_colors, 2000, 10, 0.045, 6)
 
 '''
-filename = r"../data/FG_N=200_m=1_a=-0.5_sig=0.1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=5))
-labels.append(['r_'+filename,'p_'+filename])
+filename = "../EPES_N=1000_tribe_sig=5.txt"
+data_labels_colors[0].append(genfromtxt(filename,  skip_header=5))
+data_labels_colors[1].append(['r_'+filename,'p_'+filename])
 color_code = 0
-colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
-
-filename = r"../data/FG_N=200_m=1_a=-0.5_sig=1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=5))
-labels.append(['r_'+filename,'p_'+filename])
-color_code = 2
-colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
-
-filename = r"../data/FG_N=200_m=1_a=-0.5_sig=1.5.txt"
-plot_data.append(genfromtxt(filename,  skip_header=5))
-labels.append(['r_'+filename,'p_'+filename])
-color_code = 4
-colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
+data_labels_colors[2].append([tableau20[color_code],
+                    tableau20[color_code+1],tableau20[color_code]]) 
 '''
 
-'''
-filename = r"../data/FG_N=200_m=1_a=-0.5_sig=0.1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=5))
-labels.append(['r_'+filename,'p_'+filename])
-color_code = 2
-colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
+def plot_epes(data_labels_colors): 
+    fig = plt.figure()
+    
+    for i in range(0,len(plot_data)):
+        plt.scatter((plot_data[i][:,0]), plot_data[i][:,2], marker='+', linewidth=0.5)#, np.array(plot_data[i][:,3])/np.sqrt(3000),
+                    #label = labels[i][0],color = colors[i][0])
+        plt.plot((    plot_data[i][:,0]), plot_data[i][:,1],
+                    label = labels[i][1], color = colors[i][1])
+        #plt.plot((    plot_data[i][:,0]), plot_data[i][:,4],
+        #            label = labels[i][1], color = colors[i][2])
+    
+    plt.legend().set_draggable('True')
+    
+    #plt.yscale('log')
+    # Formating:
+    #plt.xlim(0,1.1)
+    plt.xlabel(r'Edge density ($t$)')
+    plt.ylabel(r'$C_{max}/N$,r')
+    plt.ylim(0,1.1)
+    plt.title(r'Synchronization and maximum component fraction')
+    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.show()
+    
+#def plot_weff_corr():
+datos = (genfromtxt("../data/FG_N=2000_m=1_a=10_sig=0.08_EDGELIST.txt",
+                   skip_header=1))
 
+plt.xlabel(r"$\omega_{{eff}}$");
+plt.ylabel(r"$\omega_{{eff}}$");
+xdat=datos[:,2]
+ydat=datos[:,3]
 
-filename = r"../data/FG_N=200_m=1_a=0.5_sig=0.1.txt"
-plot_data.append(genfromtxt(filename,  skip_header=5))
-labels.append(['r_'+filename,'p_'+filename])
-color_code = 4
-colors.append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]]) 
-'''
+colors = cm.rainbow(np.linspace(0, 1, len(ydat)))
+for x, y, c in zip(xdat,ydat,colors):
+    plt.scatter(x, y, color=c)
+    
 
-
-fig = plt.figure()
-
-for i in range(0,len(plot_data)):
-    plt.errorbar((plot_data[i][:,0]), plot_data[i][:,2], np.array(plot_data[i][:,3])/np.sqrt(3000),
-                label = labels[i][0], color = colors[i][0])
-    plt.plot((    plot_data[i][:,0]), plot_data[i][:,1],
-                label = labels[i][1], color = colors[i][1])
-    #plt.plot((    plot_data[i][:,0]), plot_data[i][:,4],
-    #            label = labels[i][1], color = colors[i][2])
-
-plt.legend().set_draggable('True')
-
-#plt.yscale('log')
-# Formating:
-#plt.xlim(0,1.1)
-plt.xlabel(r'Edge density ($t$)')
-plt.ylabel(r'$C_{max}/N$,r')
-plt.ylim(0,1.1)
-plt.title(r'Synchronization and maximum component fraction')
-
-plt.gcf().subplots_adjust(bottom=0.15)
-plt.show()
+#plot_weff_corr()   
+    
+#plot_epes(data_labels_colors)
