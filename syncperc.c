@@ -1,9 +1,8 @@
 #include "graph.h"
 
-double *GLOB_theta;
+double GLOB_theta[NODE_NR];
 void initThetas()
 {
-    GLOB_theta = (double*)malloc(NODE_NR*sizeof(*GLOB_theta));
     for (int i = 0; i < NODE_NR; ++i) {
         GLOB_theta[i] = -M_PI + Random()*(2*M_PI);
         //GLOB_theta[i] = sampleNormal();
@@ -12,18 +11,13 @@ void initThetas()
 
 // Generates natural frequencies about 0 according to a Gaussian distribution of
 // variance 1.
-double *GLOB_omega_nat;
-double GLOB_sum_omega_nat; // this is for generating accoridng to eâlphaomeaga
+double GLOB_omega_nat[NODE_NR];
 void initOmegas()
 {
-    // omega_nat IS GLOBAL
-    GLOB_omega_nat = (double*)malloc(NODE_NR*sizeof(*GLOB_omega_nat));
-    GLOB_sum_omega_nat=0;
     for (int i = 0; i < NODE_NR; i++) 
     {
         //GLOB_omega_nat[i] = sampleNormal();//(double)degree[i];//0.5*(-1 + 2*Random());//
-        GLOB_omega_nat[i] = 0.1*(-1 + 2*Random());
-        GLOB_sum_omega_nat += exp(FG_ALPHA*(GLOB_omega_nat[i]));
+        GLOB_omega_nat[i] = 0.5*(-1 + 2*Random());
         //GLOB_omega_nat[i] = (double)degree[i];
     }
 
@@ -96,22 +90,24 @@ double phase_coherence()
 }
 
 // the following is inlined 
-/*
-double psi_coherence()
+
+double psi_coherence(void)
 {
     double Nrx, Nry;
     Nrx = Nry = 0;
+    double phase=0;
     for (int i = 0; i < NODE_NR; i++) {
-        Nrx += cos(GLOB_theta[i]);
-        Nry += sin(GLOB_theta[i]);
+        phase=GLOB_theta[i];
+        Nrx += cos(phase);
+        Nry += sin(phase);
     }
-    //if  (Nrx < 1e-6){
-    //    printf("warning: ry too small for division?");
-    //    return atan2(Nry,Nrx);
-    //}
+    if  (Nrx < 1e-6){
+        //printf("warning: ry too small for division?\n");
+        return M_PI/2;
+    }
     return atan2(Nry,Nrx);
 }
-*/
+
 
 double weff_compt_instant (int id_compt, double t, double sigma)
 {
@@ -220,28 +216,27 @@ void weff_compt_efficient (double *weff_dom, int weff_dom_size,
     }
 }
 
-void weff_compt_DOUBLY_efficient (double *weff_dom, double *r_dom, int weff_dom_size,
-                                double t, double sigma)
+void weff_compt_DOUBLY_efficient (double *weff_dom, double *weff_by_node,
+                                    double *r_dom, int len,
+                                    double *r_med, double *r_var,
+                                    double t, double sigma)
 {
     
     double timp = 0;
 
     int aux_deg=0;
-    double aux_time_average_theta_dot[NODE_NR];
-    for (int i = 0; i < NODE_NR; i++) {
-        aux_time_average_theta_dot[i]=0;
-    }
+
     
     //double weff_by_domain[NODE_NR];
-    for(int i = 0; i < weff_dom_size; i++)
+    for(int i = 0; i < NODE_NR; i++)
     {
         weff_dom[i] = FG_WEFF_LOWER_FREQUENCY;
         
-        r_dom[i] = -1;
+//        r_dom[i] = -1;
     }
     //We need to do the first step and change from default
 
-    
+/*
     //double weff = 0.0;
     int compont_name = 0;
     for(int i = 0; i < NODE_NR; i++)
@@ -257,37 +252,22 @@ void weff_compt_DOUBLY_efficient (double *weff_dom, double *r_dom, int weff_dom_
          //                                   i,compont_name);
         }
     }
-    
+*/
+
     
 
     // first hte time averages
-
+    double r_coh[FG_WEFF_MAX_STEPS];
+    double aux_time_average_theta_dot[NODE_NR];
+    for (int i = 0; i < NODE_NR; i++) {
+        aux_time_average_theta_dot[i]=0;
+    }
     for(int i = 0; i < FG_WEFF_MAX_STEPS; i++)
     {
-        /*
-        for(int idxx = 0; idxx < NODE_NR; idxx++)
-        {
-            // IF w>FR_WEFF.../10 then it means we it is a component which is 
-            // part of the network and we update its average.
-            compont_name = GLOB_component_name[idxx];
-            if (weff_dom[compont_name]>(FG_WEFF_LOWER_FREQUENCY/10)) 
-            {
-                weff = weff_compt_instant (compont_name, t, sigma);
-                weff_dom[compont_name] = 
-                        ((double)i)/(i+1) * weff_dom[compont_name] + weff/(i+1);
-            }
-        }
-        */
-
-        for (int m = 0; m < NODE_NR; m++)
-        {
-            aux_deg=degree[m];
-            for (int n = 0; n < aux_deg; n++)
-            {
-                // this means that add current theta_dot_ij to the running avg
-aux_time_average_theta_dot[m] = ((double)i)/(i+1) * aux_time_average_theta_dot[m]
-            + 1.0/(i+1) * calculateTheta_dot_i(t, GLOB_theta, NODE_NR, sigma, m);
-            }
+        for (int m = 0; m < NODE_NR; m++) {
+            aux_time_average_theta_dot[m] = 
+                ((double)i)/(i+1) * aux_time_average_theta_dot[m]
+    + 1.0/(i+1.) * calculateTheta_dot_i(t, GLOB_theta, NODE_NR, sigma, m);
         }
 
 /*
@@ -298,9 +278,9 @@ aux_time_average_theta_dot[m] = ((double)i)/(i+1) * aux_time_average_theta_dot[m
 r_dom[i_dom] = ((double)i)/(i+1) * r_dom[i_dom]+ 1.0/(i+1) * phase_coherence_compt(i_dom);
             }
         }
-*/   
-        
-        
+*/
+        r_coh[i] = phase_coherence();
+
 
         timp = i*DELTA_T*(1+FG_WEFF_IN_BETWEEN);
         for(int j = 0; j < FG_WEFF_IN_BETWEEN; j++) {
@@ -308,18 +288,21 @@ r_dom[i_dom] = ((double)i)/(i+1) * r_dom[i_dom]+ 1.0/(i+1) * phase_coherence_com
         }
         update_RK(t+timp, sigma, DELTA_T);
     }
+    med_var(r_coh, FG_WEFF_MAX_STEPS, r_med, r_var);
 
-
+/*
     // after this we have the matrix of time averaged effective frequencies-
     // if space is a probelm use commented out version from above
     // now we need to do the "spatial" or component averaging 
-/*
 printf("tdot avg: ");
 for (int i = 0; i < NODE_NR; i++)
 {
-    printf("%g ",aux_time_average_theta_dot[i]);
+    printf("%g ", aux_time_average_theta_dot[i]);
 }   printf("\n");
 */
+    for (int i = 0; i < NODE_NR; i++) {
+        weff_by_node[i] = aux_time_average_theta_dot[i];
+    }
 
 
     double aux_size = 0;
@@ -439,7 +422,6 @@ double psi_coherence_compt (int id_compt)
 }
 
 //the following is inlined
-/*
 double calculateTheta_dot_i(double t, double *phases, int phases_len,
                                             double sigma, int i)
 {
@@ -481,7 +463,6 @@ double calculateTheta_dot_i(double t, double *phases, int phases_len,
     
     return GLOB_omega_nat[i] + sigma*sum;
 }
-*/
 
 
 int initEXPL_product_rule (double t, double sigma)
@@ -870,12 +851,13 @@ else
 
 void increase_edges_FREQ_GAP (double t, int m, double alpha,
                                 double tiempo, double sigma,
-                                FILE *f_out)
+                                FILE *f_out, double *r_med, double *r_var)
 {
     int tot_nr_edges = 0;
     tot_nr_edges =  (int) (t* ((double)NODE_NR));
 
     int rnd1 = 0;
+    /*
     if (GLOB_nr_edges == 0) {
         int rnd2 = 0;
         rnd1 = (int)(Random()*NODE_NR); 
@@ -886,11 +868,13 @@ void increase_edges_FREQ_GAP (double t, int m, double alpha,
         add_edge(rnd1,rnd2);
         GLOB_nr_edges++;
     }
-
+    */
+#ifdef DEBUG
     if (m>NODE_NR || m<1) {
         printf("warning: m in frq.gap algorithm wrong\n");
         exit(45);
     }
+#endif
 
     int bool_res = 0;
     int fg_nodes[m];
@@ -904,9 +888,30 @@ void increase_edges_FREQ_GAP (double t, int m, double alpha,
     int iidx=0;
     int flag22=0;
     int flag32=1;
+    int nd1, nd2, nd3, nd4;
+    int size1, size2, size3, size4;
+    int nd[FG_ACLIOPTAS_K][2];
+    double nd_weff[FG_ACLIOPTAS_K][2];
+    double achlioptas_min[FG_ACLIOPTAS_K];
+    int achl_idx = 0;
+    double achl_opt = 0;
 
     double rnd1_weff = 0;
+    double weff_nd1, weff_nd2, weff_nd3, weff_nd4;
     double fg_nodes_weff[FG_M];
+
+    double r_dom[NODE_NR];
+    double weff_by_node[NODE_NR];
+    double weff_by_domain[NODE_NR]; // initialized in weff_compt_efficient
+
+    weff_compt_DOUBLY_efficient(weff_by_domain, weff_by_node,
+                                r_dom, NODE_NR, r_med, r_var, t, sigma);
+    
+    double weff[NODE_NR];
+    for (int i = 0; i < NODE_NR; i++) {
+        weff[i] = weff_by_node[i];
+    }
+    
 
     while(GLOB_nr_edges <= tot_nr_edges)
     {
@@ -932,12 +937,63 @@ void increase_edges_FREQ_GAP (double t, int m, double alpha,
         rnd1 = iidx;
         //printf("node: %d \n", rnd1);
         */
+        #ifndef FG_ACLIOPTAS
         flag22 = generate_node_FREQUENCY_GAP(alpha,
-                                            &rnd1, &rnd1_weff,
-                                            m,
-                                            fg_nodes, fg_nodes_weff,
-                                            tiempo, sigma);
-        
+&rnd1, &rnd1_weff, m, fg_nodes, fg_nodes_weff, tiempo, sigma, weff, NODE_NR);
+        #endif
+        #ifdef FG_ACLIOPTAS
+if  (GLOB_unique_elements_in_network > 1) // once all connected, choice irrelevant
+{
+        // THIS ASUMES FG_M == 1 !!!!!!!!
+        for (int i = 0; i < FG_ACLIOPTAS_K; i++) 
+        {
+            flag22 = generate_node_FREQUENCY_GAP(alpha,
+&rnd1, &rnd1_weff, m, fg_nodes, fg_nodes_weff, tiempo, sigma, weff, NODE_NR);
+            nd[i][0] = rnd1;
+            nd[i][1] = fg_nodes[0];
+            nd_weff[i][0] = rnd1_weff;
+            nd_weff[i][1] = fg_nodes_weff[0];
+        }
+        /*
+        printf("nodes: ");
+        for (int i = 0; i < FG_ACLIOPTAS_K; i++)
+        {
+            printf("%d-%d ",nd[i][0],nd[i][1]);
+        }   printf("\n");
+        */
+
+        achl_opt = +1e8;
+        for (int i = 0; i < FG_ACLIOPTAS_K; i++) {
+            achlioptas_min[i] = ( GLOB_component_size[ nd[i][0] ] *
+                                  GLOB_component_size[ nd[i][1] ]   );
+            if  ( (double)achlioptas_min[i] < achl_opt) {
+                achl_opt = (double)achlioptas_min[i];
+                achl_idx = i;
+            }
+        }
+        /*
+        printf("weights:");
+        for (int i = 0; i < FG_ACLIOPTAS_K; i++)
+        {
+            printf("%g ", achlioptas_min[i]);
+        }   printf("\n");
+        printf("chosen: %d\n", achl_idx);
+        */
+
+        rnd1         = nd[achl_idx][0];
+        rnd1_weff    = nd_weff[achl_idx][0];
+        fg_nodes[0]  = nd[achl_idx][1];
+        fg_nodes_weff[0] = nd_weff[achl_idx][1];
+
+        // REMEMBER ALL THIS FOR FG_M=1
+        //printf("chosen nodes: %d-%d\n", rnd1, fg_nodes[0]);
+}
+else
+{
+        flag22 = generate_node_FREQUENCY_GAP(alpha,
+&rnd1, &rnd1_weff, m, fg_nodes, fg_nodes_weff, tiempo, sigma, weff, NODE_NR);
+}
+        #endif
         if (flag22!=0)
         {
             for(int i_idx = 0; i_idx < m; i_idx++) 
@@ -948,20 +1004,25 @@ void increase_edges_FREQ_GAP (double t, int m, double alpha,
                 {
                     GLOB_nr_edges++;
                 }
-                flag32 = fprintf(f_out, "%d\t%d\t%g\t%g\n",
-                                 rnd1, fg_nodes[i_idx],
-                                 rnd1_weff, fg_nodes_weff[i_idx]);
+                flag32 = fprintf(f_out, "%d\t%d\t%d\t%g\t%g\t%g\t%g\n",
+                                 GLOB_nr_edges, rnd1, fg_nodes[i_idx],
+                                 rnd1_weff, fg_nodes_weff[i_idx],
+                                 GLOB_omega_nat[rnd1],
+                                 GLOB_omega_nat[fg_nodes[i_idx]]);
                 if (flag32==0) {
                     printf("warning: fprintf failed for edgelist!\n");
                     exit(22);
                 }
+                
             }
             //printf("\n");
             // Now we thermalize to addapt to new edges.
 #ifdef TERMALIZATION // we wait for r to stabilize
-                for (int i = 0; i < TERMALIZATION; i++)
-                    for (int t_aux = 0; t_aux < IN_BETWEEN; t_aux++)
+                for (int i = 0; i < TERMALIZATION; i++){
+                    for (int t_aux = 0; t_aux < IN_BETWEEN; t_aux++) {
                         update_RK(tiempo, sigma, DELTA_T);
+                    }
+                }
 #endif
         }
         flag22=0;

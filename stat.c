@@ -7,6 +7,21 @@ unsigned int  irr[256];
 unsigned int  ir1;
 unsigned char ind_ran, ig1, ig2, ig3;
 
+double Random  (void)
+{
+    double r;
+
+    ig1 = ind_ran - 24;
+    ig2 = ind_ran - 55;
+    ig3 = ind_ran - 61;
+    irr[ind_ran] = irr[ig1] + irr[ig2];
+    ir1 = (irr[ind_ran]^irr[ig3]);
+    ind_ran++;
+    r=ir1*NormRANu;
+
+    return r;
+}
+
 
 void calcHist(char* filename)
 {
@@ -46,8 +61,7 @@ void calcHist(char* filename)
         exit(5);
     }
     fclose(file_hist);
-    
-    //free(Hist);
+
 }
 
 void med_var (double *datos, int numero_de_datos,
@@ -319,14 +333,12 @@ void generate_node_BA (int m, int* nodes)
         }
         
     }
-    
-    
-    //free(tags);
+
 }
 
 int generate_node_FREQUENCY_GAP (double alpha, int *node_i, double *node_i_freq, 
                                 int m, int *nodes, double *nodes_freq,
-                                double t, double sigma)
+                            double t, double sigma, double *weff, int len_weff)
 {
     int counter = 0;
     double w = 0;
@@ -337,73 +349,56 @@ int generate_node_FREQUENCY_GAP (double alpha, int *node_i, double *node_i_freq,
         nodes[i] = -1;
     }
 
-    double r_dom[NODE_NR];
-    
-    double weff_by_domain[NODE_NR]; // initialized in weff_compt_efficient
-    //for (size_t i = 0; i < NODE_NR; i++)
-    //{
-    //    weff_by_domain[i] = FG_WEFF_LOWER_FREQUENCY;
-    //}
-    
-    
-    /*
-    for(int i = 0; i < NODE_NR; i++)
-    {
-        weff_by_domain[i] = FG_WEFF_LOWER_FREQUENCY;
-    }
-    for(int i = 0; i < NODE_NR; i++)
-    {
-        // IF w<FR_WEFF.../10 then it means we have a new component whos weff
-        // hasn't been calculated yet.
-        if (weff_by_domain[GLOB_component_name[i]]<(FG_WEFF_LOWER_FREQUENCY/10)) 
-        {
-            weff_by_domain[GLOB_component_name[i]] =
-                        weff_compt(GLOB_component_name[i], t, sigma);
-        }
-    }
-    */
-    
-    weff_compt_DOUBLY_efficient(weff_by_domain, r_dom, NODE_NR, t, sigma);
-    //for (size_t i = 0; i < NODE_NR; i++){
-    //    printf("%g\t",weff_by_domain[i]);
-    //}   printf("\n");
-    /*for (size_t i = 0; i < NODE_NR; i++)
-    {
-        printf("%d\t",GLOB_component_name[i]);
-    }   printf("\n");
-    print_linked_list();
-    */
-    double wi = weff_by_domain[GLOB_component_name[*node_i]];
-    double wf = 0;
-    
-    //double rf = 0;
-    
     double tags[NODE_NR];
     int aux_name = 0;
     double tmp = 0;
 
+/*
+    double r_dom[NODE_NR];
+    double weff_by_node[NODE_NR];
+    double weff_by_domain[NODE_NR]; // initialized in weff_compt_efficient
+    //for (size_t i = 0; i < NODE_NR; i++) {
+    //    weff_by_domain[i] = FG_WEFF_LOWER_FREQUENCY;
+    //}
+    
+    
+    weff_compt_DOUBLY_efficient(weff_by_domain, weff_by_node, r_dom, NODE_NR, t, sigma);
+    //for (int i = 0; i < NODE_NR; i++) {
+    //    printf("%g ", weff_by_domain[i]);
+    //}   printf("\n");
+    
+    //double rf = 0;
+
+    double weff[NODE_NR];
+    for (int i = 0; i < NODE_NR; i++) {
+        //aux_name = GLOB_component_name[i];
+        //weff[i] = weff_by_domain[aux_name];
+        weff[i] = weff_by_node[i];
+    }
+*/
+
     double norm_omega_eff = 0;
     for (int i = 0; i < NODE_NR; i++) {
-        aux_name = GLOB_component_name[i];
-        norm_omega_eff += exp(FG_ALPHA*fabs(weff_by_domain[aux_name]));
+        norm_omega_eff += exp(FG_ALPHA*fabs(weff[i]));
     }
 
     double aux_rnd22 = Random();
     int iidx = 0;
-    double aux_sum = exp(FG_ALPHA*fabs(weff_by_domain[aux_name]));
+    aux_name = GLOB_component_name[iidx];
+    double aux_sum = exp(FG_ALPHA*fabs(weff[iidx]));
     //printf("glob sum: %g\n", GLOB_sum_omega_nat);
     while (aux_sum <= aux_rnd22*norm_omega_eff) {
         iidx++;
-        aux_name = GLOB_component_name[iidx];
-        aux_sum += exp(FG_ALPHA*fabs(weff_by_domain[aux_name]));
+        aux_sum += exp(FG_ALPHA*fabs(weff[iidx]));
     }
     *node_i = iidx;
-    *node_i_freq = weff_by_domain[GLOB_component_name[*node_i]];
-    //printf("node: %d \n", iidx);
+    *node_i_freq = weff[*node_i];
+    //printf("first node: %d \n", iidx);
 
+    double wi = weff[*node_i];
+    double wf = 0;
     for(int i = 0; i < NODE_NR; i++) {
-        aux_name = GLOB_component_name[i];
-        wf = weff_by_domain[aux_name];
+        wf = weff[i];
         //rf = r_dom[aux_name];
         
         
@@ -419,6 +414,7 @@ int generate_node_FREQUENCY_GAP (double alpha, int *node_i, double *node_i_freq,
     }
 
     // Condition that neighbors have prob zero of being chosen
+    // this is so that 
     for(int j = 0; j < degree[*node_i]; j++) {
         tags[ C[*node_i][j] ] = 0;
     }
@@ -432,13 +428,15 @@ int generate_node_FREQUENCY_GAP (double alpha, int *node_i, double *node_i_freq,
         sum_norm += tags[i_idx];
     }
     //printf("sum_norm=%g\n",sum_norm);
-    if (sum_norm < 1e-6)
+    if (sum_norm < 1e-10)
     {
+        #ifdef DEBUG
         printf("warning: sum_norm = %g something wrong!\n",sum_norm);
         printf("node_i %d:",*node_i);
         for(int j = 0; j < degree[*node_i]; j++) {
             printf("%d ", C[*node_i][j]  );
         }   printf("\n");
+        #endif
 
         return 0;
     }
@@ -458,7 +456,7 @@ int generate_node_FREQUENCY_GAP (double alpha, int *node_i, double *node_i_freq,
         //printf("sum: %lf counter: %d sum_norm: %lf\n", sum, counter, sum_norm);
 
         nodes[m_idx] = counter;
-        nodes_freq[m_idx] = weff_by_domain[GLOB_component_name[nodes[m_idx]]];
+        nodes_freq[m_idx] = weff[nodes[m_idx]];
         
         sum_norm = sum_norm-tags[counter];
         tags[counter] = 0; // we remove this node from the list
@@ -475,9 +473,7 @@ int generate_node_FREQUENCY_GAP (double alpha, int *node_i, double *node_i_freq,
 
     return 1;
 }
-/*
-double diff_weff_weight(double alpha, double wi, double wj)
-{
+
+double diff_weff_weight(double alpha, double wi, double wj, double ri, double rj) {
     return exp(alpha*fabs(wi-wj));
 }
-*/

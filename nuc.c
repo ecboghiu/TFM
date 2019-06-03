@@ -196,9 +196,6 @@ void oscillator_on()
     fclose(theta_file); theta_file = NULL ;
     #endif
 
-    //free(r_coh); r_coh = NULL;
-    //free(GLOB_theta); GLOB_theta = NULL;
-    //free(GLOB_omega_nat); GLOB_omega_nat = NULL;
 }
 
 void percolation_on()
@@ -312,10 +309,7 @@ void percolation_on()
                                 sqrt(fractional_size_sigma[i]/AVG_NUMBER));
     }
     fclose(f_out1);                
-    
-    //free(fractional_size);          
-    //free(fractional_size_sigma);
-    //free(edge_fraction);            
+      
 }
 
 void epes_on ()
@@ -544,15 +538,8 @@ printf("t=%d/%d \t max_comp=%g \t unique_elem:%g \t <r>=%g \t sigma_<r>=%g clust
     }
     fclose(f_out1);                 f_out1                  = NULL;
     */
-    /*
-    free(fractional_size);          
-    free(fractional_size_sigma);    
-    free(edge_fraction);            
 
-    free(r_coh);       
-    free(GLOB_theta); 
-    free(GLOB_omega_nat); 
-    */
+
 }
 
 void debug()
@@ -757,12 +744,13 @@ void frequency_gap_on()
                     "max_steps=", MAX_STEPS,
                     "in_between=", IN_BETWEEN);
     #ifdef FREQUENCY_GAP
-    fprintf(f_out2, "# %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\n",
+    fprintf(f_out2, "# %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\t %s%g\n",
                     "fg_m=", (double)FG_M,
                     "fg_alpha=", (double)FG_ALPHA,
                     "fg_t_min=", (double)FG_T_MIN,
                     "fg_t_max=", (double)FG_T_MAX,
                     "fg_t_number=", (double)FG_T_NUMBER,
+                    "fg_achlioptas_k=", (double)FG_ACLIOPTAS_K,
                     "fg_weff_lower_frequency=", (double)FG_WEFF_LOWER_FREQUENCY,
                     "fg_weff_max_steps=", (double)FG_WEFF_MAX_STEPS,
                     "fg_weff_in_between=", (double)FG_WEFF_IN_BETWEEN);
@@ -778,12 +766,7 @@ void frequency_gap_on()
     if (f_out_edgelist == NULL) {
         printf("Could not open %s.txt", filename3);
         exit(16);
-    }
-    fprintf(f_out_edgelist,
-        "See main file without _EDGELIST for data for netwk parameters.\n");
-
-
-    
+    } 
 
     // Now we print the first with statistical data for the network.
     fprintf(f_out2,"# K Giant_component <r> sigma_r*sqrt(NODE_NR) clustering\n");
@@ -794,6 +777,7 @@ void frequency_gap_on()
     initThetas();
     // gives values distributed normally for the nat. frequancies, mean 0 var 1
     initOmegas();
+    double aux_ang22=0;
 
     int avg_idx = 0;
     //for(int avg_idx = 0; avg_idx < AVG_NUMBER; avg_idx++)
@@ -808,18 +792,19 @@ void frequency_gap_on()
         for ( t=t_min; t<=t_max; t += t_inc)
         {   
             increase_edges_FREQ_GAP(t, FG_M, fg_alpha, 0.0, sigma,
-                                         f_out_edgelist);
+                                         f_out_edgelist, &r_med, &r_var);
             
-            //for(int i = 0; i < NODE_NR; i++) {
-            //    //GLOB_theta[i] = M_PI*(-1 + Random()*2);
-            //    GLOB_theta[i] = (GLOB_theta[i]/M_PI-floor(GLOB_theta[i]/M_PI))*M_PI;
-            //}
+            for(int i = 0; i < NODE_NR; i++) {
+                //GLOB_theta[i] = M_PI*(-1 + Random()*2);
+                aux_ang22 =  GLOB_theta[i];
+                GLOB_theta[i] = atan2(sin(aux_ang22),cos(aux_ang22)); // reset to [0,2pi]
+            }
             
             //for (int i = 0; i < NODE_NR; i++) {
             //    GLOB_omega_nat[i] = 2*(double) degree[i];
             //            //0.5*(-1 + 2*Random());//sampleNormal();
             //}
-
+/* !!!!
             #ifdef TERMALIZATION // we wait for r to stabilize
             for (int i = 0; i < termalization; i++)
                 for (int t_aux = 0; t_aux < blind; t_aux++)
@@ -855,8 +840,8 @@ void frequency_gap_on()
             }
             //r_psi[0]=r_psi[1];
             //print_vec(r_psi, nr_measurements);
-
-
+!!!
+*/ 
             //aux_int = int_max_vector(&GLOB_component_size, NODE_NR);
             aux_int = (int) (GLOB_max_component_size);
             //printf("max comp: %d \n", aux_int);
@@ -864,7 +849,9 @@ void frequency_gap_on()
         
             //clustering = Clustering();
             clustering=0;
-            med_var(r_coh, nr_measurements, &r_med, &r_var);
+
+// *******            med_var(r_coh, nr_measurements, &r_med, &r_var);
+
             //med_var(r_psi, nr_measurements, &r_dpsidt, &r_dpsidt_var);
             //r_dpsidt = (r_psi[nr_measurements-1]-r_psi[0])/timp;
 
@@ -879,7 +866,8 @@ void frequency_gap_on()
             //printf("Glob_nr_edges= %d\n", GLOB_nr_edges);
             //printf("component name unique elements: %d\n",
             //                unique_elements(GLOB_component_name, NODE_NR));
-    printf("t=%d/%d=%.3lf \t max_comp=%g\tunique_elem:%g\t r=%g\t N^0.5sig_r=%g\t psi=%g sig_psi=%g\n",
+  if (GLOB_nr_edges%100==0)
+  {  printf("t=%d/%d=%.3lf \t max_comp=%g\tunique_elem:%g\t r=%g\t N^0.5sig_r=%g\t psi=%g sig_psi=%g\n",
                                             GLOB_nr_edges, NODE_NR, t, 
                                             GLOB_max_component_size,
                                             (GLOB_unique_elements_in_network),
@@ -887,13 +875,88 @@ void frequency_gap_on()
                                             sqrt(r_var),
                                             r_dpsidt,
                                             sqrt(r_dpsidt_var));
-                        
+  }                     
 
 
             edge_fraction[idx] = t;
             idx++;
             
         }
+        fclose(f_out_edgelist);
+
+#ifdef HISTERESIS
+        float aux11,aux22,aux33,aux44;//wase variabls
+        int aux55;
+        int line_nr_rev = count_lines_in_file(filename3);
+        if (line_nr_rev != GLOB_nr_edges) {
+            printf("warning: read edges not total nr of edges %d %d\n",
+                                 line_nr_rev, GLOB_nr_edges);
+        }
+        
+        int node_rev[line_nr_rev][2];
+        FILE *f_rev = fopen(filename3,"r");
+        if (f_rev != NULL) {
+            int i=0;
+            while ( fscanf(f_rev, "%d\t%d\t%d\t%g\t%g\t%g\t%g\n",
+                                 &aux55,
+                                 &node_rev[i][0], &node_rev[i][1],
+                                 &aux11, &aux22,
+                                 &aux33, &aux44) != EOF   ) 
+            {
+                i++;
+            }
+            fclose(f_rev);
+        } else {
+            printf("warning: could not open y0_ini filename!\n");
+            exit(1);
+        }
+
+
+        int flagEOF = 0;
+        int aux_nd1, aux_nd2;
+        for ( t=t_max; t>=HISTERESIS_MIN; t -= t_inc)
+        {
+            while (  ( GLOB_nr_edges > (int)(t*((double)NODE_NR)) )   )  
+            {
+                aux_nd1 = GLOB_nr_edges-1;
+                aux_nd2 = GLOB_nr_edges-1;
+                //printf("removed edge: %d %d\n",
+                //             node_rev[aux_nd1][0], node_rev[aux_nd2][1]);
+                remove_edge(node_rev[aux_nd1][0],
+                            node_rev[aux_nd2][1]);  
+            }
+            #ifdef TERMALIZATION // we wait for r to stabilize
+            for (int i = 0; i < termalization; i++)
+                for (int t_aux = 0; t_aux < blind; t_aux++)
+                    update_RK(timp, sigma, h);
+            #endif
+            for (int t_idx = 0; t_idx < nr_measurements; t_idx++)
+            {
+                timp = t_idx*h*(1+blind);
+                r_coh[t_idx] = phase_coherence();
+                #ifdef PRINT_EVOLUTION_OF_R
+                fprintf(theta_file, "%lf %lf\n",
+         timp + (t-t_min)/t_inc * nr_measurements*h*(1+blind),
+                r_coh[t_idx]);
+                #endif
+                for (int t_aux = 0; t_aux < blind; t_aux++) {
+                    update_RK(timp, sigma, h); 
+                }
+                update_RK(timp, sigma, h);
+            }
+            med_var(r_coh, nr_measurements, &r_med, &r_var);
+            fprintf(f_out2, "%g %g %g %g %g\n", t, 0., r_med, sqrt(r_var), clustering);
+            printf("t=%d/%d=%.3lf \t max_comp=%g\tunique_elem:%g\t r=%g\t N^0.5sig_r=%g\t psi=%g sig_psi=%g\n",
+                                            GLOB_nr_edges, NODE_NR, t, 
+                                            0.,
+                                            0.,
+                                            r_med,
+                                            sqrt(r_var),
+                                            0.,
+                                            0.);
+        }
+#endif
+
         if (AVG_NUMBER > 2)
         {
             printf("avgnr= %d\n", avg_idx);
@@ -907,10 +970,10 @@ void frequency_gap_on()
                         
     
     ///////////////////////////
-    fclose(f_out2);     f_out2 = NULL;
-    fclose(f_out_edgelist); f_out_edgelist = NULL;
+    //fclose(f_out2);
+    //fclose(f_out_edgelist); 
     #ifndef TERMALIZATION
-    fclose(theta_file); theta_file = NULL ;
+    fclose(theta_file);
     #endif
 
     // calculate averages
@@ -929,10 +992,6 @@ void frequency_gap_on()
     }
 
     write_C_to_file(); // to plot the graph
-/*
-    free(r_coh);        
-    free(GLOB_theta); 
-    free(GLOB_omega_nat); 
-*/
+
 }
 

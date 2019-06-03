@@ -48,12 +48,6 @@ int tiempo_ini = time(NULL);
 #endif
 ////////////////////////////////////////////////////////////////////////////////
 
-    // Freeing other global arrays.
-    //free(GLOB_component_name); GLOB_component_name = NULL;
-    //free(GLOB_component_size); GLOB_component_size = NULL;
-
-    //clear_C_memory(&C, NODE_NR, K_MAX);
-
 int tiempo_fin = time(NULL);
 
     printf("\nYou've reached the end without dying! ;-) (runtime: %g min)\n",

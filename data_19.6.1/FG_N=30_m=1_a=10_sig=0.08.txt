@@ -1,0 +1,11 @@
+# Relevant parameters to reproduce this network:
+# node_nr=30	 k_max=500
+# initial_seed=10	 delta_t=0.05	 max_steps=5000	 in_between=0
+# fg_m=1	 fg_alpha=10	 fg_t_min=0	 fg_t_max=2	 fg_t_number=60	 fg_weff_lower_frequency=-1e+08	 fg_weff_max_steps=5000	 fg_weff_in_between=0
+# K Giant_component <r> sigma_r*sqrt(NODE_NR) clustering
+0 0.0666667 0.1358 0.0749258 0
+0.0333333 0.0666667 0.187499 0.0954657 0
+0.0666667 0.0666667 0.170493 0.0739301 0
+0.1 0.1 0.168811 0.0853524 0
+0.133333 0.1 0.182454 0.087994 0
+0.166

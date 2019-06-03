@@ -58,47 +58,40 @@ def plot_alph_slice (ALPHA):
     take_from_txt_Nas(data_labels_colors, 200, ALPHA, 1.5, 4)
     take_from_txt_Nas(data_labels_colors, 200, ALPHA, 3, 6)
 
-#plot_sig_slice(0.1)
 
-#plot_alph_slice(0)
+#variation with h
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=5_sig=0.08_h=.1.txt", 6)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=5_sig=0.08_h=.05.txt", 4)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=5_sig=0.08_h=1..txt", 0)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=5_sig=0.08_h=0.01.txt", 2)
 
-#ALPHA=-1
-#take_from_txt_Nas(data_labels_colors, 200, 0, 1.5, 0)
-'''
-take_from_txt_Nas(data_labels_colors, 1000, -1, "1.50", 0)
-take_from_txt_Nas(data_labels_colors, 1000, 0, "1.50", 2)
-take_from_txt_Nas(data_labels_colors, 1000, 1, "1.50", 4)
-'''
+take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-20_sig=0.5.txt", 0)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=10_sig=0.08.txt", 2)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=20_sig=0.08.txt", 4)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-5_sig=0.08.txt", 6)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-10_sig=0.08.txt", 8)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-20_sig=0.08.txt", 10)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=0_sig=0.08.txt", 12)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-1_sig=0.08.txt", 14)
+#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=1_sig=0.08.txt", 16)
 
 
-'''
-take_from_txt_Nas(data_labels_colors, 1000, -0.8, 1.5, 0)
-take_from_txt_Nas(data_labels_colors, 1000, 0, 1.5, 2)
-take_from_txt_Nas(data_labels_colors, 1000, +0.8, 1.5, 4)
-'''
+#take_from_txt(data_labels_colors, "../data/ach_change_with_k/FG_N=1000_m=1_2_a=0_sig=0.08.txt", 6)
 
-take_from_txt_Nas(data_labels_colors, 2000, 10, 0.1, 0)
-take_from_txt_Nas(data_labels_colors, 2000, 10, 0.05, 2)
-take_from_txt_Nas(data_labels_colors, 2000, 10, 0.04, 4)
-take_from_txt_Nas(data_labels_colors, 2000, 10, 0.045, 6)
-
-'''
-filename = "../EPES_N=1000_tribe_sig=5.txt"
-data_labels_colors[0].append(genfromtxt(filename,  skip_header=5))
-data_labels_colors[1].append(['r_'+filename,'p_'+filename])
-color_code = 0
-data_labels_colors[2].append([tableau20[color_code],
-                    tableau20[color_code+1],tableau20[color_code]]) 
-'''
+#filename = "../EPES_N=1000_tribe_sig=5.txt"
+#data_labels_colors[0].append(genfromtxt(filename,  skip_header=5))
+#data_labels_colors[1].append(['r_'+filename,'p_'+filename])
+#color_code = 0
+#data_labels_colors[2].append([tableau20[color_code],
+#                    tableau20[color_code+1],tableau20[color_code]]) 
 
 def plot_epes(data_labels_colors): 
-    fig = plt.figure()
-    
     for i in range(0,len(plot_data)):
-        plt.scatter((plot_data[i][:,0]), plot_data[i][:,2], marker='+', linewidth=0.5)#, np.array(plot_data[i][:,3])/np.sqrt(3000),
-                    #label = labels[i][0],color = colors[i][0])
-        plt.plot((    plot_data[i][:,0]), plot_data[i][:,1],
-                    label = labels[i][1], color = colors[i][1])
+        plt.scatter((plot_data[i][:,0]), plot_data[i][:,2],# np.array(plot_data[i][:,3])/np.sqrt(250),
+                    linewidth=0.5, marker='+',
+                    label = labels[i][0],color = colors[i][0])
+        plt.scatter((    plot_data[i][:,0]), plot_data[i][:,1], marker='*',
+                    label = labels[i][1], color = colors[i][1], linewidth=0.5)
         #plt.plot((    plot_data[i][:,0]), plot_data[i][:,4],
         #            label = labels[i][1], color = colors[i][2])
     
@@ -115,20 +108,21 @@ def plot_epes(data_labels_colors):
     plt.gcf().subplots_adjust(bottom=0.15)
     plt.show()
     
-#def plot_weff_corr():
-datos = (genfromtxt("../data/FG_N=2000_m=1_a=10_sig=0.08_EDGELIST.txt",
-                   skip_header=1))
-
-plt.xlabel(r"$\omega_{{eff}}$");
-plt.ylabel(r"$\omega_{{eff}}$");
-xdat=datos[:,2]
-ydat=datos[:,3]
-
-colors = cm.rainbow(np.linspace(0, 1, len(ydat)))
-for x, y, c in zip(xdat,ydat,colors):
-    plt.scatter(x, y, color=c)
+def plot_weff_corr():
+    datos = (genfromtxt("../data/FG_N=2000_m=1_a=10_sig=0.08_EDGELIST.txt",
+                       skip_header=1))
+    
+    plt.xlabel(r"$\omega_{{eff}}$");
+    plt.ylabel(r"$\omega_{{eff}}$");
+    xdat=datos[:,2]
+    ydat=datos[:,3]
+    
+    colors = cm.rainbow(np.linspace(0, 1, len(ydat)))
+    for x, y, c in zip(xdat,ydat,colors):
+        plt.scatter(x, y, color=c, marker='+')
+    
     
 
 #plot_weff_corr()   
     
-#plot_epes(data_labels_colors)
+plot_epes(data_labels_colors)

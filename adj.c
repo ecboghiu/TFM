@@ -2,7 +2,7 @@
 
 double GLOB_max_component_size;
 double GLOB_unique_elements_in_network;
-int *degree, *GLOB_component_size, *GLOB_component_name;
+int degree[NODE_NR], GLOB_component_size[NODE_NR], GLOB_component_name[NODE_NR];
 int GLOB_nr_edges, GLOB_unique_components;
 int **C;
 int **C_dom;
@@ -77,18 +77,13 @@ void init_C_memory(int ***data_ptr, int dim_x, int dim_y)
 #endif
 }
 
+
 void init_glob_vect_memory(void)
 {    
     int i=0;
     GLOB_unique_elements_in_network = NODE_NR;
 
-    degree = (int*)malloc(NODE_NR * sizeof *degree);
-    if (degree==NULL)
-        {
-            printf("warning: malloc gives bad results...\n");
-            exit(111);
-        }
-    else
+
     {
         for (i = 0; i < NODE_NR; i++)
         {
@@ -98,22 +93,11 @@ void init_glob_vect_memory(void)
     }
     
     
-
-    GLOB_component_size = (int*)malloc(NODE_NR * sizeof *GLOB_component_size);
-    if (GLOB_component_size==NULL)
-    {
-        printf("warning: malloc gives bad results...\n");
-        exit(111);
-    } 
+ 
     for(i = 0; i < NODE_NR; i++){
         GLOB_component_size[i] = 1; // all nodes are their own cluster
     }
-    GLOB_component_name = (int*)malloc(NODE_NR* sizeof *GLOB_component_name);
-    if (GLOB_component_name==NULL)
-        {
-            printf("warning: malloc gives bad results...\n");
-            exit(111);
-        }
+
     for(i = 0; i < NODE_NR; i++){
         GLOB_component_name[i] = i; // all nodes are their own cluster
     }
@@ -213,27 +197,7 @@ print_linked_list();
     return 1;
 }
 
-int remove_edge(int I, int J) {
-    for(int j = 0; j < K_MAX; j++) {
-        if (C[I][j] == J) {
-            for(int i = j; i < K_MAX-j-1; i++) {
-                C[I][i] = C[I][i+1];
-            }
-            degree[I]--;
-            break;
-        }
-    }
-    for(int j = 0; j < K_MAX; j++) {
-        if (C[J][j] == I) {
-            for(int i = j; i < K_MAX-j-1; i++) {
-                C[J][i] = C[J][i+1];
-            }
-            degree[J]--;
-            return 1;
-        }
-    }
-    return 0; // false if no edge to remove
-}
+
 
 int exists_edge(int i, int j)
 {
@@ -279,9 +243,6 @@ void read_edgelist_file_py (const char* filename)
         fclose(f_in); f_in = NULL;
     }
 }
-
-
-
 
 void initDom()
 {
@@ -521,8 +482,7 @@ void initScaleFree ()
         }
         
     }
-    free(aux_deg);
-    free(list); 
+
 }
 
 
@@ -554,7 +514,7 @@ void init_BA (int m, int N)
         }
         
     }
-    free(ba_nodes);
+
 }
 
 // This saves an edges table suitable for the open source program
@@ -700,6 +660,78 @@ void removeNode (Node *I, int j)
             crawl = crawl->next;
         }
     }
+}
+
+// careful, when removing edge PERCOLATION DATA STRUCTURES DONT UPDATE
+// this is because this remove_edge function will only be used for hysteresis
+// so we do not need to have it be general. its kind of problematic to know
+// whether when removing one edge we will actually split the cluster into 
+// two or not and costly computationally, so we just don't calculate it.
+int remove_edge_OLD (int node_i, int node_j)
+{
+    if (!exists_edge(node_i,node_j)){
+        return 0;
+    }
+
+    for (int i = 0; i < degree[node_i]; i++) {
+        if (C[node_i][i] == node_j) {
+            for (int j = i; j < degree[node_i]-i; j++) {
+                C[node_i][j] = C[node_i][j+1];
+            }
+            break;
+        }   
+    }
+    degree[node_i]--;
+    for (int i = 0; i < degree[node_j]; i++) {
+        if (C[node_j][i] == node_i) {
+            for (int j = i; j < degree[node_j]-i; j++) {
+                C[node_j][j] = C[node_j][j+1];
+            }
+            break;
+        }   
+    }
+    degree[node_j]--;
+
+    for (int i = 0; i < NODE_NR; i++) {
+        // the first label unused goes to the new component
+        // node_i conserves its previous name
+        if (C_dom[i][0] == -1) {
+            GLOB_component_name[node_j] = i;
+            break;
+        }
+    }
+
+    GLOB_nr_edges--;
+
+    // now we disjoin the domains
+    
+  
+      return 1;
+}
+
+int remove_edge (int I, int J) {
+
+    for(int j = 0; j < K_MAX; j++) {
+        if (C[I][j] == J) {
+            for(int i = j; i < K_MAX-j-1; i++) {
+                C[I][i] = C[I][i+1];
+            }
+            degree[I]--;
+            break;
+        }
+    }
+    for(int j = 0; j < K_MAX; j++) {
+        if (C[J][j] == I) {
+            for(int i = j; i < K_MAX-j-1; i++) {
+                C[J][i] = C[J][i+1];
+            }
+            degree[J]--;
+            GLOB_nr_edges--;
+            return 1;
+        }
+    }
+    
+    return 0; // false if no edge to remove
 }
 
 int join_domains(int dom_i, int dom_j)
@@ -1052,4 +1084,28 @@ void copy_vector (int *target, int *source, int i_from, int len)
     for (int i = i_from; i < len; i++) {
         target[i] = source[i];
     }    
+}
+
+int count_lines_in_file(const char *filename)
+{
+    FILE *fileptr;
+    int count_lines = 0;
+    char chr;
+ 
+    fileptr = fopen(filename, "r");
+   //extract character from file and store in chr
+    chr = getc(fileptr);
+    while (chr != EOF)
+    {
+        //Count whenever new line is encountered
+        if (chr == '\n')
+        {
+            count_lines = count_lines + 1;
+        }
+        //take next character from file.
+        chr = getc(fileptr);
+    }
+    fclose(fileptr); //close file.
+
+    return count_lines;
 }
