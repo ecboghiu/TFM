@@ -36,18 +36,18 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 500
+#define NODE_NR 100
 #define K_MAX 500
 #define K_MIN 2
 #define AVG_NUMBER 1
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 1.0
+#define DELTA_T 0.1
 // How many times we measure.
-#define MAX_STEPS 20
+#define MAX_STEPS 50
 // Number of updates in between measures.
-#define IN_BETWEEN 2
+#define IN_BETWEEN 10
 #define SIGMA_MIN 0.0
 #define SIGMA_MAX 0.2
 #define NR_SIGMA 10
@@ -55,13 +55,13 @@
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
 
-#define SIGMA_VAL 0.05
+#define SIGMA_VAL 10.0
 
 //#define PRINT_EVOLUTION_OF_R
 
 // If its not defined we dont wait to termalize
 // we need to wait around 
-#define TERMALIZATION 10
+#define TERMALIZATION 100
 //#define HISTERESIS
 #define HISTERESIS_MIN 0.05
 
@@ -87,15 +87,15 @@
 #define FREQUENCY_GAP
 //#ifdef FREQUENCY_GAP
     #define FG_M 1
-    #define FG_ALPHA -19.8
+    #define FG_ALPHA -20.0
     #define FG_T_MIN 0.0
-    #define FG_T_MAX 249.0
+    #define FG_T_MAX 1.0
     #define FG_T_NUMBER (FG_T_MAX-FG_T_MIN)*NODE_NR
     #define FG_WEFF_LOWER_FREQUENCY -1e8
     #define FG_WEFF_MAX_STEPS MAX_STEPS
     #define FG_WEFF_IN_BETWEEN IN_BETWEEN
-    //#define FG_ACLIOPTAS
-    #define FG_ACLIOPTAS_K 2
+    #define FG_ACLIOPTAS
+    #define FG_ACLIOPTAS_K 4
 //#endif
 
 

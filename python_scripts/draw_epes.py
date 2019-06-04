@@ -65,17 +65,26 @@ def plot_alph_slice (ALPHA):
 #take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=5_sig=0.08_h=1..txt", 0)
 #take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=5_sig=0.08_h=0.01.txt", 2)
 
-take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-20_sig=0.5.txt", 0)
-#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=10_sig=0.08.txt", 2)
-#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=20_sig=0.08.txt", 4)
-#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-5_sig=0.08.txt", 6)
-#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-10_sig=0.08.txt", 8)
-#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-20_sig=0.08.txt", 10)
-#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=0_sig=0.08.txt", 12)
-#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-1_sig=0.08.txt", 14)
-#take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=1_sig=0.08.txt", 16)
+lam=['0.05','0.08','0.1','0.5','1']
+alpha=['-20','-10','-5','-1','0','1','5','10','20']
+def data_section_lam(lam, alpha, data_labels_colors):
+    for i in range(len(alpha)):
+        take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a="+(alpha[i])+"_sig="+(lam)+".txt", 2*i)
+def data_section_alph(lam, alpha, data_labels_colors):
+    for i in range(len(lam)):
+        take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a="+(alpha)+"_sig="+(lam[i])+".txt", 2*i)
 
+data_section_lam('1', alpha, data_labels_colors)
+#data_section_alph(lam, '-20', data_labels_colors)
 
+'''
+take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_2_a=20_sig=0.08.txt", 2)
+take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_2_a=20_sig=0.5.txt", 4)
+take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_2_a=20_sig=0.1.txt", 6)
+take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_2_a=20_sig=1.txt", 8)
+take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=20_sig=0.05.txt", 10)
+take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=20_sig=0.02.txt", 0)
+'''
 #take_from_txt(data_labels_colors, "../data/ach_change_with_k/FG_N=1000_m=1_2_a=0_sig=0.08.txt", 6)
 
 #filename = "../EPES_N=1000_tribe_sig=5.txt"
@@ -87,10 +96,10 @@ take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=-20_sig=0.5.txt", 0)
 
 def plot_epes(data_labels_colors): 
     for i in range(0,len(plot_data)):
-        plt.scatter((plot_data[i][:,0]), plot_data[i][:,2],# np.array(plot_data[i][:,3])/np.sqrt(250),
-                    linewidth=0.5, marker='+',
+        plt.errorbar((plot_data[i][:,0]), plot_data[i][:,2], np.array(plot_data[i][:,3])/np.sqrt(250),
+                    linewidth=0.5, #marker='+',
                     label = labels[i][0],color = colors[i][0])
-        plt.scatter((    plot_data[i][:,0]), plot_data[i][:,1], marker='*',
+        plt.scatter((    plot_data[i][:,0]), plot_data[i][:,1], marker='_',
                     label = labels[i][1], color = colors[i][1], linewidth=0.5)
         #plt.plot((    plot_data[i][:,0]), plot_data[i][:,4],
         #            label = labels[i][1], color = colors[i][2])
