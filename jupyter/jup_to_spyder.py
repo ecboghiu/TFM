@@ -227,10 +227,10 @@ def plot_generic(r, psi,weff_real, weff_medida, out_comp):
 #                method=METHOD,
 #                dense_output=False)
 
-g=nx.Graph()
+#g=nx.Graph()
 
-for i in range(0,4):
-    g.add_node(i)
+#for i in range(0,10):
+#    g.add_node(i)
 #g.add_node(60)
 
 #Ahora definimos 4 componentes: dos grandes, dos pequeñas. Quiero que tenga dos sincronizadas y dos sin sincronizar.
@@ -240,22 +240,24 @@ g.add_edge(39,38)
 g.add_edge(37,36)
 g.add_edge(35,34)
 '''
-
+'''
 g.add_edge(1,2)
 g.add_edge(1,3)
 g.add_edge(1,4)
 g.add_edge(4,3)
 
-#g.add_edge(8,7)
-'''
+g.add_edge(8,7)
+g.add_edge(8,0)
+g.add_edge(8,5)
+
 g.add_edge(7,6)
 g.add_edge(2,8)
 g.add_edge(6,4)
 g.add_edge(6,8)
 g.add_edge(6,2)
 g.add_edge(7,9)
-
-
+'''
+'''
 g.add_edge(21,22)
 g.add_edge(21,23)
 g.add_edge(21,25)
@@ -296,7 +298,7 @@ g.add_edge(13,0)
 #g.add_edge(12,23)
 #g.add_edge(22,5)
 
-#g = nx.barabasi_albert_graph(10, 3)
+g = nx.barabasi_albert_graph(50, 6)
 #write_directed_vertex_list_to_file(g,'net.net')
 
 #E=np.loadtxt('net.net')
@@ -336,16 +338,16 @@ plt.figure(figsize=(8,5))
 #print(g.nodes())
 nx.draw(g,pos=nx.spring_layout(g), node_size=200, with_labels=True,font_size=10, font_color='white') 
 
-np.random.seed(77)
-#w=-0.5+(0.5--0.5)*np.random.rand(NODE_NR)
-w=np.random.normal(0, 1, NODE_NR)
+#np.random.seed(77)
+#w=(-0.5+(0.5--0.5)*np.random.rand(NODE_NR))+1.0
+w=np.random.normal(3, 2, NODE_NR)
 theta_0 = -np.pi + 2*np.pi*np.random.rand(NODE_NR)
 COUPLING = 1.0
 
 TIME_INITIAL = 0.0
-TIME_FINAL = 1000.0
+TIME_FINAL = 2.0
 #DT = (TIME_FINAL-TIME_INITIAL)/100
-DT = 1.0
+DT = 0.001
 INTEGRATOR = 'lsoda'
 
 ode = inte.ode(lambda t,y: velocity(t,y,[COUPLING,w,A]),
@@ -420,8 +422,9 @@ def update(i):
     
     plt.plot(np.cos(ang_2pi),np.sin(ang_2pi), color='y')
     for node in range(0,NODE_NR):
-        plt.scatter(np.cos(y_t[node][i]),np.sin(y_t[node][i]), color='b', marker='o')
+        plt.scatter(np.cos(y_t[node][i]),np.sin(y_t[node][i]), color='b', marker='o', linewidth=1)
         
+    plt.scatter(r[i]*np.cos(psi[i]),r[i]*np.sin(psi[i]), color='red', linewidth = 3)
     plt.xlim([-1.1,1.1])
     plt.ylim([-1.1,1.1])
     
@@ -429,10 +432,10 @@ def update(i):
 
 frame = [i for i in range(0,len(t))]
 
-ani = animation.FuncAnimation(fig, update, frames=1000,
-                              interval=5, blit=False)
+ani = animation.FuncAnimation(fig, update, frames=frame,
+                              interval=10, blit=False)
 
-#ani.save('basic_animation.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+#ani.save('basic_animation.mp4', fps=60, extra_args=['-vcodec', 'libx264'])
 #ani.save('test.gif', writer='imagemagick')
 
 #ani.save("movie.mp4")

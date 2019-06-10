@@ -36,7 +36,7 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 100
+#define NODE_NR 500
 #define K_MAX 500
 #define K_MIN 2
 #define AVG_NUMBER 1
@@ -45,9 +45,9 @@
 // sufficently. small
 #define DELTA_T 0.1
 // How many times we measure.
-#define MAX_STEPS 50
+#define MAX_STEPS 1000
 // Number of updates in between measures.
-#define IN_BETWEEN 10
+#define IN_BETWEEN 0
 #define SIGMA_MIN 0.0
 #define SIGMA_MAX 0.2
 #define NR_SIGMA 10
@@ -64,6 +64,8 @@
 #define TERMALIZATION 100
 //#define HISTERESIS
 #define HISTERESIS_MIN 0.05
+
+#define EXTRA_LABEL "_1"
 
 //#define WEFF_MEMORY_LINKED_LIST 1   // THIS IS OBSOLTE NOW
 #define WEFF_MEMORY_DYNAMIC_MATRIX
@@ -89,7 +91,7 @@
     #define FG_M 1
     #define FG_ALPHA -20.0
     #define FG_T_MIN 0.0
-    #define FG_T_MAX 1.0
+    #define FG_T_MAX 4.0
     #define FG_T_NUMBER (FG_T_MAX-FG_T_MIN)*NODE_NR
     #define FG_WEFF_LOWER_FREQUENCY -1e8
     #define FG_WEFF_MAX_STEPS MAX_STEPS

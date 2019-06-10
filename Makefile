@@ -8,13 +8,16 @@ CFLAGS= @compilerFlags
 SOURCES=  main.c stat.c adj.c syncperc.c nuc.c
 
 # Name of output:
-TARGET= net
+TARGET= $(name)
 
 $(TARGET):
-	$(CC) $(SOURCES) $(CFLAGS) -o $(TARGET)
+	$(CC) $(SOURCES) $(CFLAGS) -o $(TARGET).out
 
 clean:
 	rm -f $(TARGET)
+
+run:
+	nohup ./$(name).out > $(name).txt &
 
 valgrind:
 	valgrind --leak-check=yes ./$(TARGET)

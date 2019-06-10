@@ -728,8 +728,8 @@ void frequency_gap_on()
 ////
     
     char filename2[128] = "aa";
-    snprintf(filename2, sizeof(char) * 128, "data/FG_N=%d_m=%d_a=%g_sig=%g.txt", 
-                                        NODE_NR, FG_M, FG_ALPHA, SIGMA_VAL);
+    snprintf(filename2, sizeof(char) * 128, "data/FG_N=%d_m=%d_%d_a=%g_sig=%g%s.txt", 
+             NODE_NR, FG_M, FG_ACLIOPTAS_K, FG_ALPHA, SIGMA_VAL, EXTRA_LABEL);
 
     FILE *f_out2 = fopen(filename2,"w");
     if (f_out2 == NULL) {
@@ -759,8 +759,8 @@ void frequency_gap_on()
     // in the following file we will write edges added with their weff's
     char filename3[128] = "aa";
     snprintf(filename3, sizeof(char) * 128, 
-                        "data/FG_N=%d_m=%d_a=%g_sig=%g_EDGELIST.txt", 
-                                        NODE_NR, FG_M, FG_ALPHA, SIGMA_VAL);
+                        "data/FG_N=%d_m=%d_%d_a=%g_sig=%g_EDGELIST%s.txt", 
+            NODE_NR, FG_M, FG_ACLIOPTAS_K, FG_ALPHA, SIGMA_VAL, EXTRA_LABEL);
 
     FILE *f_out_edgelist = fopen(filename3,"w");
     if (f_out_edgelist == NULL) {
