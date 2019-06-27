@@ -3,6 +3,43 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 import scipy.integrate as inte
+from matplotlib.colors import LinearSegmentedColormap
+
+#from pylab import genfromtxt
+'''
+from pylab import rcParams
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+plt.rc('font', serif='Palatino')
+
+golden_ration = (1 + 5 ** 0.5)/2
+one_column_figure_size = 1.7
+rcParams['figure.figsize'] = (2*one_column_figure_size * golden_ration, 2*one_column_figure_size)
+#rcParams['axes.linewidth'] = 0.25
+#rcParams['xtick.major.width'] = 0.25
+#rcParams['ytick.major.width'] = 0.25
+'''
+# folllowing lines taken form: https://github.com/cbnfreitas/kuramoto_model_integrate_and_plot
+def chop_colormap(cmap, minval=0.0, maxval=1.0, n=100):
+    new_cmap = LinearSegmentedColormap.from_list(
+        'trunc({n},{a:.2f},{b:.2f})'.format(n=cmap.name, a=minval, b=maxval),
+        cmap(np.linspace(minval, maxval, n)))
+    return new_cmap
+
+#This cmap is applied in to node coloring 
+#cmap_aux = LinearSegmentedColormap.from_list("", ["cyan","#580058"])
+#see https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib for colors
+cmap_aux = LinearSegmentedColormap.from_list("", ["red","yellow"])
+
+#In gray scale, cyan becomes almost white, this is why we chop the begining of the color map
+cyan_purple_cmap = chop_colormap(cmap_aux, 0.00, 1)
+
+def frequency_to_color(w):
+    colors_cyan_purple = cyan_purple_cmap(np.linspace(0, 1, 1001))
+    w_min = min(w)
+    w_max = max(w)
+    return [colors_cyan_purple[int(1000*(w[i] - w_min)/(w_max - w_min))] for i in range(len(w))]
+
 
 #para que en jupytter se vean mejor las graficas
 #%config InlineBackend.figure_format = 'svg'
@@ -89,7 +126,7 @@ def r_psi_comp(theta, conn, dt):
     #z = (np.exp(theta*1j))
     # cada elto de out sera las r(t),psi(t) de una de las componentes disconexas
     out = []
-    zc = 0
+    #zc = 0
     weff_med = [np.diff(theta[i])  for i in range(0,len(theta))]
     for comp in conn:
         a = []
@@ -98,6 +135,7 @@ def r_psi_comp(theta, conn, dt):
             # a conn[i] en una lista para sumar despues
             a.append(np.exp(theta[j]*1j))  
         zc = sum(a)/len(comp)
+        print(zc)
         
         lenz=len(zc)
         ayx = np.zeros(lenz)
@@ -172,6 +210,9 @@ def plot_on_argand_plane(r, psi, out_comp):
                  aux_r*np.sin(aux_psi),
                  label=r"$z_{"+str(i)+"}$")
     plt.legend()
+    plt.savefig('argand.pdf')
+    plt.show()
+    
     
 def plot_generic(r, psi,weff_real, weff_medida, out_comp):
     #plt.rc('text', usetex=True)
@@ -216,8 +257,11 @@ def plot_generic(r, psi,weff_real, weff_medida, out_comp):
     plt.xlabel(r'$t$')
     plt.legend()
     
+   
     plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25,
                         wspace=0.35)
+    plt.savefig('generic.pdf')
+    plt.show()
     
 
 #METHOD = 'RK45'
@@ -227,11 +271,11 @@ def plot_generic(r, psi,weff_real, weff_medida, out_comp):
 #                method=METHOD,
 #                dense_output=False)
 
-#g=nx.Graph()
+g=nx.Graph()
 
-#for i in range(0,10):
-#    g.add_node(i)
-#g.add_node(60)
+for i in range(0,60):
+    g.add_node(i)
+g.add_node(60)
 
 #Ahora definimos 4 componentes: dos grandes, dos pequeñas. Quiero que tenga dos sincronizadas y dos sin sincronizar.
 # los nodos extra estan para simular"otras componentes sincronziadas" me dan igual cuales son
@@ -240,7 +284,7 @@ g.add_edge(39,38)
 g.add_edge(37,36)
 g.add_edge(35,34)
 '''
-'''
+
 g.add_edge(1,2)
 g.add_edge(1,3)
 g.add_edge(1,4)
@@ -256,7 +300,7 @@ g.add_edge(6,4)
 g.add_edge(6,8)
 g.add_edge(6,2)
 g.add_edge(7,9)
-'''
+
 '''
 g.add_edge(21,22)
 g.add_edge(21,23)
@@ -298,7 +342,7 @@ g.add_edge(13,0)
 #g.add_edge(12,23)
 #g.add_edge(22,5)
 
-g = nx.barabasi_albert_graph(50, 6)
+#g = nx.barabasi_albert_graph(50, 6)
 #write_directed_vertex_list_to_file(g,'net.net')
 
 #E=np.loadtxt('net.net')
@@ -333,10 +377,8 @@ for i in range(0,NODE_NR):
         if C[i][j]!=-1:
             neighbors[i].append(int(C[i][j]))
 
-plt.figure(figsize=(8,5))
-
 #print(g.nodes())
-nx.draw(g,pos=nx.spring_layout(g), node_size=200, with_labels=True,font_size=10, font_color='white') 
+
 
 #np.random.seed(77)
 #w=(-0.5+(0.5--0.5)*np.random.rand(NODE_NR))+1.0
@@ -346,7 +388,7 @@ COUPLING = 1.0
 
 TIME_INITIAL = 0.0
 TIME_FINAL = 2.0
-#DT = (TIME_FINAL-TIME_INITIAL)/100
+DT = (TIME_FINAL-TIME_INITIAL)/100
 DT = 0.001
 INTEGRATOR = 'lsoda'
 
@@ -402,7 +444,25 @@ print("w_comp: ",["{:.2f}".format((w_r_mean_comp[i]))+"+-"+"{:.2f}".format(np.sq
 print("w: ",["{:.2f}".format((w[i])) for i in range(0,len(w))])
 print("comptes:",connctd)
 
+plt.figure(figsize=(8,5))
+colors_w = frequency_to_color(w)
+nx.draw(g, pos=nx.spring_layout(g), node_size=200, node_color = colors_w,
+        edge_color = 'gray',
+        with_labels=False, font_size=10, font_color='white')
+ax = plt.gca()
+ax.collections[0].set_edgecolor("black") #Drawing a black border around nodes.
+ax.collections[0].set_linewidth(0.5)
+
+ax.collections[1].set_linewidth(0.5)  # Change edges linewidth
+sm = plt.cm.ScalarMappable(cmap=cyan_purple_cmap, norm=plt.Normalize(vmin=min(w), vmax=max(w)))
+sm._A = []
+cb1 = plt.colorbar(sm)
+cb1.set_label(r'$\omega_i$')
+plt.savefig('graph.pdf')
+
+
 plot_generic(r, psi, weff_real, weff_medida, out_comp)
+
 
 plot_on_argand_plane(r, psi, out_comp)
 
@@ -410,30 +470,70 @@ plot_on_argand_plane(r, psi, out_comp)
 import matplotlib.animation as animation
 
 #%pylab qt
+ 
+
 plt.rcParams['animation.ffmpeg_path'] = 'c://ffmpeg-4.1.1-win64-static//bin//ffmpeg.exe'
-fig = plt.figure(figsize=(8, 8))
+fig = plt.figure(figsize=(10, 8))
 #param, = plt.plot(t,y_t[1])
 ang_2pi = np.linspace(0,2*np.pi,num=1000)
+colors_w = frequency_to_color(w)
 
 
-
-def update(i):
+def update_argand(i):
     fig.clf()
     
-    plt.plot(np.cos(ang_2pi),np.sin(ang_2pi), color='y')
+    
     for node in range(0,NODE_NR):
-        plt.scatter(np.cos(y_t[node][i]),np.sin(y_t[node][i]), color='b', marker='o', linewidth=1)
+        plt.scatter(np.cos(y_t[node][i]),np.sin(y_t[node][i]),facecolor=colors_w[node], # color='b',
+                marker='o', linewidth=0.5, zorder=3, edgecolor='gray', s = 100)
         
-    plt.scatter(r[i]*np.cos(psi[i]),r[i]*np.sin(psi[i]), color='red', linewidth = 3)
+    plt.scatter(r[i]*np.cos(psi[i]),r[i]*np.sin(psi[i]), color='b',
+                linewidth = 3, zorder=2)
+    plt.plot(r[:i]*np.cos(psi[:i]),r[:i]*np.sin(psi[:i]), color='b', linewidth = 1.0, zorder=1)
+    
+    plt.plot(np.cos(ang_2pi),np.sin(ang_2pi), color='gray')
+    
     plt.xlim([-1.1,1.1])
     plt.ylim([-1.1,1.1])
+    
+    sm = plt.cm.ScalarMappable(cmap=cyan_purple_cmap, norm=plt.Normalize(vmin=min(w), vmax=max(w)))
+    sm._A = []
+    cb1 = plt.colorbar(sm)
+    cb1.set_label(r'$\omega_i$')
+    
+    return fig,
+
+    
+
+def update_graph(i):
+    fig.clf()
+    
+    
+    
+    for node in range(0,NODE_NR):
+        plt.scatter(np.cos(y_t[node][i]),np.sin(y_t[node][i]),facecolor=colors_w[node], # color='b',
+                marker='o', linewidth=0.5, zorder=3, edgecolor='gray', s = 100)
+        
+    plt.scatter(r[i]*np.cos(psi[i]),r[i]*np.sin(psi[i]), color='b',
+                linewidth = 3, zorder=2)
+    plt.plot(r[:i]*np.cos(psi[:i]),r[:i]*np.sin(psi[:i]), color='b', linewidth = 1.0, zorder=1)
+    
+    plt.plot(np.cos(ang_2pi),np.sin(ang_2pi), color='gray')
+    
+    plt.xlim([-1.1,1.1])
+    plt.ylim([-1.1,1.1])
+    
+    sm = plt.cm.ScalarMappable(cmap=cyan_purple_cmap, norm=plt.Normalize(vmin=min(w), vmax=max(w)))
+    sm._A = []
+    cb1 = plt.colorbar(sm)
+    cb1.set_label(r'$\omega_i$')
     
     return fig,
 
 frame = [i for i in range(0,len(t))]
 
-ani = animation.FuncAnimation(fig, update, frames=frame,
-                              interval=10, blit=False)
+#ani = animation.FuncAnimation(fig, update_argand, frames=frame,
+#                              interval=10, blit=False)
 
 #ani.save('basic_animation.mp4', fps=60, extra_args=['-vcodec', 'libx264'])
 #ani.save('test.gif', writer='imagemagick')

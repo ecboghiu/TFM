@@ -1,7 +1,6 @@
-set xlabel 't'
-set ylabel 'r,G/N'
-set title 'EPES'
-
-p 'FG_N=1001_m=1_a=5.1_sig=0.08.txt' u 1:2
-rep 'FG_N=1001_m=1_a=5.1_sig=0.08.txt' u 1:3:0 lt palette
+set nokey
+set terminal png size 500,400
+set output '_1_sss.png'
+p 'FG_N=2000_m=1_a=5_sig=0.01_EDGELIST.txt' u 4:5:($0/2000.0) lt palette
+#rep 'FG_N=2000_m=1_a=5_sig=0.08_EDGELIST.txt' u 1:3:0 lt palette
 

@@ -30,6 +30,9 @@ int main(void)
 
 int tiempo_ini = time(NULL);
 
+FILE *theta_file = fopen("pattern.txt","w");
+fclose(theta_file);
+
 ////////////////////////// PERCOLATION ////////////////////////////////////////
 #ifdef PERCOLATION_ON
 //percolation_on();

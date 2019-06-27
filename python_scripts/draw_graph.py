@@ -64,8 +64,10 @@ G = nx.read_adjlist("../adj_C.txt", nodetype=int)
 
 #G = nx.barabasi_albert_graph(1000, 3)
 
-#G = nx.erdos_renyi_graph(1000, 0.006)
-#nx.write_edgelist(G, "nx_edgelist.txt")
+G = nx.erdos_renyi_graph(1000, 0.006)
+G = nx.generators.lattice.grid_graph(dim=[100, 100])
+G = nx.convert_node_labels_to_integers(G, first_label=0, ordering='default', label_attribute=None)
+nx.write_edgelist(G, "../nx_edgelist.txt")
 
 
 options = {
@@ -83,14 +85,13 @@ degree_sequence = sorted([d for n, d in G.degree()], reverse=True)  # degree seq
 degreeCount = collections.Counter(degree_sequence)
 deg, cnt = zip(*degreeCount.items())
 
-average = 0
-norm = 0
-for i in range(0,len(deg)):
-    norm = norm + cnt[i]    
-for i in range(0,len(deg)):
-    average = average + deg[i] * cnt[i]
-average = average/norm
-print("average=",average)
+
+np_deg = np.array(deg)
+np_cnt = np.array(cnt)
+norm = np.sum(np_cnt)   
+np_prob = np_cnt/norm
+average = np.sum(np_deg*np_prob)
+var = np.sum(np_deg*np_deg*np_prob)-average
 
 fig, ax = plt.subplots()
 plt.bar(np.array(deg), np.array(cnt), color='b')#, width=0.80, color='b')

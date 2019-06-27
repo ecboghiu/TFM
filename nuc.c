@@ -1,5 +1,7 @@
 #include "graph.h"
 
+//FILE *theta_file;
+
 void oscillator_on()
 {
       ///////////////////////ERDOS-RENYI////////////////////////////////////////
@@ -168,9 +170,14 @@ void oscillator_on()
             timp = t_idx*h*(1+blind);
 
             #ifdef PRINT_EVOLUTION_OF_R
-            fprintf(theta_file, "%lf %lf %lf\n",
-     timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind),
-            r_coh[t_idx], 0.0);//exp(-0.01*timp));
+            fprintf(theta_file, "%lf ",
+     timp + (sigma-sigma_min)/sigma_inc * nr_measurements*h*(1+blind));
+            for (int i = 0; i < NODE_NR; i++)
+            {
+                fprintf(theta_file, "%lf ", GLOB_theta[i]);
+            }
+            fprintf(theta_file, "\n");
+            
             #endif
 
             for (int t_aux = 0; t_aux < blind; t_aux++) {
@@ -686,7 +693,7 @@ void frequency_gap_on()
                                                 FG_ALPHA,
                                                 SIGMA_VAL,
                                                 FG_M);
-    FILE *theta_file = fopen(filename_coh,"a");
+    theta_file = fopen(filename_coh,"a");
     if (theta_file == NULL) {
         printf("%s\n", "Could not open coh.txt");
         exit(2);
@@ -796,10 +803,10 @@ void frequency_gap_on()
             
             for(int i = 0; i < NODE_NR; i++) {
                 //GLOB_theta[i] = M_PI*(-1 + Random()*2);
-                aux_ang22 =  GLOB_theta[i];
-                GLOB_theta[i] = atan2(sin(aux_ang22),cos(aux_ang22)); // reset to [0,2pi]
+                //aux_ang22 =  GLOB_theta[i];
+                //GLOB_theta[i] = atan2(sin(aux_ang22),cos(aux_ang22)); // reset to [0,2pi]
             }
-            
+
             //for (int i = 0; i < NODE_NR; i++) {
             //    GLOB_omega_nat[i] = 2*(double) degree[i];
             //            //0.5*(-1 + 2*Random());//sampleNormal();

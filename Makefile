@@ -17,7 +17,8 @@ clean:
 	rm -f $(TARGET)
 
 run:
-	nohup ./$(name).out > $(name).txt &
+	./$(name).out
+	#nohup ./$(name).out > $(name).txt &
 
 valgrind:
 	valgrind --leak-check=yes ./$(TARGET)

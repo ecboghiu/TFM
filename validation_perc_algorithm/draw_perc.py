@@ -2,10 +2,24 @@ import matplotlib.pyplot as plt
 
 from pylab import genfromtxt
 
+
 import seaborn as sns
-sns.set()
+#sns.set()
 #sns.set_context('talk')
-sns.set_context("notebook", font_scale=1.1, rc={"lines.linewidth": 1.5})
+#sns.set_context("notebook", font_scale=1.1, rc={"lines.linewidth": 1.5})
+
+
+from pylab import rcParams
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+plt.rc('font', serif='Palatino')
+
+golden_ration = (1 + 5 ** 0.5) / 2
+one_column_figure_size = 1.7
+rcParams['figure.figsize'] = (2*one_column_figure_size * golden_ration, 2*one_column_figure_size)
+#rcParams['axes.linewidth'] = 0.25
+#rcParams['xtick.major.width'] = 0.25
+#rcParams['ytick.major.width'] = 0.25
 
 # Sources: http://www.randalolson.com/2014/06/28/how-to-make
 #            -beautiful-data-visualizations-in-python-with-matplotlib/
@@ -50,12 +64,12 @@ colors.append(tableau20[6])
 #colors.append(tableau20[6])
 
 plot_data.append(genfromtxt("N=100000_fracsize_vs_t.txt"))
-labels.append(r'$N=10000$ Null/Random')
-colors.append(tableau20[8])
+labels.append(r'$N=10000$ Aleatorio')
+colors.append(tableau20[0])
 
 plot_data.append(genfromtxt("N=1000000_fracsize_vs_t.txt"))
-labels.append(r'$N=100000$ EP/Product rule')
-colors.append(tableau20[10])
+labels.append(r'$N=100000$ Achlioptas, $m=2$')
+colors.append(tableau20[6])
 
 '''
 plot_data.append(genfromtxt("N=1000_fracsize_vs_t.txt"))
@@ -76,20 +90,32 @@ colors.append(tableau20[6])
 '''
 
 fig = plt.figure()
+i=0
+plt.plot((plot_data[i][:,0]), plot_data[i][:,1], '--',#, plot_data[i][:,2],
+                label = labels[i],color = 'k', linewidth=2.0,
+            ) 
+i=1
+plt.plot((plot_data[i][:,0]), plot_data[i][:,1], #marker='o', facecolors='none',# plot_data[i][:,2],
+                label = labels[i],color = colors[i], linewidth=2.0#, s=40.0,
+            ) 
 
+'''
 for i in range(0,len(plot_data)):
-    plt.errorbar((plot_data[i][:,0]), plot_data[i][:,1], plot_data[i][:,2],
-                label = labels[i], color = colors[i]
+    plt.plot((plot_data[i][:,0]), plot_data[i][:,1], '--',#, plot_data[i][:,2],
+                label = labels[i],color = colors[i], linewidth=2.0,
             )    
-
+'''
 plt.legend()
 
 #plt.yscale('log')
 # Formating:
-#plt.xlim(0,1.1)
-plt.xlabel(r'Edge density ($t$)')
-plt.ylabel(r'$C_{max}/N$')
+plt.xlim(0.0,1.0)
+plt.xlabel(r'$\ell$')
+plt.ylabel(r'$\vert C \vert/N$')
 plt.ylim(0,1.1)
 
 plt.gcf().subplots_adjust(bottom=0.15)
 plt.show()
+#plt.grid(True)
+#plt.rc('grid', linestyle='--', color='gray')
+plt.savefig("perc.pdf")

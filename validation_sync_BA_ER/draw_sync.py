@@ -9,10 +9,25 @@ import matplotlib.pyplot as plt
 
 from pylab import genfromtxt
 
+'''
 import seaborn as sns
 sns.set()
 #sns.set_context('talk')
 sns.set_context("notebook", font_scale=1.1, rc={"lines.linewidth": 1.5})
+'''
+
+from pylab import rcParams
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+plt.rc('font', serif='Palatino')
+
+golden_ration = (1 + 5 ** 0.5) / 2
+one_column_figure_size = 1.7
+rcParams['figure.figsize'] = (2*one_column_figure_size * golden_ration, 2*one_column_figure_size)
+#rcParams['axes.linewidth'] = 0.25
+#rcParams['xtick.major.width'] = 0.25
+#rcParams['ytick.major.width'] = 0.25
+
 
 # Sources: http://www.randalolson.com/2014/06/28/how-to-make
 #            -beautiful-data-visualizations-in-python-with-matplotlib/
@@ -42,40 +57,55 @@ plot_data.append(genfromtxt("sync_sigmaVSr_SF_N=1000_gamma=1.69285.txt", skip_he
 labels.append(r'SF $\gamma$=1.69285 $N$=1000')
 colors.append(tableau20[6])
 '''
-filename = "sync_sigmaVSr_file_N=1000_BA_3.txt"
-plot_data.append(genfromtxt(filename, skip_header=3))
-labels.append(filename)
-colors.append(tableau20[2])
-
-
 filename = "sync_sigmaVSr_file_N=1000_ER_0.006.txt"
 plot_data.append(genfromtxt(filename, skip_header=2))
 labels.append(filename)
 colors.append(tableau20[0])
 
+filename = "sync_sigmaVSr_file_N=1000_BA_3.txt"
+plot_data.append(genfromtxt(filename, skip_header=3))
+labels.append(filename)
+colors.append(tableau20[6])
+
+
+
+
 
 
 fig = plt.figure()
+labels[0]=r'Erdős–Rényi (Aleatoria)'
+labels[1]=r'Barabási–Albert (Libre de escala)'
 
+
+i=0
+plt.plot((plot_data[i][:,0]), plot_data[i][:,1], #, plot_data[i][:,2],
+                label = labels[i],color = colors[i], linewidth=2.0,
+            ) 
+i=1
+plt.plot((plot_data[i][:,0]), plot_data[i][:,1],#, plot_data[i][:,2],
+                label = labels[i],color = colors[i], linewidth=2.0,
+            ) 
+'''
 nr_plots = len(plot_data)
 for i in range(0,nr_plots):
     plt.errorbar(plot_data[i][:,0], plot_data[i][:,1], plot_data[i][:,2],
                 label = labels[i], color = colors[i]
             )
-
+'''
 
 plt.legend(loc="upper left").set_draggable(True)
 #plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 # Formating:
-plt.xlim(0,)
-#plt.ylim(0,1.1)
+plt.xlim(0,0.2)
+plt.ylim(0,1)
 
 #plt.xlabel(r'Edge density ($t$)')
 #plt.ylabel(r'$C_{max}/N$')
 
-plt.xlabel(r'Coupling: $\sigma$')
-plt.ylabel(r'Phase coherence: $r$')
+plt.xlabel(r'Acoplo $\sigma$')
+plt.ylabel(r'Coherencia $r$')
 
 plt.gcf().subplots_adjust(bottom=0.15)
+plt.savefig('sync_BA_ER.pdf')
 plt.show()

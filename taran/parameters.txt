@@ -1,0 +1,4 @@
+1000 N_par
+100 niter
+1 nx_edgelist.txt
+0 posicion.dat
