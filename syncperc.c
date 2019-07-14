@@ -17,8 +17,8 @@ void initOmegas()
     for (int i = 0; i < NODE_NR; i++) 
     {
         //GLOB_omega_nat[i] = sampleNormal();//(double)degree[i];//0.5*(-1 + 2*Random());//
-        GLOB_omega_nat[i] = 0.5*(-1 + 2*Random());
-        //GLOB_omega_nat[i] = 3+0.5*(-1 + 2*Random());
+        //GLOB_omega_nat[i] = 0.5*(-1 + 2*Random());
+        GLOB_omega_nat[i] = 0+0.5*(-1 + 2*Random());
         //GLOB_omega_nat[i] = (double)degree[i];
     }
 
@@ -289,7 +289,7 @@ r_dom[i_dom] = ((double)i)/(i+1) * r_dom[i_dom]+ 1.0/(i+1) * phase_coherence_com
             update_RK(t+timp, sigma, DELTA_T); 
         }
         update_RK(t+timp, sigma, DELTA_T);
-        if ((float)(GLOB_nr_edges)/NODE_NR > T_INI_MEAS && (float)(GLOB_nr_edges)/NODE_NR < T_FIN_MEAS)
+        if ((float)(GLOB_nr_edges)/NODE_NR >= T_INI_MEAS && (float)(GLOB_nr_edges)/NODE_NR <= T_FIN_MEAS)
         {
             fprintf(theta_file, "%d %f ",  GLOB_nr_edges, DELTA_T);
             for (int ii_aux = 0; ii_aux < NODE_NR; ii_aux++)

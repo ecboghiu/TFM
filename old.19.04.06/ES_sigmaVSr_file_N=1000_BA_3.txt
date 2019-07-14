@@ -1,4 +1,0 @@
-# Node_nr = 1000
-# K <r> sigma_r(sig not of average! divide by sqrt(n))
-1.2 0.0666099 0.0353588 
-1.35 0.0923555 0.0468946 

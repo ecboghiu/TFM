@@ -3,10 +3,25 @@ import matplotlib.pyplot as plt
 from pylab import genfromtxt
 import numpy as np
 
+'''
 import seaborn as sns
 sns.set()
 #sns.set_context('talk')
 sns.set_context("notebook", font_scale=1.1, rc={"lines.linewidth": 1.5})
+'''
+
+from pylab import rcParams
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+plt.rc('font', serif='Palatino')
+
+
+golden_ration = (1 + 5 ** 0.5) / 2
+one_column_figure_size = 1.7
+rcParams['figure.figsize'] = (2*one_column_figure_size * golden_ration, 2*one_column_figure_size)
+#rcParams['axes.linewidth'] = 0.25
+#rcParams['xtick.major.width'] = 0.25
+#rcParams['ytick.major.width'] = 0.25
 
 # Sources: http://www.randalolson.com/2014/06/28/how-to-make
 #            -beautiful-data-visualizations-in-python-with-matplotlib/
@@ -69,8 +84,10 @@ plt.legend(loc="upper left").set_draggable(True)
 #plt.xlabel(r'Edge density ($t$)')
 #plt.ylabel(r'$C_{max}/N$')
 
-plt.xlabel(r'Time')
-plt.ylabel(r'Phase coherence: $r$')
+plt.xlabel(r'Tiempo')
+plt.ylabel(r'Parámetro de orden $r$')
 
 plt.gcf().subplots_adjust(bottom=0.15)
+#plt.savefig('termo.eps', format='eps', dpi=1200)
+plt.savefig('termo.pdf')
 plt.show()

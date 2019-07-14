@@ -3,11 +3,19 @@ import matplotlib.pyplot as plt
 from pylab import genfromtxt
 import numpy as np
 
-import seaborn as sns
-sns.set()
-#sns.set_context('talk')
-sns.set_context("notebook", font_scale=1.1, rc={"lines.linewidth": 1.5})
 
+from pylab import rcParams
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+plt.rc('font', serif='Palatino')
+
+
+golden_ration = (1 + 5 ** 0.5) / 2
+one_column_figure_size = 1.7
+rcParams['figure.figsize'] = (2*one_column_figure_size * golden_ration, 2*one_column_figure_size)
+#rcParams['axes.linewidth'] = 0.25
+#rcParams['xtick.major.width'] = 0.25
+#rcParams['ytick.major.width'] = 0.25
 # Sources: http://www.randalolson.com/2014/06/28/how-to-make
 #            -beautiful-data-visualizations-in-python-with-matplotlib/
 # These are the "Tableau 20" colors as RGB.   
@@ -44,24 +52,41 @@ plot_data.append(genfromtxt("coh_0.8_300.txt", skip_header=2))
 labels.append(r'$\sigma$=0.8')
 colors.append(tableau20[10])
 '''
+'''
 plot_data.append(genfromtxt("coh_1e-005.txt", skip_header=2))
-labels.append(r'$\delta t$=0.00001')
+labels.append(r'$h$=0.00001')
 colors.append(tableau20[10])
 plot_data.append(genfromtxt("coh_0.0001.txt", skip_header=2))
-labels.append(r'$\delta t$=0.0001')
+labels.append(r'$h$=0.0001')
 colors.append(tableau20[0])
 plot_data.append(genfromtxt("coh_0.001.txt", skip_header=2))
-labels.append(r'$\delta t$=0.001')
+labels.append(r'$h$=0.001')
 colors.append(tableau20[2])
 plot_data.append(genfromtxt("coh_0.01.txt", skip_header=2))
-labels.append(r'$\delta t$=0.01')
+labels.append(r'$h$=0.01')
 colors.append(tableau20[4])
 plot_data.append(genfromtxt("coh_0.1.txt", skip_header=2))
-labels.append(r'$\delta t$=0.1')
+labels.append(r'$h$=0.1')
 colors.append(tableau20[6])
 plot_data.append(genfromtxt("coh_0.5.txt", skip_header=2))
-labels.append(r'$\delta t$=0.5')
+labels.append(r'$h$=0.5')
 colors.append(tableau20[8])
+'''
+plot_data.append(genfromtxt("../data/FG_N=500_m=1_a=0_sig=1.5_h_high.txt", skip_header=5))
+labels.append(r'$h$=0.01')
+colors.append(tableau20[0])
+
+plot_data.append(genfromtxt("../data/FG_N=500_m=1_a=0_sig=1.5_fantastico.txt", skip_header=5))
+labels.append(r'$h$=0.1')
+colors.append(tableau20[2])
+
+plot_data.append(genfromtxt("../data/FG_N=500_m=1_a=0_sig=1.5_hvlow.txt", skip_header=5))
+labels.append(r'$h$=0.5')
+colors.append(tableau20[4])
+
+plot_data.append(genfromtxt("../data/FG_N=500_m=1_a=0_sig=1.5_nlow.txt", skip_header=5))
+labels.append(r'$h$=0.1 low')
+colors.append(tableau20[4])
 
 fig = plt.figure()
 
@@ -74,7 +99,7 @@ for i in [0]:
 '''
 for i in range(0,len(plot_data)):
     plt.plot(plot_data[i][:,0],
-             np.abs(np.array(plot_data[i][:,1])-np.array(plot_data[i][:,2])),
+             (plot_data[i][:,2]),
                 label = labels[i], color = colors[i])
 '''
 plt.plot(plot_data[i][:,0], plot_data[i][:,1], 
@@ -86,7 +111,7 @@ plt.plot(plot_data[i][:,0], plot_data[i][:,2],
 
   
 
-plt.yscale('log')
+#plt.yscale('log')
 plt.legend(loc="upper left").set_draggable(True)
 #plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
@@ -97,9 +122,9 @@ plt.legend(loc="upper left").set_draggable(True)
 #plt.xlabel(r'Edge density ($t$)')
 #plt.ylabel(r'$C_{max}/N$')
 
-plt.xlabel(r'time')
-plt.ylabel(r'Error')
-plt.title(r'Error as a function of $\delta t$')
+plt.xlabel(r'$\ell$')
+plt.ylabel(r'r')
+plt.title(r'Variación en $r$ debido a cambios en $h$')
 
 plt.gcf().subplots_adjust(bottom=0.15)
 plt.show()

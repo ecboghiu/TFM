@@ -23,7 +23,7 @@ plt.rc('font', serif='Palatino')
 
 golden_ration = (1 + 5 ** 0.5) / 2
 one_column_figure_size = 1.7
-rcParams['figure.figsize'] = (2*one_column_figure_size * golden_ration, 2*one_column_figure_size)
+rcParams['figure.figsize'] = (2*one_column_figure_size * golden_ration*0.9, 2*one_column_figure_size*1.1)
 #rcParams['axes.linewidth'] = 0.25
 #rcParams['xtick.major.width'] = 0.25
 #rcParams['ytick.major.width'] = 0.25
@@ -81,10 +81,14 @@ i=0
 plt.plot((plot_data[i][:,0]), plot_data[i][:,1], #, plot_data[i][:,2],
                 label = labels[i],color = colors[i], linewidth=2.0,
             ) 
+
+'''
 i=1
 plt.plot((plot_data[i][:,0]), plot_data[i][:,1],#, plot_data[i][:,2],
                 label = labels[i],color = colors[i], linewidth=2.0,
             ) 
+'''
+
 '''
 nr_plots = len(plot_data)
 for i in range(0,nr_plots):
@@ -103,9 +107,9 @@ plt.ylim(0,1)
 #plt.xlabel(r'Edge density ($t$)')
 #plt.ylabel(r'$C_{max}/N$')
 
-plt.xlabel(r'Acoplo $\sigma$')
+plt.xlabel(r'Acoplo $K/N$')
 plt.ylabel(r'Coherencia $r$')
 
 plt.gcf().subplots_adjust(bottom=0.15)
-plt.savefig('sync_BA_ER.pdf')
+plt.savefig('sync_BA_ER1.png',dpi=1200)
 plt.show()

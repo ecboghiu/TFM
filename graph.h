@@ -36,16 +36,16 @@
 //#define DEGREE_HISTOGRAM
 
 // Number of nodes in the graph.
-#define NODE_NR 500
+#define NODE_NR 2001
 #define K_MAX 500
 #define K_MIN 2
 #define AVG_NUMBER 1
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 0.5
+#define DELTA_T 0.1
 // How many times we measure.
-#define MAX_STEPS 100
+#define MAX_STEPS 80
 // Number of updates in between measures.
 #define IN_BETWEEN 0
 #define SIGMA_MIN 0.0
@@ -55,18 +55,18 @@
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
 
-#define SIGMA_VAL 0.08
+#define SIGMA_VAL 0.06
 
 //#define PRINT_EVOLUTION_OF_R
-    #define T_INI_MEAS 2.166
-    #define T_FIN_MEAS 2.178    
+    #define T_INI_MEAS 3.32130
+    #define T_FIN_MEAS 3.32440  
 
 
 // If its not defined we dont wait to termalize
 // we need to wait around 
 #define TERMALIZATION 0
 //#define HISTERESIS
-#define HISTERESIS_MIN 0.05
+#define HISTERESIS_MIN 0.076
 
 #define EXTRA_LABEL "_1"
 

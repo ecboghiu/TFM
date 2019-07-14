@@ -20,7 +20,6 @@ plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 plt.rc('font', serif='Palatino')
 
-
 golden_ration = (1 + 5 ** 0.5) / 2
 one_column_figure_size = 1.7
 rcParams['figure.figsize'] = (2*one_column_figure_size * golden_ration, 2*one_column_figure_size)
@@ -141,11 +140,11 @@ def take_from_txt (out, filename, filename_hist, color ):
     color_code = color
     out[2].append([tableau20[color_code], tableau20[color_code+1],tableau20[color_code]])
     
-    
+    '''
     file_in = filename_hist
     file_out = "../data/hist3D_"+filename
     out[3].append(hist_3d(file_in,file_out))
-    
+    '''
     
    
 def take_from_txt_Nas (out, N, a, sig, color):
@@ -180,13 +179,13 @@ def plot_alph_slice (ALPHA):
 #take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=5_sig=0.08_h=.05.txt", 4)
 #take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=5_sig=0.08_h=1..txt", 0)
 #take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_a=5_sig=0.08_h=0.01.txt", 2)
-lambas=['0.1','0.09','0.08','0.07','0.06','0.05','0.04','0.03','0.02','0.01']
-lambas=['0.04','0.03','0.02']
-'''
-lambas=['0.07','0.06','0.058']
-lmmm = [str(0.01+0.002*i).format("%.3d") for i in range(0,45)]
 
-lmmm
+#lambas=['0.1','0.09','0.08','0.07','0.06','0.05','0.04','0.03','0.02','0.01']
+#lambas=['0.04','0.03','0.02','0.012']
+
+#lambas=['0.07','0.06','0.058']
+#lmmm = [str(0.01+0.002*i).format("%.3d") for i in range(0,45)]
+
 lambas= ['0.01',
  '0.012',
  '0.014',
@@ -233,7 +232,8 @@ lambas= ['0.01',
  '0.096',
  '0.098',
  '0.1']
-'''
+
+
 
 #lambas_list=['1','0.5','0.1','0.08','0.05']
 lam = lambas
@@ -243,11 +243,11 @@ alpha_list=['-20','-5','0','5','20']
 def data_section_lam(lam, alpha, data_labels_colors):
     for i in range(len(alpha)):
         take_from_txt(data_labels_colors, "../data.19.6.11.achlioptas/FG_N=2000_m=1_a="+(alpha[i])+"_sig="+lam+".txt",
-                  "../data.19.6.11.achlioptas/FG_N=2000_m=1_a="+(alpha[i])+"_sig="+lam+"_EDGELIST.txt", 2*i)
+                  "../data.19.6.11.achlioptas/FG_N=2000_m=1_a="+(alpha[i])+"_sig="+lam+"_EDGELIST.txt", 0)
 def data_section_alph(lam, alpha, data_labels_colors):
     for i in range(len(lam)):        
         take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_4_a="+(alpha)+"_sig="+(lam[i])+".txt",
-                  "../data/FG_N=2000_m=1_a="+(alpha)+"_sig="+(lam[i])+"_EDGELIST.txt", 2*i)
+                  "../data/FG_N=2000_m=1_a="+(alpha)+"_sig="+(lam[i])+"_EDGELIST.txt", 0)
 
 #data_section_lam('1', alpha, data_labels_colors)
         
@@ -371,13 +371,13 @@ take_from_txt(data_labels_colors, "../data/FG_N=2000_m=1_4_a=5_sig=0.01.txt", 14
 
 
 # DOWNSAMPLING SYN
-'''
+
 NUMBER_OF_SAMPLES = 1000
 loop_nr=len(plot_data)
 for i in range(0,loop_nr):
     #plot_data[i] = plot_data[i][::(int(len(plot_data[i])/NUMBER_OF_SAMPLES))].copy()
     plot_data[i] = plot_data[i][::100].copy()
-'''
+
 
 def r_to_color(r_list):
     #colors_cyan_purple = cyan_purple_cmap(np.linspace(0, 1, 1001))
@@ -609,7 +609,7 @@ def plot_phase_diag(data_labels_colors):
     #t1t2 = [[0,0], [2.205,2.2608], [2.573,2.657],
     #        [2.991,3.233], [3.593,4.052], [4.497,5.294], [6.00,7.420],
     #        [8.97,11.642], [17.679,23.689]]
-    '''
+    
     t1t2 = []
     for i in range(0,len(plot_data)):
         aux_a = plot_data[i][:,2] # sinc
@@ -623,33 +623,35 @@ def plot_phase_diag(data_labels_colors):
             t1t2.append([t1,t2])
         if t1 > t2:
             t1t2.append([t2,t1])
-    '''
+    
         
     for i in range(0,len(plot_data)):
+        t1 = t1t2[i][0]
+        t2 = t1t2[i][1]
+        
         temp_len = int(len(plot_data[i][:,0])/2)
         #coloress = r_to_color(plot_data[i][:temp_len,2])
         #for j in range(0,int(len(plot_data[i][:,0]/2))):
-        #aux_cb = ax.scatter(plot_data[i][:temp_len,0],
-        #            float(lambas[i])*np.ones(temp_len), marker='s', #linewidth=0.5, #marker='+',
-        #            s = 20, #label = labels[i][0],
-        #            c = plot_data[i][:temp_len,2],
-        #            cmap=plt.cm.get_cmap('plasma'),
-        #            norm=plt.Normalize(vmin=0, vmax=1))
+        aux_cb = ax.scatter(plot_data[i][:temp_len,0],
+                    float(lambas[i])*np.ones(temp_len), marker='.', #linewidth=0.5, #marker='+',
+                    s = 35, #label = labels[i][0],
+                    c = plot_data[i][:temp_len,2],
+                    cmap=plt.cm.get_cmap('plasma'),
+                   norm=plt.Normalize(vmin=0, vmax=1))
         
-        plt_len = len(plot_data[i][temp_len:,0])
-        aux_cb=ax.scatter(plot_data[i][temp_len:,0],
-            float(lambas[i])*np.ones(plt_len), marker='s', #linewidth=0.5, #marker='+',
-            s = 20, #label = labels[i][0],
-            c = plot_data[i][temp_len:,2],
-            cmap=plt.cm.get_cmap('viridis'),
+        
+        ax.scatter(plot_data[i][2*temp_len-t1:t2,0],
+            float(lambas[i])*np.ones(len(plot_data[i][2*temp_len-t1:t2,0])), marker='.', #linewidth=0.5, #marker='+',
+            s = 35, #label = labels[i][0],
+            c = plot_data[i][2*temp_len-t1:t2,2],
+            cmap=plt.cm.get_cmap('cool_r'),
             norm=plt.Normalize(vmin=0, vmax=1))
 
         
         '''
         #t1 = int(t1t2[i][0]*NODE_NR)
         #t2 = int(t1t2[i][1]*NODE_NR)
-        t1 = t1t2[i][0]
-        t2 = t1t2[i][1]
+        
         ax.scatter(plot_data[i][t1:t2,0],
                     float(lambas[i])*np.ones(abs(t2-t1)), marker='s',
                     #linewidth=0.5, #marker='+',
@@ -723,8 +725,8 @@ def plot_both_thing(data_labels_colors):
 #plot_r_thing(data_labels_colors)
 #plot_perc_thing(data_labels_colors)
 
-#plot_phase_diag(data_labels_colors)
-plot_epes(data_labels_colors)
+plot_phase_diag(data_labels_colors)
+#plot_epes(data_labels_colors)
 #p
 #plot_weff_corr()
 
