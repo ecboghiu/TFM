@@ -43,9 +43,9 @@
 
 // Value not chosen arbitrarily, but so that theta_dot*h~1e-4,ie,
 // sufficently. small
-#define DELTA_T 0.1
+#define DELTA_T 0.05
 // How many times we measure.
-#define MAX_STEPS 80
+#define MAX_STEPS 300
 // Number of updates in between measures.
 #define IN_BETWEEN 0
 #define SIGMA_MIN 0.0
@@ -58,8 +58,8 @@
 #define SIGMA_VAL 0.06
 
 //#define PRINT_EVOLUTION_OF_R
-    #define T_INI_MEAS 3.32130
-    #define T_FIN_MEAS 3.32440  
+    #define T_INI_MEAS 3.2014
+    #define T_FIN_MEAS 3.2059 
 
 
 // If its not defined we dont wait to termalize

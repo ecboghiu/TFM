@@ -18,7 +18,7 @@ void initOmegas()
     {
         //GLOB_omega_nat[i] = sampleNormal();//(double)degree[i];//0.5*(-1 + 2*Random());//
         //GLOB_omega_nat[i] = 0.5*(-1 + 2*Random());
-        GLOB_omega_nat[i] = 0+0.5*(-1 + 2*Random());
+        GLOB_omega_nat[i] = 1+0.5*(-1 + 2*Random());
         //GLOB_omega_nat[i] = (double)degree[i];
     }
 

@@ -934,8 +934,8 @@ currentDT = datetime.datetime.now()
 print (str(currentDT))
 #ani = animation.FuncAnimation(fig, update_argand, frames=10,interval=10, blit=True)
 
-ani.save('oscill_net5.mp4', extra_args=['-vcodec', 'libx264'], #bitrate=500,#,
-          fps=120)#, dpi=300)
+ani.save('oscill_net6asd.mp4', extra_args=['-vcodec', 'libx264'], #bitrate=500,#,
+          fps=60)#, dpi=300)
 
 
 
