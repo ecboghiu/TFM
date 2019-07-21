@@ -50,7 +50,7 @@
 #define IN_BETWEEN 0
 #define SIGMA_MIN 0.0
 #define SIGMA_MAX 10.0
-#define NR_SIGMA 10
+#define NR_SIGMA 10 
 
 // only when termalization is undefined, when termalization is
 // defined we make a look going through many sigma values, not one
